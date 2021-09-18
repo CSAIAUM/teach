@@ -1,0 +1,21 @@
+<div class="news">
+    <h2 style="padding-top: 30px;" align="right" dir="rtl">📚 دروس اخیرا ارائه شده</h2>
+    {% if site.lastcourse  %}
+      <div class="table-responsive">
+        <table class="table table-sm table-borderless">
+        {% assign lastcourse = site.lastcourse | reverse %}
+        {% for item in lastcourse limit: site.lastcourse_limit %}
+          <tr>
+            <!-- <th scope="row">{{ item.date | date: "%b %-d, %Y" }}</th> -->
+            <td align="right" dir="rtl">
+            <a class="news-title" href="{{ item.link | relative_url }}">{{ item.name }} - ترم {{ item.semester }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+        </table>
+      </div>
+    {% else %}
+      <p align="right">!درس ارائه شده ای وجود ندارد</p>
+    {% endif %}
+  </div>
+  

@@ -1,0 +1,45 @@
+---
+layout: default
+---
+
+<div class="post">
+  <header class="post-header" style="padding-bottom: 30px;">
+    {% if page.profile.image %}
+    <img align="right" class="img-fluid z-depth-1" style="border-radius: 50%; height: 100px; width: 100px; margin-top: -10px;" src="{{ page.profile.image | prepend: '/assets/img/' | prepend: site.baseurl }}">
+    {% endif %}    
+    <h1 class="post-title" dir="rtl" align="right" style="margin-right: 130px;" >
+     {% if site.title == "blank" %}<span class="font-weight-bold">{{ site.first_name }}</span> {{ site.middle_name }} {{ site.last_name }}{% else %}{{ site.title }}{% endif %}
+    </h1>
+     <p class="desc" dir="rtl" align="right" style="margin-right: 130px;" >{{ page.description }}</p>
+     {% if page.profile %}
+     <div style="margin-right: 550px; margin-top: -80px;" align="left" class="profile float-{% if page.profile.align == 'left' %}left{% else %}right{% endif %}">
+       {% if page.profile.address %}
+         <div align="left"  class="address">
+           {{ page.profile.address }}
+         </div>
+       {% endif %}
+     </div>
+     {% endif %}     
+  </header>
+
+  <article>
+
+    <div align="right" dir="rtl" class="clearfix">
+      {{ content }}
+    </div>
+
+    {% if page.news %}
+      {% include lastcourse.html %}
+    {% endif %}
+
+    {% if page.social %}
+    <div align="center" style="margin-bottom: -130px; margin-top: 30px;" class="social">
+      <div class="contact-icons">
+        {% include social.html %}
+      </div>
+      <div class="contact-note">{{ site.contact_note }}</div>
+    </div>
+    {% endif %}
+  </article>
+
+</div>
