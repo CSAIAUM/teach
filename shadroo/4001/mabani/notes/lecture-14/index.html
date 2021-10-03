@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 14: Approximate Inference: Markov Chain Monte Carlo</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-14/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 14: Approximate Inference: Markov Chain Monte Carlo",
+      "description": "An introduction of Markov Chain Monte Carlo methods.",
+      "published": "March 4, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Irene Li"
+        },
+        
+        {
+          "author": "Ziheng Cai"
+        },
+        
+        {
+          "author": "Zhuoran Zhang"
+        },
+        
+        {
+          "author": "Jiacheng Zhu"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Xun Zheng"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 14: Approximate Inference: Markov Chain Monte Carlo</h1>
+        <p align='right' dir="rtl">An introduction of Markov Chain Monte Carlo methods.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <!-- Irene -->
+
+<h2 id="recap-of-monte-carlo">Recap of Monte Carlo</h2>
+<h3 id="monte-carlo-methods-are-algorithms-that">Monte Carlo methods are algorithms that:</h3>
+<ul>
+  <li>Generate samples from a given probability distribution $p(x)$.</li>
+  <li>Estimate expectations of functions $E[f(x)]$ under a distribution $p(x)$.</li>
+</ul>
+
+<h3 id="why-is-monte-carlo-useful">Why is Monte Carlo useful?</h3>
+<ul>
+  <li>Can use samples of $p(x)$ to approximate $p(x)$ itself
+    <ul>
+      <li>Allow us to do graphical model inference when we can’t compute $p(x)$.</li>
+    </ul>
+  </li>
+  <li>Expectations $E[f(x)]$ reveal interesting properties about $p(x)$, e.g., means and variances.</li>
+</ul>
+
+<h3 id="limitations-of-monte-carlo">Limitations of Monte Carlo</h3>
+<ul>
+  <li>Direct sampling
+    <ul>
+      <li>Hard to get rare events in high-dimensional spaces.</li>
+      <li>Infeasible for MRFs, unless we know the normalizer $Z$.</li>
+    </ul>
+  </li>
+  <li>Rejection sampling, Importance sampling
+    <ul>
+      <li>Do not work well if the proposal $Q(x)$ is very different from $P(x)$.</li>
+      <li>Yet constructing a $Q(x)$ similar to $P(x)$ can be difficult.
+        <ul>
+          <li>Requires knowledge of the analytical form of $P(x)$ - but if we had that, we wouldn’t even need to sample!</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Intuition: Instead of a fixed proposal $Q(x)$, use an adaptive proposal.</li>
+</ul>
+
+<h2 id="markov-chain-monte-carlo-mcmc">Markov Chain Monte Carlo (MCMC)</h2>
+<p>MCMC algorithms feature adaptive proposals.</p>
+<ul>
+  <li>Instead of $Q(x^\prime)$, use $Q(x^\prime \mid x)$ where $x^\prime$ is the new state being sampled, and $x$ is the previous sample.</li>
+  <li>As $x$ changes, $Q(x^\prime \mid x)$ can also change (as a function of $x^\prime$).</li>
+</ul>
+
+<figure>
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/MCMC.png" />
+<figcaption>
+Comparison between using a fixed (bad) proposal and an adaptive proposal.
+</figcaption>
+</figure>
+
+<p>To understand how MCMC works, we need to look at Markov Chains first.</p>
+
+<h3 id="markov-chains">Markov Chains</h3>
+<ul>
+  <li>A Markov Chain is a sequence of random variables $x^{(1)}$, $x^{(2)}$, …, $x^{(n)}$ with the Markov Property</li>
+</ul>
+
+<p><script type="math/tex">P(x^{(n)}=x\ |x^{(1)}, ..., x^{(n-1)})=P(x^{(n)}=x\ |x^{(n-1)})</script></p>
+<ul>
+  <li>$P(x^{(n)}=x\mid x^{(n-1)})$ is known as the <strong>transition kernel</strong>.</li>
+  <li>The next state depends only on the preceding state.</li>
+  <li>Random variables $x^{(i)}$ can be <strong>vectors</strong>.
+    <ul>
+      <li>We define $x^{(i)}$ to be the t-th sample of <strong>all</strong> variables in a graphical model</li>
+      <li>$x^{(i)}$ represents the entire state of the graphical model at time $t$.</li>
+    </ul>
+  </li>
+  <li>We study homogeneous Markov Chains, in which the transition kernel $P(x^{(n)}=x\mid x^{(n-1)})$ is fixed with time.
+    <ul>
+      <li>To emphasize this, we will call the kernel $T(x^\prime\mid x)$, where $x$ is the previous state and $x^\prime$ is the next state.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="markov-chains-concepts">Markov Chains Concepts</h3>
+<p>Define a few important concepts of Markov Chains(MC)</p>
+<ul>
+  <li><strong>Probability distribution over states</strong>: $\pi^{(t)}(x)$ is a distribution over the state of the system $x$, at time $t$.
+    <ul>
+      <li>When dealing with MCs, we don’t think of the system as being in one state, but as having a distribution over states.</li>
+      <li>For graphical models, remember that $x$ represents <strong>all</strong> variables.</li>
+    </ul>
+  </li>
+  <li><strong>Transitions</strong>: recall that states transition from $x^{(t)}$ to $x^{(t+1)}$ according to the transition kernel $T(x^\prime\mid  x)$.
+    <ul>
+      <li>We can also transition entire distributions: 
+<script type="math/tex">\pi^{(t+1)}(x')=\sum_{x} \pi^{(t)}(x)T(x' \mid x)</script></li>
+      <li>At time t, state $x$ has probability mass $\pi^{(t)}(x)$. The transition probability redistributes this mass to other states $x^\prime$.</li>
+    </ul>
+  </li>
+  <li><strong>Stationary distributions</strong>: $\pi^{(t)}(x)$ is stationary if it does not change under the transition kernel:
+$\pi(x^\prime)=\sum_{x} \pi(x)T(x^\prime\mid x)$, for all $x^\prime$. To understand stationary distributions, we need to define some notions:
+    <ul>
+      <li><strong>Irreducible</strong>: an MC is irreducible if you can get from any state $x$ to any other state $x^\prime$ with probability &gt; 0 in a finite number of steps, i.e., there are no unreachabble parts of the state space.</li>
+      <li><strong>Aperiodic</strong>: an MC is aperiodic if you can return to any state $x$ at any time.
+        <ul>
+          <li>Periodic MCs have states that need ≥2 time steps to return to (cycles).</li>
+        </ul>
+      </li>
+      <li><strong>Ergodic (or regular)</strong>: an MC is ergodic if it is irreducible and aperiodic
+        <ul>
+          <li>Ergodicity is important: it implies you can reach the stationary distribution $\pi_{st}(x)$, no matter the initial distribution $\pi^{(0)}(x)$.</li>
+          <li>All good MCMC algorithms must satisfy ergodicity, so that you can’t initialize in a way that will never converge.</li>
+        </ul>
+      </li>
+      <li><strong>Reversible (detailed balance)</strong>: an MC is reversible if there exists a distribution $\pi(x)$ such that the detailed balance condition is satisfied:
+<script type="math/tex">\pi(x')T(x\ |x')=\pi(x)T(x'\ |x)</script>
+Probability of $x^\prime \rightarrow x$ is the same as $x\rightarrow x^\prime$.
+        <ul>
+          <li>Reversible MCs <strong>always</strong> have a stationary distribution! Proof:</li>
+        </ul>
+        <d-math block="">
+  \begin{aligned}
+  \pi(x')T(x\ |x') &amp; = \pi(x)T(x'\ | x) \\
+  \sum_{x}\pi(x')T(x\ |x') &amp; = \sum_{x}\pi(x)T(x'\ | x) \\
+  \pi(x')\sum_{x}T(x\ |x') &amp; = \sum_{x}\pi(x)T(x'\ | x) \\
+  \pi(x') &amp; = \sum_{x}\pi(x)T(x'\ | x) 
+  \end{aligned}
+  </d-math>
+        <p>Note that the last line is the definition of a stationary distribution!</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="metropolis-hastings-mh--an-mcmc-method">Metropolis-Hastings (MH) – An MCMC method</h2>
+<h3 id="how-the-mh-algorithm-works-in-practice">How the MH algorithm works in practice</h3>
+<ol>
+  <li>Draws a sample $x^\prime$ from $Q(x^\prime\mid x)$, where x is the previous sample.</li>
+  <li>The new sample $x^\prime$ is accepted with some probability $A(x^\prime \mid x)=min(1, \frac{P(x^\prime)Q(x\mid x^\prime)}{P(x)Q(x^\prime\mid x)})$
+    <ul>
+      <li>$A(x^\prime\mid x)$ is like a ratio of importance sampling weights</li>
+    </ul>
+    <ul>
+      <li>$P(x^\prime)/Q(x^\prime\mid x)$ is the importance weight for $x^\prime$, $P(x)/Q(x\mid x^\prime)$ is the importance weight for $x$.</li>
+      <li>We devide the importance wieght for $x^\prime$ by that of $x$.</li>
+      <li>Notice that we only need to compute $P(x^\prime)/P(x)$ rather than $P(x^\prime)$ or $P(x)$ separately, so we don’t need to know the normalizer.</li>
+      <li>$A(x^\prime\mid x)$ ensures that, after sufficiently many draws, our samples will come from the true distribution $P(x)$.</li>
+    </ul>
+  </li>
+</ol>
+
+<figure>
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/MH_algo.png" />
+<figcaption>
+The Metropolis-Hastings Algorithm
+</figcaption>
+</figure>
+
+<h3 id="why-does-metropolis-hastings-work">Why does Metropolis-Hastings work?</h3>
+<p>Since we draw a sample $x^\prime$ according to $Q(x^\prime\mid x)$, and then accept/reject according to $A(x^\prime\mid x)$, the transition kernel is:
+<script type="math/tex">T(x'\mid x)=Q(x'\mid x)A(x'\mid x)</script></p>
+
+<p>We can prove that MH satisfies detailed balance (or reversibility):</p>
+
+<p>Recall that $A(x^\prime\mid x)=min(1, \frac{P(x^\prime)Q(x\mid x^\prime)}{P(x)Q(x^\prime\mid x)})$, which implies the following:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\text{If } A(x^\prime\mid x)<1 \text{ then } \frac{P(x^\prime)Q(x\mid x^\prime)}{P(x)Q(x^\prime\mid x)}>1 \text{ and thus } A(x\mid x^\prime)=1 %]]></script>
+
+<p>Now suppose $A(x^\prime \mid x)&lt;1$ and $A(x \mid x^\prime)=1$. We have:</p>
+<d-math block="">
+\begin{aligned}
+A(x'\ |x) &amp; = \frac{P(x')Q(x\ |x')}{P(x)Q(x'\ |x)} \\
+P(x)Q(x'\ |x)A(x'\ |x) &amp; = P(x')Q(x\ |x') \\
+P(x)Q(x'\ |x)A(x'\ |x) &amp; =P(x')Q(x\ |x')A(x\ |x') \\
+\pi(x')T(x\ |x')&amp; =\pi(x)T(x'\ |x)
+\end{aligned}
+</d-math>
+<p>The last line is exactly the detailed balance condition. 
+In other words, the MH algorithm leads to a stationary distribution $P(x)$. Recall we defined $P(x)$ to be the true distribution of $x$. Thus, the MH algorithm eventually converges to the true distribution!</p>
+
+<h3 id="caveats">Caveats</h3>
+<p>Although MH eventually converges to the true distribution $P(x)$, we have no guarantees as to when this will occur.</p>
+<ul>
+  <li>MH has a “burn-in” period: an initial number of samples are thrown away because they are not from the true distribution.
+    <ul>
+      <li>The burn-in period represents the un-converged part of the Markov Chain.</li>
+      <li>Knowing when to halt burn-in is an art. We will look at some techniques later in this lecture.</li>
+    </ul>
+  </li>
+</ul>
+
+<!-- Ziheng -->
+<h2 id="gibbs-sampling">Gibbs Sampling</h2>
+
+<h3 id="definition">Definition</h3>
+
+<p>Gibbs Sampling is an Markov Chain Monte Carlo algorithm that samples each random variable of a graphical, one at a time. It is a special case of the Metropolis-Hasting algorithm, which performs a biased random walk to explore the distribution. It is assumed that $P(\mathbb{x})$ is too complex while $P(x_i|x_{-i})$ is tractable to work with.</p>
+
+<h3 id="algorithm">Algorithm</h3>
+
+<p>Gibbs Sampling:</p>
+<ol>
+  <li>Let $x_1, \cdots, x_n$ be the variables of the graphical model for which we are estimating the distribution</li>
+  <li>Initialize starting values for $x_1,\cdots,x_n$</li>
+  <li>At time step $t$:
+    <ol>
+      <li>Pick an arbitrary ordering of $x_1,\cdots,x_n$ (this can be arbitrary or random)</li>
+      <li>For each $x_i$ in the order:
+Sample $x_i^{(t)} \sim P(x_i|x_{-i})$, where $x_i$ is updated immediately by $x_i^{(t)}$ (the new value will be used for the next sampling)</li>
+    </ol>
+  </li>
+  <li>Repeat until convergence</li>
+</ol>
+
+<h3 id="how-do-we-compute-the-conditional-probability-px_ix_-i--recall-markov-blankets">How do we compute the conditional probability $P(x_i|x_{-i})$? – Recall Markov Blankets:</h3>
+
+<script type="math/tex; mode=display">P(x_i|x_{-i}) = P(x_i|MB(x_i))</script>
+
+<figure>
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/markov_blanket.png" style="width: 70%; height: auto;display: block;margin-left: auto;margin-right: auto;" />
+<figcaption>
+An illustration of markov blanket for BN and MRF.
+</figcaption>
+</figure>
+
+<p>For a Bayesian Network, the Markov Blanket of $x$ is the set of parents, childen and co-parents.</p>
+
+<p>For a Markov Random Field, the Markov Blanket of $x$ is its immediate neighbors.</p>
+
+<h3 id="a-2d-example">A 2D Example</h3>
+
+<p>The following figure illustrates Gibbs Sampling on two variables $(x_1,x_2)=\mathbf{x}$.</p>
+
+<figure>
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/gibbs-sampling-2d-example.png" style="width: 70%; height: auto;display: block;margin-left: auto;margin-right: auto;" />
+<figcaption>
+A complete single iteration of Gibbs sampling for two-dimensional variables 
+</figcaption>
+</figure>
+
+<p>On each iteration, we start from the current state $\mathbf{x}^{(t)}$ and $x_1$ is sampled from conditional density $P(x_1|x_2)$, with $x_2$ fixed to $x_2^{(t)}$. Then $x_2$ is sampled from conditional density $P(x_2|x_1)$, with $x_1$ fixed to $x_1^{(t+1)}$. This gives $\mathbb{x}^{t+1}$ and completes the iteration.</p>
+
+<h3 id="why-does-gibbs-sampling-work">Why does Gibbs Sampling work?</h3>
+
+<ul>
+  <li>
+    <p>Gibbs Sampling is a special case of Metropolis-Hastings by giving a special proposal distribution which ensures the acceptance ratio if always $1.0$.</p>
+  </li>
+  <li>
+    <p>The Gibbs Sampling proposal distribution is</p>
+  </li>
+</ul>
+
+<script type="math/tex; mode=display">Q(x'_i,\mathbf{x}_{-i}|x_i,\mathbf{x}_{-i}) = P(x'_i|\mathbf{x}_{-i})</script>
+
+<ul>
+  <li>Applying Metropolis-Hastings to this proposal, we find that samples are always accepted</li>
+</ul>
+
+<d-math block="">
+\begin{aligned}
+  A(x'_i,\mathbf{x}_{-i}|x_i,\mathbf{x}_{-i})
+  &amp; = \min(1, \frac{P(x'_i,\mathbf{x}_{-i})Q(x_i,\mathbf{x}_{-i}\|x'_i,\mathbf{x}_{-i})}{P(x_i,\mathbf{x}_{-i})Q(x'_i,\mathbf{x}_{-i}\|x_i,\mathbf{x}_{-i})}) \\
+  &amp; = \min(1, \frac{P(x'_i,\mathbf{x}_{-i})P(x_i|\mathbf{x}_{-i})}{P(x_i,\mathbf{x}_{-i})P(x'_i|\mathbf{x}_{-i})}) \\
+  &amp; =  \min(1, \frac{P(x'_i\|\mathbf{x}_{-i})P(\mathbf{x}_{-i})P(x_i|\mathbf{x}_{-i})}{P(x_i\|\mathbf{x}_{-i})P(\mathbf{x}_{-i})P(x'_i|\mathbf{x}_{-i})}) \\
+  &amp; = \min(1,1)\\
+  &amp; = 1
+\end{aligned}
+</d-math>
+
+<h2 id="collapsed-gibbs-sampling">Collapsed Gibbs Sampling</h2>
+
+<p>A collapsed Gibbs Sampler marginalizes over one of more variables when sampling from the conditional density. For example, for variables $A$, $B$ and $C$, a simple Gibbs sampler will sample from $P(A|B,C)$, $P(B|A,C)$ and $P(C|A,B)$, respectively. A collapsed Gibbs sampler might marginalize over variable $B$ and sample only from $P(A|C)$ and $P(C|A)$ and not sample for $B$ at all.</p>
+
+<h3 id="topic-models">Topic Models</h3>
+
+<p>Collapsed Gibbs Sampling is a popular inference algorithm for topic models. Topic models are applied primarily to text corpora, which learns the structural relationships between the thematic categories. Typically, we use Latent Dirichlet Allocation to represent the model.</p>
+
+<figure>
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/LDA.png" style="width: 30%; height: auto;display: block;margin-left: auto;margin-right: auto;" />
+<figcaption>
+A plate diagram of the generative process of a topic model
+</figcaption>
+</figure>
+
+<p>The above plate diagram illustrates a topic model, where we have:</p>
+
+<ul>
+  <li>
+    <p>$\beta$ defines a Dirichlet prior over the topics $B$, where each topic $B_k$ defines a multinomial distribution over the vocabulary.</p>
+  </li>
+  <li>
+    <p>$\alpha$ defines a Dirichlet prior over the document.</p>
+  </li>
+  <li>
+    <p>$\mathbf{B}$ is the sampled topic.</p>
+  </li>
+  <li>
+    <p>$\mathbf{\pi}$ is the document-specific topic distribution or so-called the topic vector.</p>
+  </li>
+  <li>
+    <p>$\mathbf{z}$ is the topic assignment.</p>
+  </li>
+  <li>
+    <p>$\mathbf{w}$ is the observed word.</p>
+  </li>
+</ul>
+
+<p>When performing the sampling, we first marginalize over the topic $\mathbf{B}$ and the topic vectors $\mathbf{\pi}$ and then sampling from $P(z_i|\mathbf{z}_{-i},\mathbf{w})$, which is a product of two Dirichlet-Multinomial conditional distributions:</p>
+
+<script type="math/tex; mode=display">P(z_i=j\|\mathbf{z}_{-i},\mathbf{w}) \propto \frac{n^{w_i}_{-i,j}+\beta}{n^{(\cdot)_{-i,j}}+W\beta} \frac{n^{(d_i)_{-i,j}}+\alpha}{n^{(d_i)}_{-i,\cdot}+T\alpha}</script>
+
+<p>where</p>
+
+<ul>
+  <li>
+    <p>$n^{w_i}_{-i,j}$ is the number of word positions $a$ (excluding $w_i$) such that $w_a=w_i$ and $z_a=j$</p>
+  </li>
+  <li>
+    <p>$n^{(\cdot)_{-i,j}}$ is the number of word positions $a$ in the current document $d_i$ (excluding $w_i$) such that $z_a=j$</p>
+  </li>
+  <li>
+    <p>$n^{(d_i)_{-i,j}}$ is the number of word positions $a$ (excluding $w_i$) such that $z_a=j$</p>
+  </li>
+  <li>
+    <p>$n^{(d_i)}_{-i,\cdot}$ is the number of word positions $a$ in the current document $d_i$ (excluding $w_i$)</p>
+  </li>
+</ul>
+
+<p>We then perform normal Gibbs Sampling on the above distribution to sample $z_i$.</p>
+
+<!-- Zhuoran -->
+
+<h2 id="practical-aspects-of-mcmc">Practical Aspects of MCMC</h2>
+
+<h3 id="how-do-we-know-if-our-proposal-is-any-good--monitor-the-acceptance-rate">How do we know if our proposal is any good? – Monitor the acceptance rate:</h3>
+
+<p>Choosing the proposal $Q(x’ | x)$ is a tradeoff. The ‘narrow’, low-variance proposals have high acceptance, but may take many iterations to explore $P(x)$ fully because the proposed $x$ are too close. The ‘wide’, high-variance proposals have the potential to explore much of $P(x)$, but many proposals are rejected which slows down the sampler.</p>
+
+<p>A good $Q(x’ | x)$ proposes distant samples $x’$ with a sufficiently high acceptance rate.</p>
+
+<p><img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/acceptance_rate.png" style="width: 70%; height: auto;display: block;margin-left: auto;margin-right: auto;" /></p>
+
+<p>Acceptance rate is the fraction of samples that MH accepts. A general guideline is proposals should have ~0.5 acceptance rate <d-cite key="muller1991generic"></d-cite>.</p>
+
+<p>If both $P(x)$ and $Q(x’ | x)$ are Gaussian, the optimal acceptance rate is ~0.45 for D=1 dimension and approaches ~0.23 as D tends to infinity <d-cite key="roberts1997weak"></d-cite>.</p>
+
+<h3 id="how-do-we-know-if-our-proposal-is-any-good--autocorrelation-function">How do we know if our proposal is any good? – Autocorrelation function:</h3>
+
+<p>MCMC chains always show autocorrelation (AC), because we are using the previous example to define the transition of the next example. (Note: AC means that adjacent samples in time are highly correlated.) We quantify AC with the autocorrelation fucntion of an r.v.x:</p>
+
+<script type="math/tex; mode=display">R_x(k) = \frac{\sum_{t=1}^{n-k}(x_t-\bar{x})(x_{t+k}-\bar{x})}{\sum_{t=1}^{n-k}(x_t-\bar{x})^2}</script>
+
+<p>The first-order AC $R_x(1)$ can be used to estimate the Sample Size Inflation Factor (SSIF):</p>
+
+<script type="math/tex; mode=display">s_x = \frac{1+R_x(1)}{1-R_x(1)}</script>
+
+<p>If we took $n$ samples with SSIF $s_x$, then the effective sample size is $n/s_x$. High autocorrelation leads to smaller effective sample size. We wan proposals $Q(x’ | x)$ with low auto correlation.</p>
+
+<p><img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/autocorrelation.png" style="width: 70%; height: auto;display: block;margin-left: auto;margin-right: auto;" /></p>
+
+<h3 id="how-do-we-know-when-to-stop-burn-in--plot-the-sample-values-vs-time">How do we know when to stop burn-in? – Plot the sample values vs time</h3>
+
+<p>We can monitor convergence by plotting samples (of r.v.s) from multiple MH runs (chains). (Note: In practice, when people do MCMC, they usually start with multiple MCMC chains rather than one MCMC). If the chains are well-mixed (left), they are probably converged. If the chains are poorly-mixed (right), we should continue burn-in.</p>
+
+<p><img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/sample_value_time.png" style="width: 70%; height: auto;display: block;margin-left: auto;margin-right: auto;" /></p>
+
+<h3 id="how-do-we-know-when-to-stop-burn-in--plot-the-log-likelihood-vs-time">How do we know when to stop burn-in? – Plot the log-likelihood vs time</h3>
+
+<p>Many graphical models are high-dimensional, so it is hard to visualize all r.v. chains at once. Instead, we can plot the complete log-likelihood vs. time. The complete log-likelihood is an r.v. that depends on all model r.v.s. Generall, the log-likelihood will climb, then eventually plateau.</p>
+
+<p><img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/loglikelihood_time.png" style="width: 70%; height: auto;display: block;margin-left: auto;margin-right: auto;" /></p>
+
+<h2 id="summary">Summary</h2>
+
+<p>The key point is that we are going to use an adaptive proposal. And we are going to have choices of further engineered adaptive proposal to be a conditional distribution of a single random variable given the rest. And by using the Markov Blanket concept, we can make that simple proposal eqsy to manpulate, and get a constant 1 acceptant rate. So that the samples can be better used. We need to take care of convegence rate, good mixing, etc.</p>
+
+<p>In summary:</p>
+
+<ul>
+  <li>Markov Chain Monte Carlo methods use adaptive proposals $Q(x’ | x)$ to
+sample from the true distribution $P(x)$.</li>
+  <li>Metropolis-Hastings allows you to specify any proposal $Q(x’ | x)$. Though chooing a good $Q(x’ | x)$ requires care.</li>
+  <li>Gibbs sampling sets the proposal $Q(x’ | x)$ to the conditional distribution $P(x’ | x)$:
+    <ol>
+      <li>Acceptance rate is always 1!</li>
+      <li>But remember that high acceptance usually entails slow exploration</li>
+      <li>In fact, there are better MCMC algorithms for certain models</li>
+    </ol>
+  </li>
+  <li>Knowing when to halt burn-in is an art.</li>
+</ul>
+
+<!-- Jiacheng Zhu -->
+
+<h2 id="optimization-in-mcmc-introduction">Optimization in MCMC: Introduction</h2>
+<p>One of the struggle people had in all vanilla MCMC methods is so called random walk behavior, which is caused by the proposed 
+distribution. However, we want to propose prefered biased samples. How to impose the derivative (maybe likelihood function) into the proposal in a mathematically elegent fashion had became an important question</p>
+
+<h3 id="hamiltonian-monte-carlo">Hamiltonian Monte Carlo</h3>
+<p>Hamiltonian Dynamics comes form physics, is given by</p>
+
+<script type="math/tex; mode=display">H(p,x) = U(x) + K(p)</script>
+
+<p>Where $x$ is the position vector, $p$ is the momentum vector. $U(x)$ is the potential energy and $K(p)$ stands for kinetic energy. There are many interesting connections betrween the terms and derivatives over Hamiltonian. One of the key of Hamiltonian is that</p>
+
+<script type="math/tex; mode=display">\frac{d x_i}{dt} = \frac{\partial H}{\partial p_i}</script>
+
+<script type="math/tex; mode=display">\frac{d p_i}{dt} = - \frac{\partial H}{\partial x_i}</script>
+
+<p>When we want to sample a target distribution, we can leverage on gradient methods by introducing more variables to an auxiliary distribution.</p>
+
+<p><script type="math/tex">P_H (x,p) = \frac{e^{-E(x)-K(p)}}{Z_h}</script>
+Thus, using Hamiltonian, we are able to define the change of state v.s. the gradient of a loss function over the change.</p>
+
+<h3 id="how-to-update-eulers-method">How to update: Euler’s Method</h3>
+<p>There are multiple way to compute the $\delta$ in the state as a function of teh gradient.
+The Euler’s Method directly estabilsh the change in $p$ (momentum), and $q$ (position) as a function of the loss.</p>
+
+<script type="math/tex; mode=display">p_i(t + \epsilon) = p_i(t) + \epsilon \frac{dp_i}{dt}(t) = p_i(t) - \epsilon \frac{\partial U}{\partial q_i}(q(t))</script>
+
+<script type="math/tex; mode=display">q_i(t + \epsilon) = q_i(t) + \epsilon \frac{dq_i}{dt}(t) = q_i(t) + \epsilon \frac{ p_i(t) }{m_i }</script>
+
+<h3 id="how-to-update-leapfrog-method">How to update: Leapfrog Method</h3>
+<p>Leapfrog Method is prefered, because it alternates between the $p$ and $q$ to calculate the updates in a very controlled fashion. So behaviors like over shooting and under shooting can be avoided.
+<script type="math/tex">p_i(t + \epsilon /2) = p_i(t) - (\epsilon /2) \frac{\partial U}{\partial q_i}(q(t))</script></p>
+
+<script type="math/tex; mode=display">q_i(t + \epsilon) = q_i(t) + \epsilon \frac{p_i(t + \epsilon /2)}{m_i}</script>
+
+<script type="math/tex; mode=display">p_i(t + \epsilon) = p_i(t + \epsilon /2) - (\epsilon / 2) \frac{\partial U}{\partial q_i}(q(t + \epsilon))</script>
+
+<p><img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/compare_e_l.png" style="width: 70%; height: auto;display: block;margin-left: auto;margin-right: auto;" /></p>
+
+<h3 id="mcmc-from-hamiltonian-dynamics">MCMC from Hamiltonian Dynamics</h3>
+<p>Let $q$ be variable of interest, $p$ is introduced as an auxiliary random variable in order to define the Hamiltonian.</p>
+
+<script type="math/tex; mode=display">P(q,p)=\frac{1}{Z} \exp (-U(q)/T) \exp(-K(p)/TY)</script>
+
+<p>Where $U(q) = -log [\pi (q) L(q|D)]$ and $K(p) = \sum^d_{i=1} \frac{p^2_i}{2m_i}$. Here it is a Bayesian setting where we have both the distribution of hidden states or the states of interest and also conditioned from priors.
+$U(q) = -log [\pi (q) L(q|D)]$ connects to the likelihhod, the gradient of which is not directly involved in the proposal of next $q$. Then a accept/ reject critera is built based on the change of the Hamiltonian.</p>
+
+<p><img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-14/sudo.png" style="width: 60%; height: auto;display: block;margin-left: auto;margin-right: auto;" /></p>
+
+<h3 id="langevin-dynamics">Langevin Dynamics</h3>
+<p>Langevin Dynamics is special case of Hamiltonian. Instead of doing Leapfrog, Langevin does a more sophiscated update based on second-order updates of the sampling states.</p>
+
+<script type="math/tex; mode=display">q^*_i = q_i - \frac{\epsilon^2}{2} \frac{\partial U}{ \partial q_i}(q) + \epsilon p_i</script>
+
+<p><script type="math/tex">p^*_i = p_i - \frac{\epsilon}{2} \frac{\partial U}{ \partial q_i}(q) - \frac{\epsilon}{2} \frac{\partial U}{ \partial q_i}(q^*)</script>
+Even for a strange distribution with constrains on regions, this augmented optimization methods still deal with it.</p>
+
+<h2 id="optimization-in-mcmc-conclusion">Optimization in MCMC: Conclusion</h2>
+
+<ul>
+  <li>Using Hamiltonian, we are able to define the change of state v.s. the gradient of a loss function over the change.</li>
+  <li>Hamiltonian Mento Carlo can improve acceptence rate and give better mixing by incorporating optimization based approaches to generate better proposals.</li>
+  <li>Stochastic variants can be used to improve performance in large dataset scenarios.</li>
+  <li>Hamiltonnian Mento Carlo may not be used for discrete variable</li>
+</ul>
+
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-03-04-lecture-14.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

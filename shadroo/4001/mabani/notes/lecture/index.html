@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 26: Gaussian processes (GPs) and elements of meta-learning</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 26: Gaussian processes (GPs) and elements of meta-learning",
+      "description": "GPs, kernel functions, (Deep) kernel learning and approximations, NPs, and meta-learning",
+      "published": "April 22, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Maruan Al-Shedivat",
+          "lecturerURL": "https://www.cs.cmu.edu/~mshediva/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Anjalie Field",
+          "authorURL": "http://www.cs.cmu.edu/~anjalief/"
+        },
+        
+        {
+          "author": "Wenchao Du"
+        },
+        
+        {
+          "author": "Sachin Kumar"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Paul Liang",
+          "editorURL": "https://www.cs.cmu.edu/~pliang/"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 26: Gaussian processes (GPs) and elements of meta-learning</h1>
+        <p align='right' dir="rtl">GPs, kernel functions, (Deep) kernel learning and approximations, NPs, and meta-learning</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <h2 id="learning-functions-from-data">Learning Functions from Data</h2>
+
+<p><strong>Background</strong></p>
+
+<p>Given a set of data points, we often want to learn a function that describes the data. One approach is to guess the parametric form of a function that could fit the data. Forms we might guess include:</p>
+
+<ul>
+<li>Linear function of $\mathbf{w}$ and $\mathbb{x}$: $f(\mathbb{x}, \mathbf{w}) = \mathbf{w}^T\mathbb{x}$</li>
+
+<li>Linear function of $\mathbf{w}$: $f(\mathbb{x}, \mathbf{w}) = \mathbf{w}^T\phi(\mathbb{x})$  where $\phi(\mathbb{x})$ is a vector basic function, i.e. $\phi(\mathbb{x}) = (1, \mathbb{x}, \mathbb{x}^2)$</li>
+
+<li>Non-linear function of $\mathbf{w}$ and $\mathbb{x}$: $f(\mathbb{x}, \mathbf{w}) = \mathbb{g} (\mathbf{w}^T\phi(\mathbb{x}))$, i.e. Neural Network </li>
+</ul>
+
+<p>We then choose an error measure and minimize with respect to $\mathbf{w}$: $E(\mathbf{w}) = \sum_{i=1}^n \left[f(\mathbb{x_i}, \mathbf{w}) - y(\mathbb{x_i}) \right]^2$</p>
+
+<p><strong>Noise</strong></p>
+
+<p>Additionally, we can explicitly account for noise in our model by introducting a noise function $\epsilon(x)$: $y(\mathbb{x}) = f(\mathbb(x), \mathbf{w}) + \epsilon(\mathbb{x})$</p>
+
+<p>We commonly use i.d.d. additive Gaussian noise, where we take $\epsilon(x) = \mathcal{N}(0, \sigma^2)$. Then, we aim to maximize the likelihood of the data $p(\mathbf{y} \mid \mathbb{x}, \mathbf{w}, \sigma^2)$ with respect to $\sigma^2$, $\mathbf{w}$. The model and likelihood are given by:</p>
+
+<ul>
+<li> Observation Model: $p(y(\mathbb{x}) | \mathbb{x}, \mathbf{w}, \sigma^2) = \mathcal{N}(y(\mathbb{x}); f(\mathbb{x}, \mathbf{w}), \sigma^2)$ </li>
+<li> Likelihood: $p(\mathbf{y} | \mathbb{x}, \mathbf{w}, \sigma^2) = \prod_{i=1}^N \mathcal{N}(y(\mathbb{x_i}); f(\mathbb{x_i}, \mathbf{w}), \sigma^2)$ </li>
+</ul>
+
+<p><strong>Regularlization</strong></p>
+
+<p>This probabilistic approach helps us interpret the error measure in a deterministic way and gives a sense of the noise level $\sigma^2$. Thus, probabilistic methods provide an intuitive framework for representing uncertainty and model development. However, these approaches are prone to <em>overfitting</em> for flexible $f(\mathbb{x}, \mathbf{w})$. They achieve low error on the training data, but high error on test data.</p>
+
+<p>One way to reduce overfitting is to use <em>regularization</em>. We can introdcuce a complexity penality to the log-likelihood or error function:</p>
+
+<script type="math/tex; mode=display">\log p(\mathbf{y} | \mathbb{x}, \mathbf{w}) \propto -\frac{1}{2 \sigma^2} \sum_{i=1}^n(f(\mathbb{x_i}, \mathbf{w}) - y(\mathbb{x_i})^2) - \lambda \mathbb{w}^T\mathbb{w}</script>
+
+<p>However, this introduces new questions: how do we define complexity? and how much should we penalize complexity? In practice, we control the penalty by setting  $\lambda$ using cross-validation</p>
+
+<p><strong>Bayesian Approach</strong></p>
+
+<p>We can describe our data and models using Bayes’ Rule:</p>
+
+<script type="math/tex; mode=display">\textrm{posterior} = \frac{\textrm{likelihood} * \textrm{prior}}{\textrm{marginal\ likelihood}}</script>
+
+<script type="math/tex; mode=display">p(\mathbf{w} \mid \mathbf{y}, \mathbb{X}, \sigma^2) = \frac{p(\mathbf{y} \mid \mathbb{X}, \mathbf{w}, \sigma^2)p(\mathbf{w})}{p(\mathbf{y} \mid \mathbb{X}, \sigma^2)}</script>
+
+<p>To make predictions over a test case, we can obtain a predictive distribution by marginalizing out $\mathbf{w}$:</p>
+
+<script type="math/tex; mode=display">p(y \mid x_{*}, \mathbf{y}, \mathbb{X}) = \int p(y \mid x_{*}, \mathbf{w}) p(\mathbf{w} \mid \mathbf{y}, \mathbb{X}) d \mathbf{w}</script>
+
+<p>In this predictive distribution, we average over infinitely many models weighted by their posterior probabilities. There is no over-fitting, and complexity is automatically calibrated. This approach is useful because we are typically more interested in distributions over functions than in parameters $\mathbf{w}$.</p>
+
+<h2 id="introducing-nonparametric-models">Introducing nonparametric models</h2>
+
+<p><strong>Comparison to parametric models</strong></p>
+
+<p>In parametric models, we assume that all data can be represented using a fixed, finite number of parameters. (e.g. Mixture of K Gaussians, polynomial regression, neural networks). In nonparametric models, the number of parameters can grow with the sample size. The number of parameters may be random (e.g. kernel density estimation). In Bayesian nonparametrics, we allow for an infinite number of parameters a prior. Models of finite datasets will have only finite number of parameters; other parameters are integrated out. We can compare parametric Bayesian inference with nonparametric Bayesian inference:</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td><em>Parametric Bayesian Inference</em></td>
+      <td><em>Nonparametric Bayesian Inference</em></td>
+    </tr>
+    <tr>
+      <td>$\mathcal{M}$ is represented as a finite set of parameters $\theta$</td>
+      <td>$\mathcal{M}$ is a richer model (e.g. with an infinite set of parameters)</td>
+    </tr>
+    <tr>
+      <td>Parametric likelihood $x \sim p(\bullet \mid \theta)$</td>
+      <td>Nonparametric likelihood $x \sim p(\bullet \mid \mathcal{M})$</td>
+    </tr>
+    <tr>
+      <td>Prior on $\theta$: $\pi(\theta)$</td>
+      <td>Prior on $\mathcal{M}$: $\pi(\mathcal{M})$</td>
+    </tr>
+    <tr>
+      <td>Posterior distribution: $p(\theta \mid x) \propto p(x \mid \theta)\pi(\theta)$</td>
+      <td>Posterior distribution: $p(\mathcal{M} \mid x) \propto p(x \mid \mathcal{M})\pi(\mathcal{M})$</td>
+    </tr>
+    <tr>
+      <td>Examples: Gaussian distribution prior + 2D Gaussian likelihood $\rightarrow$ Gaussian posterior distribution</td>
+      <td>Examples: Dirichlet Process Prior + Multinomial/Gaussian/Softmax Likelihood</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Weight space vs. Function space view</strong></p>
+
+<p>Consider a simple linear model: $f(x) = a_0 + a_1x$ for $a_0, a_1 \sim \mathcal{N}(0, 1)$.</p>
+
+<p>We can sample different weights ($a_0$, $a_1$) and graph the results (e.g. weight space view):</p>
+
+<figure id="weightspace-view" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-26/weight_space.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Weight space view of a simple linear model</strong>
+  </figcaption>
+</figure>
+
+<p>However, we are more interested in the distribution over functions induced by the distribution over parameters, rather than the distribution over parameters. We can characterize the properties of these functions:</p>
+
+<d-math block="">
+\begin{aligned}
+&amp; f(x | a_0, a_1) = a_0 + a_1x \\
+\\
+&amp; \mathbb{E}[f(x)] = \mathbb{E}[a_0] + \mathbb{E}[a_1]x = 0\\
+\\
+\textrm{cov}[f(x_b), f(x_c)] &amp;= \mathbb{E}[f(x_b)f(x_c)] - \mathbb{E}[f(x_b)]\mathbb{E}[f(x_c)]\\
+
+&amp; = \mathbb{E}[a_0^2 + a_0a_1(x_b + x_c) + a_1^2x_bx_c] - 0\\
+
+&amp; = \mathbb{E}[a_0^2] + \mathbb{E}[a_0a_1(x_b + x_c)] + \mathbb{E}[a_1^2x_bx_c]\\
+
+&amp; = 1 + x_bx_c+ 0\\
+&amp; = 1 + x_bx_c
+\end{aligned}
+</d-math>
+
+<p>This gives the first and second moments of the function for random variables along the x-axis.</p>
+
+<p>Using a little algebra, we can show that any collection of values from this set has a joint Gaussian distribution<d-cite key="rasmussen2003gaussian"></d-cite>:</p>
+
+<d-math block="">
+\begin{aligned}
+\left[ f(x_1) ..f(x_N) \right] \sim \mathcal{N}(0, K)
+\end{aligned}
+</d-math>
+
+<p>where $K$ is defined by,</p>
+
+<d-math block="">
+\begin{aligned}
+K_{ij} = \textrm{cov}(f(x_i), f(x_j)) = k(x_i, x_j) = 1 + x_bx_c
+\end{aligned}
+</d-math>
+
+<p>This is a Gaussian process</p>
+
+<p><strong>Gaussian Process</strong></p>
+
+<p>A Gaussian process (GP) is a collection of random variables, any finite number of which have a joint Gaussian distribution. We write $f(x) \sim \mathcal{GP}(m, k)$ to mean</p>
+
+<d-math block="">
+\begin{aligned}
+\left[ f(x_1) ..f(x_N) \right] \sim \mathcal{N}(\mu, K) \\
+\mu_i = m(x_i) \\
+K_{ij} = k(x_i, x_j)
+\end{aligned}
+</d-math>
+
+<p>for any collection of input values $x_1…x_N$. Then, $f$ is a GP with mean function $m(x)$ and covariance kernel $k(x_i, x_j)$</p>
+
+<p>As an example, consider Linear Basis Function Models:</p>
+
+<ul>
+  <li>Model speficiations:</li>
+</ul>
+
+<d-math block="">
+\begin{aligned}
+f(x, \mathbf{w}) = \mathbf{w}^T\phi(x)
+\end{aligned}
+</d-math>
+
+<d-math block="">
+\begin{aligned}
+p(\mathbf{w}) = \mathcal{N}(0, \Sigma_w)
+\end{aligned}
+</d-math>
+
+<ul>
+  <li>Moments of the induced distribution over functions:</li>
+</ul>
+
+<d-math block="">
+\begin{aligned}
+&amp; \mathbb{E}[f(x, \mathbf{w})] = m(x) = \mathbb{E}[\mathbf{w^T}]\phi(x) = 0\\
+\\
+\textrm{cov}[f(x_i), f(x_i)] &amp;= k(x_i, x_j) = \mathbb{E}[f(x_i) f(x_j)] - \mathbb{E}[f(x_i)]\mathbb{E}[f(x_j)]\\
+
+&amp; = \phi(x_i)^T \mathbb{E}[\mathbf{w}\mathbf{w^T}]\phi(x_j) - 0\\
+
+&amp; = \phi(x_i)^T\Sigma_w\phi(x_j)
+\end{aligned}
+</d-math>
+
+<p>In this example, $f(x, \mathbf{w})$ is a Gaussian process, $f(x) \sim \mathcal{N}(m, k)$ with mean function $m(x) = 0$ and covariance kernel $k(x_i, x_j) = \phi(x_i)^T \Sigma_w\phi(x_j)$</p>
+
+<p>We generally have more intuition about the functions that model our data than the weights $\mathbf{w}$ in a parametric model. We can express these intuitions using a covariance kernel. Additionally, the kernel controls the support and inductive biases of our model, and thus the model’s ability to generalize to unseen data.</p>
+
+<p><strong>Graphical Model of Gaussian Process</strong></p>
+
+<figure id="weightspace-view" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-26/gpgm.jpg" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Graphical Model Representing Gaussian Process</strong>
+  </figcaption>
+</figure>
+
+<p><strong>Kernel Example: RBF</strong></p>
+
+<p>RBF (Radial Basis Function) is the most popular kernel used with Gaussian processes. It is given as</p>
+<d-math block="">
+\begin{aligned}
+k_{\text{RBF}(x, x')} &amp;= \text{cov} \left( f(x), f(x') \right) \\
+&amp;= a^2 \exp \left(-\frac{\Vert x-x'\Vert^2}{2\ell^2}\right)
+\end{aligned}
+</d-math>
+
+<ul>
+  <li>
+    <p>The kernel function will have high values when the two points are closer together which expresses the intuition that nearby points are more correlated in function values than farther ones.</p>
+  </li>
+  <li>
+    <p>$a$ controls the amplitude and $\ell$ controls its wiggliness, that is high value of $\ell$ will lead to higher range of distances for which the kernel gets high values and vice versa as depicted in the figure below</p>
+  </li>
+</ul>
+
+<figure id="weightspace-view" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-26/rbf-l.jpg" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>$\tau=x-x'$, the figure shows the values of RBF kernel with different values of $\ell$</strong>
+  </figcaption>
+</figure>
+
+<p><strong>Gaussian Process Inference</strong></p>
+
+<p>Now we study how to perform inference using Gaussian process. That is given a set of training points and their predictions, we want to compute predictions for new points not in the training set.</p>
+
+<ul>
+  <li>
+    <p>The observed noisy data is given as: $\mathbf{y} = (y(x_1), \ldots, y(x_N))^T$ at input points $\mathbf{X} = (x_1, \ldots, x_N)$.</p>
+  </li>
+  <li>
+    <p>We begin with a standard regression assumption that $y(x)$ has a gaussian distribution with mean $f(x)$ and variance $\sigma^2$, that is $y(x) \sim \mathcal{N}(f(x), \sigma^2)$</p>
+  </li>
+  <li>
+    <p>Now, we place a Gaussian process distribution over the noise free functions $f(x)$, that is,
+$f(x) \sim \mathcal{GP}(0, k_\theta)$ where $\theta$ describes the parameters used to define the kernel $k$.</p>
+  </li>
+  <li>
+    <p>Given text input $\mathbf{X}_{*}$ we can infer $f$ using $p(f_{*} \mid \mathbf{y}, \mathbf{X}, \mathbf{X}_{*})$. The joint distribution of $\mathbf{y}$ and $\mathbf{f}_{*}$ is given as</p>
+  </li>
+</ul>
+
+<d-math block="">
+\begin{aligned}
+\begin{bmatrix}
+\mathbf{y} \\
+\mathbf{f_*} 
+\end{bmatrix}
+\sim \mathcal{N} \left(\mathbf{0},
+\begin{bmatrix}
+k_\theta (\mathbf{X}, \mathbf{X}) + \sigma^2\mathbf{I} &amp;  k_\theta (\mathbf{X}, \mathbf{X}_*) \\
+k_\theta (\mathbf{X}_*, \mathbf{X}) &amp; k_\theta (\mathbf{X}_*, \mathbf{X}_*) 
+\end{bmatrix} \right)
+\end{aligned}
+</d-math>
+
+<p>We can condition over $\mathbf{y}$ to predict the distribution of $\mathbf{f}_{*}$ which is given as,</p>
+
+<d-math block="">
+\begin{aligned}
+\mathbf{f}_* \mid \mathbf{X}, \mathbf{X}_*, \mathbf{y}, \theta &amp;\sim \mathcal{N} (\bar{\mathbf{f}}_*, \text{cov}(\bar{\mathbf{f}}_*)) \\
+\bar{\mathbf{f}}_* &amp;= k_\theta (\mathbf{X}_*, \mathbf{X}) [ k_\theta (\mathbf{X}, \mathbf{X}) + \sigma^2\mathbf{I} ]^{-1} \mathbf{y} \\
+\text{cov}(\bar{\mathbf{f}}_*) &amp;= k_\theta (\mathbf{X}_*, \mathbf{X}_*) - k_\theta (\mathbf{X}_*, \mathbf{X})  [ k_\theta (\mathbf{X}, \mathbf{X}) + \sigma^2\mathbf{I} ]^{-1} k_\theta (\mathbf{X}, \mathbf{X}_*)
+\end{aligned}
+</d-math>
+
+<p>This comes from a standard result over multivariate normalize distribution. Refer to <a href="https://en.wikipedia.org/wiki/Multivariate_normal_distribution#Conditional_distributions">this article</a> for more information.</p>
+
+<p>This is pictorially represented in the following two figures (with an RBF kernel). The gray region shows the variance. The left figure shows the distribution of points without any observed data points. Without any observed points, this covariance matrix reduces to $k_\theta (\mathbf{X}_<em>, \mathbf{X}_</em>)$, which will be same along the diagonals (Hence the same width). When some points are observed (show by x mark), the variance at those points reduces as shown in the right figure.</p>
+
+<figure id="weightspace-view" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-26/gp-inference.jpg" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>$\tau=x-x'$, the figure shows the values of RBF kernel with different values of $\ell$</strong>
+  </figcaption>
+</figure>
+
+<p>If we increase the scale parameter $\ell$, we get a smoother looking distribution.</p>
+
+<figure id="weightspace-view" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-26/gp-inference-l.jpg" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>$\tau=x-x'$, the figure shows the values of RBF kernel with different values of $\ell$</strong>
+  </figcaption>
+</figure>
+
+<p><strong>Gaussian Process Learning</strong></p>
+
+<p>So far we covered inference with gaussian process, to learn the parameters of the kernel $\theta$, we maximize the likelihood of the observations with respect to $\theta$ by marginalizing over the entire Gaussian process $f(x)$ given as,</p>
+
+<d-math block="">
+\begin{aligned}
+p (\mathbf{y} \mid \theta, \mathbf{X}) &amp;= \int p (\mathbf{y} \mid \mathbf{f}, \mathbf{X}) p (\mathbf{f} | \theta, \mathbf{X}) d\mathbf{f} \\
+\log p (\mathbf{y} \mid \theta, \mathbf{X}) &amp;= \underbrace{-\frac{1}{2}\mathbf{y}^T(k_\theta + \sigma^2 \mathbf{I})^{-1} \mathbf{y}}_{\text{model fit}} - \underbrace{\frac{1}{2}\log |k_\theta + \sigma^2 \mathbf{I}|}_{\text{complexity penalty}} - \frac{N}{2} \log (2\pi) \\
+\end{aligned}
+</d-math>
+
+<p>We can use gradient descent to find a $\theta$ which maximizes this log-likelihood</p>
+
+<p><strong>Deep Kernel Learning</strong></p>
+
+<p>There are multiple ways in the literature to define kernel functions such as kernel as function of the distance (like RBF), spectral mixture kernels <d-cite key="wilson2013gaussian"></d-cite>, kernels defined on strings/sequences, fisher kernels <d-cite key="jaakkola1999using"></d-cite> and so on. Recent work has introduced deep kernels,</p>
+
+<d-math block="">
+\begin{aligned}
+\kappa (x, x') &amp;= k(h(x), h(x'))
+\end{aligned}
+</d-math>
+
+<p>where $h(x)$ is the representation of x learned using a neural network $h(.)$. These parameters $\mathbf{w}$ of $h(.)$ can be learned jointly with the kernel hyperparameters (e.g. $a$ and $\ell$ in RBF kernel) by maximizing the log-likelihood mentioned above using backpropagation through the network.</p>
+
+<d-math block="">
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial \theta} &amp;= \frac{\partial \mathcal{L}}{\partial k_\theta} \frac{\partial k}{\partial \theta} \\
+\frac{\partial \mathcal{L}}{\partial \mathbf{w}} &amp;= \frac{\partial \mathcal{L}}{\partial k_\theta} \frac{\partial k}{\partial h(x; \mathbf{w})} \frac{\partial h(x; \mathbf{x})}{\partial \mathbf{w}}
+\end{aligned}
+</d-math>
+
+<p>This parameterization makes it easier to apply gaussian processes on a wide range of tasks, for example, sequential data. A sequence can be encoded using a recurrent neural network and a kernel function can be applied to the encoded representation. For more details, please refer to (cite) which uses a Gaussian process on top of a LSTM to predict the prediction of lead by vehicles.</p>
+
+<p><strong>The Scalability Issue</strong></p>
+
+<p>GP inference requires computing inverse and determinants of huge covariance matrices over the entire training data which can be computationally intenstive.</p>
+
+<ul>
+  <li>Inference requires a $(k_\theta + \sigma^2 \mathbf{I})^{-1} \mathbf{y}$ step and,</li>
+  <li>Learning requires a $\log \mid k_\theta + \sigma^2 \mathbf{I} \mid$ step,</li>
+</ul>
+
+<p>Both of these computation require an $\mathcal{O}(n^3)$ time and $\mathcal{O}(n^2)$ storage.</p>
+
+<p>There are three families of approaches for inference</p>
+
+<ul>
+  <li>Approximate non-parametric kernels in a ‘dual space’ with finite basis. This requires $O(m^2n)$ computations and $O(m)$ storage for $m$ basis functions. Examples: SSGP, Random Kitchen Sinks, Fastfood, A la Carte.</li>
+  <li>Inducing point based sparse approximations. Examples include SoR, FITC, and KISS-GP.</li>
+  <li>Exploit existing structure in K to quickly (and exactly) solve linear systems and log determinants. Examples: Toeplitz and Kronecker methods.</li>
+</ul>
+
+<p><strong>Inducing Point Methods</strong></p>
+
+<p>We can approximate GP through $M &lt; N$ inducing points $\hat f$ to obtain Sparse Pseudo-input Gaussian Process (SPGP) prior: $p(f) = \int d \hat f \prod_n p(f_n \mid \hat f) p(\hat f) $</p>
+
+<ul>
+  <li>$\mathcal{N}(0, K_n) \approx p(f) = \mathcal{N}(0, K_{NM}K_M^{-1}K_{MN} + \Lambda)$</li>
+  <li>SPGP covariance inverted in $O(M^2N) \ll O(N^3)$, which is much faster</li>
+</ul>
+
+<p><strong>Running Exact GPs on GPUs</strong></p>
+
+<p>Key idea is to use a clever distributed GP learning algorithm and inference algorithms on multiple GPUs</p>
+
+<p><strong>Summary</strong></p>
+<ul>
+  <li>Gaussian processes are Bayesian nonparametric models than can represent distributions over smooth functions</li>
+  <li>Using expressive covariance kernel functions, GPs can model a variety of data (scalar, vector, sequential, structured, etc.)</li>
+  <li>Inference can be done fully analytically (in case of Gaussian likelihood)</li>
+  <li>Inference and learning are very computationally costly since exact methods require inversion of large matrices</li>
+  <li>There is a variety of approximation methods to GPs that can bring down the learning and inference cost to $O(n)$ and $O(1)$, respectively</li>
+  <li>Many new libraries based on Tensorflow, PyTorch, Keras – despite computational constraints, GPs are certainly quite popoular</li>
+</ul>
+
+<h2 id="meta-learning-and-neural-processes">Meta-learning and Neural Processes</h2>
+
+<p>So far, we assume that data was generated by a single function. What if there are multiple data-generating functions, and each time we get only a few points from one of them. Can we identify it?</p>
+
+<p><strong>Definition of meta-learning</strong></p>
+
+<p>In standard learning, given a distribution over examples (single task), we learn a function that minimizes the loss $\hat \phi = \arg\min_{\phi} E_{z \sim D}[l(f_{\phi}(z))]$</p>
+
+<p>In learning-to-learn, given a distribution over tasks, output an adaptation rule that can be used at test time to generalize from a task description: $\hat \theta = \arg\min_{\theta} E_{T \sim P}[L_T(g_{\theta}(T))]$ where $L_T(g_{\theta}(T)) \coloneqq E_{z \sim D}[l(f_{\phi}(z))]$, $\phi \coloneqq g_{\theta}(T)$</p>
+
+<p>Examples:</p>
+
+<ul>
+  <li>Few-shot image classification: multiple datasets, each of which includes a few examples of each class.</li>
+  <li>Few-shot user-specific recommendation: recommend twitter posts to users; each user has different set of likes and dislikes (binary prediction)</li>
+  <li>Contextual interpretability: interpretable linear model conditioned on images</li>
+  <li>One-shot imitation learning: imitate a single behaviour from demonstrations; give a new demonstration, produce a policy to quickly imitate the demonstration</li>
+</ul>
+
+<p><strong>Conditional Neural Processes</strong>
+Try to produce representations for observable inputs and labels, $r$. The representations are aggregated and fed to function $g$ for prediction. So we can produce different function $g$’s given different sets of training data. This is similar to Gaussian Processes.</p>
+
+<p><strong>Attentive Neural Processes</strong>
+Incorporates attention mechanism into neural processes. Instead of using MLP, use attention to attend to differnt parts of contexts. Proposed based on the observation that neural processes tend to under-fit.</p>
+
+<p><strong>Summary</strong></p>
+<ul>
+  <li>There are cases when learning a single function is not enough – contextual models are used in such cases</li>
+  <li>Few-shot learning is a popular application of meta-learning, where contextual models are trained on distributions of different tasks. Examples include solving different sub-problems, imitating different demonstrations, and making predictions about different user preferences</li>
+  <li>Neural processes propose an alternative to kernel learning (kernel becomes fully implicity; the model is scalable without approximations)</li>
+</ul>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-04-26-lecture.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 2: Bayesian Networks</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-02/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 2: Bayesian Networks",
+      "description": "Overview of Bayesian Networks, their properties, and how they can  be helpful to model the joint probability distribution over a set of random variables. Concludes with a summary of relevant sections from the textbook reading.",
+      "published": "January 16, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Cathy Su",
+          "authorURL": "https://ceesu.github.io"
+        },
+        
+        {
+          "author": "Angel C. Hernandez",
+          "authorURL": "https://github.com/ahernandez105"
+        },
+        
+        {
+          "author": "Mark Cheung"
+        },
+        
+        {
+          "author": "Xueqian Li"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Maruan Al-Shedivat",
+          "editorURL": "https://www.cs.cmu.edu/~mshediva/"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 2: Bayesian Networks</h1>
+        <p align='right' dir="rtl">Overview of Bayesian Networks, their properties, and how they can  be helpful to model the joint probability distribution over a set of random variables. Concludes with a summary of relevant sections from the textbook reading.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <p><strong>Motivation:</strong> representing joint distributions over some random variables is computationally expensive, so we need methodologies to represent joint distributions compactly.</p>
+
+<h2 id="two-types-of-graphical-models-">Two types of Graphical Models <d-cite key="Blei:2015:BasicsPGM"></d-cite><d-cite key="Jordan:2003:PGM"></d-cite></h2>
+<h3 id="directed-graphs-bayesian-networks">Directed Graphs (Bayesian Networks)</h3>
+<p>An acyclic graph, $\mathcal{G}$, is made up of a set of nodes, $\mathcal{V}$, and a set
+of directed edges, $\mathcal{E}$, where edges represent a causality relationship between nodes. Nodes in the graph represent a set of random variables, ${X_1,…,X_N}$, where there is a one-to-one map between nodes and random variables.</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/directed-graph.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Directed graph.</strong>
+  </figcaption>
+</figure>
+
+<p>The joint probability of the above directed graph can be written as follows:</p>
+
+<script type="math/tex; mode=display">P(X_1, \dots ,X_8) = P(X_1)P(X_2)P(X_3|X_1)P(X_4|X_2)P(X_5|X_2)P(X_6|X_3,X_4)P(X_7|X_6)P(X_8|X_5,X_6)</script>
+
+<h3 id="undirected-graphs-markov-random-fields-">Undirected Graphs (Markov Random Fields) <d-cite key="Jordan:2003:PGM"></d-cite></h3>
+<p>An undirected graph contains nodes that are connected via non-directional edges.</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/undirected-graph.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Undirected graph.</strong>
+  </figcaption>
+</figure>
+
+<p>The joint probability of the above undirected graph can be written as followed:</p>
+
+<d-math block="">
+\begin{aligned}
+  P(X_1, \dots ,X_8) = \frac{1}{Z} \exp\bigg(
+    &amp; E(X_1) + E(X_2) + \\
+    &amp; E(X_3, X_1) + E(X_4, X_2) + E(X_5, X_2) + \\
+    &amp; E(X_6,X_3,X_4) + \\
+    &amp; E(X_7,X_6) + E(X_8,X_5,X_6) \bigg)
+\end{aligned}
+</d-math>
+
+<h2 id="notation">Notation</h2>
+
+<ul>
+  <li><strong>Variable:</strong> capitalized english letter, with subscripts to represent dimensions $(i, j, k)$ and superscripts to represent index e.g. $V_{i, j}^j$.</li>
+  <li><strong>Values of variables:</strong> a lowercase letter means it is an ‘observed value’ of some random variable e.g. $v_{i, j}^j$.</li>
+  <li><strong>Random variable:</strong> a variable with stochasticity, changing across different observations.</li>
+  <li><strong>Random vector:</strong> capitalized and bold letter, with random vars as entries (of dimension $1 \times n$).</li>
+  <li><strong>Random matrix:</strong> capitalized and bold letter, with random vars as entries (of dimension $n \times m$).</li>
+  <li><strong>Parameters:</strong> greek characters. Can be considered random variables.</li>
+</ul>
+
+<h2 id="the-dishonest-casino">The Dishonest Casino</h2>
+
+<p>Let $\textbf{x}$ be a sequence of random variables, $x_1,…,x_T$, where $x_t$ is the outcome
+of a casino’s die roll, $ x \in (1,2,3,4,5,6) $. Also, let $\textbf{y}$ be a parse of random
+variables, $y_1,…,y_T$, where $y_t$ is the outcome of whether the die was fair or bias, $y \in (0,1)$. The bias die follows the following distributions:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>p(x=1)</th>
+      <th>p(x=2)</th>
+      <th>p(x=3)</th>
+      <th>p(x=4)</th>
+      <th>p(x=5)</th>
+      <th>p(x=6)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.5</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Some questions we might want to ask are:</p>
+
+<ul>
+  <li><strong>Evaluation:</strong> How likely is the sequence, given our model of casino?</li>
+  <li><strong>Decoding</strong>: What portion of the sequence was generated
+with the fair die, and what portion with the loaded die?</li>
+  <li><strong>Learning:</strong> How “loaded” is the loaded die? How “fair” is the fair die? How often does the casino player change from fair die to loaded die, and back?</li>
+</ul>
+
+<p>One way we could model this casino problem is as a Hidden Markov Model where $x_t$ are our
+observed variables and $y_t$ are our hidden variables.</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/hmm.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Hidden Markov Model.</strong>
+  </figcaption>
+</figure>
+
+<p>The hidden variables all share the <em>Markov property</em> that the the past is conditionally
+independent of the future given the present:</p>
+
+<script type="math/tex; mode=display">y_{t-1} \, \bot \, \{y_{t+1}, \dots ,y_{T}\} \mid y_t</script>
+
+<p>This property is also explicitly highlighted in the topology of the graph.</p>
+
+<p>Furthermore, we can find how likely of the parse, given our HMM sequence, as followed:</p>
+
+<d-math block="">
+  \begin{aligned}
+    p(\mathbf{x,y}) &amp;= p(y_1)\prod\limits_{t=1}^T p(x_t\,|\,y_t)\prod\limits_{t=2}^{T} p(y_t\,|\,y_{t-1}) \\
+    p(\mathbf{x,y}) &amp;= p(y_1)p(x_1|y_1)p(y2|y_1)p(x_2|y_2)...p(y_T|y_{T-1})p(x_T|y_T) \\
+    p(\mathbf{x,y}) &amp;= p(y_1)p(y_2|y_1)...p(y_T|y_{T-1})\times p(x_1|y_1)p(x_2|y_2)...p(x_T|y_T)\\
+    p(\mathbf{x,y}) &amp;= p(y_1,...,y_T)p(x_1,...,x_T|y_1,...,y_T)
+  \end{aligned}
+</d-math>
+
+<p>The marginal and posterior distributions can be computed as follows:</p>
+
+<ul>
+  <li><strong>Marginal:</strong> $p(\mathbf{x}) = \sum\limits_{y_{1}}\cdots\sum\limits_{y_T} p(\mathbf{x,y})$</li>
+  <li><strong>Posterior:</strong> $p(\mathbf{y} \mid \mathbf{x}) = \frac{p(\mathbf{x,y})}{p(\mathbf{x})}$</li>
+</ul>
+
+<h2 id="bayesian-network">Bayesian Network</h2>
+
+<ul>
+  <li>A BN is a directed graph whose nodes represent the random variables and whose edges represent
+directed influence of one variable on the another.</li>
+  <li>It is a data structure that provides the skeleton for representing <strong>a joint distribution</strong> compactly in a <strong>factorized</strong> way.</li>
+  <li>It offers a compact representation for <strong>a set of conditional independence assumptions</strong> about a distribution.</li>
+  <li>We can view the graph as encoding a <strong>generative sampling process</strong> executed by nature, where</li>
+  <li>the value for each variable is selected by the nature using a distribution that depends only on its
+parents. In other words, each variable is a stochastic function of its parents.</li>
+</ul>
+
+<h2 id="bayesian-network-factorization-theorem">Bayesian Network: Factorization Theorem</h2>
+<p>We define  $Pa_{X_i}$ and $NonDescendants_{X_i}$ as the set of parent nodes and not descendant nodes
+for the $i$th node, respectively.
+The topology of a directed graph asserts the set of conditional independence statements:</p>
+
+<script type="math/tex; mode=display">\{ X_i \, \bot \, NonDescendants_{X_i} \, | \, Pa_{X_i} \}</script>
+
+<figure>
+<div class="row">
+  <div class="col two">
+    <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/directed-graph.png" />
+  </div>
+</div>
+<figcaption>
+  <strong>Directed Graph.</strong>
+</figcaption>
+</figure>
+
+<p>As a result, the joint probability of the above directed graph can be written as follows:</p>
+
+<d-math block="" class="l-page">
+\begin{aligned}
+  P(X_1, \dots ,X_8)
+    &amp;= \prod\limits_{i =1}^8 P(X_i \, | \, Pa_{X_i}) \\
+    &amp;= P(X_1)P(X_2)P(X_3|X_1)P(X_4|X_2)P(X_5|X_2)P(X_6|X_3,X_4)P(X_7|X_6)P(X_8|X_5,X_6)
+\end{aligned}
+</d-math>
+
+<h2 id="specification-of-a-directed-graphical-model">Specification of a Directed Graphical Model</h2>
+
+<p>There are two components to any GM:</p>
+
+<ul>
+  <li>qualitative (topology)</li>
+  <li>quantitative (numbers associated with each conditional distributions)</li>
+</ul>
+
+<h3 id="sources-of-qualitative-specifications">Sources of Qualitative Specifications</h3>
+
+<p>Where do our assumptions come from?</p>
+<ul>
+  <li>Prior knowledge of causal relationship</li>
+  <li>Prior knowledge of modular relationship</li>
+  <li>Assessment from expert</li>
+  <li>Learning from data</li>
+  <li>We simply like a certain architecture (e.g. a layered graph)</li>
+  <li>…</li>
+</ul>
+
+<h2 id="local-structures--independencies">Local Structures &amp; Independencies</h2>
+
+<ul>
+  <li>Common parent (also called ‘common cause’ in <a href="#active_trail">section 3.3.1</a>)
+    <ul>
+      <li>Fixing $B$ decouples $A$ and $C$</li>
+      <li>“Given the level of gene $B$, the levels of $A$ and $C$ are independent” <br />
+$A \perp C \mid B \Rightarrow P(A,C \mid B) = P(A \mid B) P(C \mid B)$
+        <d-footnote>
+<strong>Proof.</strong> We have the following:
+
+<d-math block="">
+\begin{aligned}
+  P(A,B,C) &amp;= P(B)P(A \vert B)P(C \vert B) \\
+  P(A,C \vert B) &amp;= P(A,B,C)/P(B)
+\end{aligned}
+</d-math>
+
+Plugging in the above, $P(A,C \vert B)=P(B)P(A \vert B)P(C \vert B)/P(B)=P(A \vert B)P(C \vert B)$
+</d-footnote>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<figure id="common parent" class="l-body-outset">
+ <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/common_parent.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Common parent example.</strong>
+  </figcaption>
+</figure>
+
+<ul>
+  <li>Cascade (also called ‘causal/evidential trail’ in <a href="#active_trail">section 3.3.1</a>)
+    <ul>
+      <li>Knowing $B$ decouples $A$ and $C$</li>
+      <li>“Given the level of gene $B$, the level gene $A$ provides no extra prediction value for the level of gene $C$”</li>
+    </ul>
+  </li>
+</ul>
+
+<figure id="Cascade" class="l-body">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/cascade.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Cascade example.</strong>
+  </figcaption>
+</figure>
+
+<ul>
+  <li>V-structure (also called ‘common effect’ in <a href="#active_trail">section 3.3.1</a>)
+    <ul>
+      <li>Knowing $C$ couples $A$ and $B$ because $A$ can “explain away” $B$ w.r.t. $C$</li>
+      <li>“If $A$ correlates to $C$, then chance for $B$ to also correlate to $B$ will decrease”</li>
+    </ul>
+  </li>
+</ul>
+
+<figure id="V-structure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/V-structure.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>V-structure example.</strong>
+  </figcaption>
+</figure>
+
+<h3 id="in-class-example-of-v-structure">In class example of v-structure</h3>
+
+<p>My clock running late (event $A$) and a traffic jam (event $B$) which are independent events could both cause me to be late for class (event $C$).
+However, my presence couples the two events. Observe that if my clock was running late it could ‘explain away’ my lateness due to the traffic jam.
+In other words, $A$ and $B$ become coupled if $C$ is known because they jointly cause the 3rd event: $P(A,B)=P(A)P(B)$ but $P(A,B \vert C)$ cannot be decoupled into two conditionals.</p>
+
+<h2 id="i-maps">I-maps</h2>
+
+<ul>
+  <li>
+    <p>Definition (also see <a href="#imap">Definition 3.2-3.3</a>): Let $P$ be a distribution over $X$. We define $I(P)$ to be the set of independence assertions of the form $(X \perp Y \vert Z)$ that hold in $P$.</p>
+  </li>
+  <li>
+    <p>Defn: Let $\mathcal{K}$ be any graph object associated with a set of independencies $I(K)$. We say that $\mathcal{K}$ is an I-map for a set of independencies $I$, if $I(\mathcal{K}) \subseteq I$.</p>
+  </li>
+  <li>
+    <p>We now say that $\mathcal{G}$ is an I-map for $\mathcal{P}$ if $\mathcal{G}$ is an I-map for $I(\mathcal{P})$, where we use $I(\mathcal{G})$ as the set of independencies associated.</p>
+  </li>
+</ul>
+
+<h2 id="facts-about-i-map">Facts about I-map</h2>
+
+<ul>
+  <li>
+    <p>For $\mathcal{G}$ to be an I-map of $\mathcal{P}$, it is necessary that $\mathcal{G}$ does not mislead us regarding independencies in $P$:</p>
+
+    <p>any independence that $\mathcal{G}$ asserts must also hold in $\mathcal{P}$. Conversely, $\mathcal{P}$ may have additional independencies that are not reflected in $\mathcal{G}$</p>
+
+    <p>This is formally defined in <a href="#imap_fact">Definition 3.4</a>.</p>
+  </li>
+</ul>
+
+<h3 id="in-class-examples">In class examples</h3>
+
+<figure id="I-maps" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/I-maps.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>I-maps examples.</strong>
+  </figcaption>
+</figure>
+
+<p>$X$ and $Y$ are independent only in Graph 1.</p>
+
+<p>Below we have two tables showing the marginal distributions. Find the I-maps:</p>
+
+<ul>
+  <li>$ P_1: I(P_1) = {X \perp Y} $ (from inspection i.e., $ P(X,Y)=P(X)P(Y), 0.48=0.6* 0.8 $)</li>
+</ul>
+
+<figure id="I-map_p1">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/I-Map_p1.png" />
+    </div>
+  </div>
+</figure>
+
+<p>Solution: Graph 1.</p>
+
+<ul>
+  <li>$P_2: I(P_2) = \emptyset$</li>
+</ul>
+
+<figure id="I-map_p2">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/I-Map_p2.png" />
+    </div>
+  </div>
+</figure>
+
+<p>Solution: Both graph 2 and graph 3, since they assume no independences. Therefore, they are equivalent in terms of independent sets. Graph 1 has an independent set. Therefore it is not an I-map of $P_2$.</p>
+
+<h2 id="what-is-ig">What is $I(G)$</h2>
+
+<h3 id="local-markov-assumptions-of-bn">Local Markov assumptions of BN</h3>
+
+<p>A <em>Bayesian network structure</em> $\mathcal{G}$ is a directed acyclic graph whose nodes represent random variables $X_1, \dots, X_n$ (also see the <a href="#BN">textbook definition 3.2.1</a>).</p>
+
+<h3 id="local-markov-assumptions">Local Markov assumptions</h3>
+
+<h4 id="definition">Definition</h4>
+
+<p>Let <script type="math/tex">{Pa}_{X_i}</script> denote the parents of <script type="math/tex">X_i</script> in <script type="math/tex">\mathcal{G}</script>, and <script type="math/tex">NonDescendants_{X_i}</script> denote the variables in the graph that are not descendants of $X_i$. Then $\mathcal{G}$ encodes the following set of local conditional independence assumptions $I_{\ell}(\mathcal{G})$:</p>
+
+<script type="math/tex; mode=display">I_{\ell} (\mathcal{G}): \left\{ X_i \perp NonDescendants_{X_i} \vert Pa_{X_i}: \forall i \right\}</script>
+
+<p>In other words, each node $X_i$ is independent of its non-descendants given its parents.</p>
+
+<h2 id="d-separation-criterion-for-bayesian-networks">D-separation criterion for Bayesian networks</h2>
+
+<h3 id="definition-1">Definition 1</h3>
+<p>Variables $X$ and $Y$ are <em>D-separated</em> (conditionally independent) given $Z$ if they are separated in the <em>moralized</em> ancestral graph. (D stands for Directed edges.)</p>
+
+<ul>
+  <li>Example: $ X \perp Y \vert Z$, then we say $Z$ D-separates $X$ and $Y$.</li>
+</ul>
+
+<figure id="graph-separation">
+  <div class="row">
+    <div class="col three">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/graph_separation_criterion_example.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Graph separation example.</strong>
+  </figcaption>
+</figure>
+
+<ul>
+  <li>
+    <p>Ancestral graph (focusing only the nodes of interest): keeping only the nodes themselves + ancestors of the nodes in question.</p>
+  </li>
+  <li>
+    <p>Moral ancestral: remove the connectivity between nodes, but connect parents to nodes that are shared by a single child.</p>
+  </li>
+</ul>
+
+<p>If there is a way to travel from one node to another node using any path (not through the given), then these two nodes are not conditionally independent (example is not conditionally independent).</p>
+
+<h2 id="practical-definition-of-imathcalg">Practical definition of $I(\mathcal{G})$</h2>
+
+<p>Global Markov properties of Bayesian networks</p>
+<ul>
+  <li>$X$ is <em>d-separated</em> (directed-separated) from $Z$ given $Y$ if we can’t send a ball from any node in $X$ to any node in $Z$ using the <em>“Bayes-ball”</em> algorithm illustrated bellow (and plus some boundary conditions).
+Note this is expressed using math in <a href="#dsep">Definition 3.7</a>.</li>
+</ul>
+
+<figure id="graph-separation">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/d_separated.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Graph separation example.</strong>
+  </figcaption>
+</figure>
+
+<ul>
+  <li><strong>Definition:</strong> $I(\mathcal{G}) =$ all independence properties that correspond to d-separation:</li>
+</ul>
+
+<script type="math/tex; mode=display">I(\mathcal{G}): \left\{ X_i \perp Z \vert Y: dsep_{\mathcal{G}} ( X ; Z \vert Y) \right\}</script>
+
+<h2 id="ig-example">I(G) example</h2>
+
+<figure id="IG-example">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/IG_Exp.png" />
+    </div>
+  </div>
+</figure>
+
+<p>In this graph there are two types of active trail structures (see <a href="#active_trail">section 3.3.1</a> from the reading below for definition):</p>
+
+<ul>
+  <li>common cause: $x_3 \leftarrow x_1 \rightarrow x_4$. This trail is active if we don’t condition on $x_1$.</li>
+  <li>common effect: $x_2 \rightarrow x_3 \leftarrow x_1$. This trail is active if we condition on $x_3$.</li>
+</ul>
+
+<p>To find the independencies, consider all trails with length greater than 1 (since a node cannot be independent of its parent).</p>
+
+<h3 id="trails-of-length-2">Trails of length 2:</h3>
+<ul>
+  <li>$x_2 \rightleftharpoons x_3 \rightleftharpoons x_1$: due to ‘common effect’ structure, this trail is blocked as long as we do not condition on $x_3$. Therefore we get $(x_2 \perp x_1), (x_2 \perp x_1 \vert x_4)$.</li>
+  <li>$x_3 \rightleftharpoons  x_1 \rightleftharpoons x_4$: due to ‘common cause’ structure, this trail is blocked if we condition on $x_1$. Therefore we get <script type="math/tex">(x_3 \perp x_4 \vert x_1), (x_3 \perp x_4 \vert \{x_1, x_2\})</script>.</li>
+</ul>
+
+<h3 id="trails-of-length-3-only-x_2-rightleftharpoons--x_3-rightleftharpoons-x_1-rightleftharpoons-x_4">Trails of length 3 (only $x_2 \rightleftharpoons  x_3 \rightleftharpoons x_1 \rightleftharpoons x_4$):</h3>
+<ul>
+  <li>due to ‘common effect’ structure $x_2 \rightarrow x_3 \leftarrow x_1$, this trail is blocked as long as we do not condition on $x_3$. Therefore we get $(x_2 \perp x_4),  (x_2 \perp x_4 \vert x_1)$.</li>
+  <li>due to ‘common cause’ structure $x_3 \leftarrow x_1 \rightarrow x_4$, this trail is blocked if we condition on $x_1$. Therefore we get <script type="math/tex">(x_2 \perp x_4 \vert x_1), (x_2 \perp x_4 \vert \{x_1, x_3\})</script>.</li>
+</ul>
+
+<h3 id="trails-between-sets-of-nodes">Trails between sets of nodes</h3>
+<ul>
+  <li>$x_2 \perp {x_1, x_4}$ : This is true by d-separation because we have seen that any path between $x_2$ and $x_1$, or between $x_2$ and $x_4$, is blocked.</li>
+</ul>
+
+<h3 id="full-imathcalg">Full $I(\mathcal{G})$</h3>
+<p>Putting the above together, and we have the following independencies.</p>
+
+<d-math block="">
+  \begin{aligned}
+    I(\mathcal{G})=
+    &amp;\{(x_2 \perp x_1), (x_2 \perp x_1 \vert x_4), \\
+    &amp;(x_3 \perp x_4 \vert x_1), (x_3 \perp x_4 \vert \{x_1, x_2\}), \\
+    &amp;(x_2 \perp x_4),  (x_2 \perp x_4 \vert x_1),  (x_2 \perp x_4 \vert \{x_1, x_3\})\\
+    &amp;(x_2 \perp \{x_1, x_4\})
+  \end{aligned}
+</d-math>
+
+<h2 id="the-equivalence-theorem">The Equivalence Theorem</h2>
+
+<p>For a graph $G$, Let $D_1$ denotes the family of all distributions that satisfy $I(G)$. Let $D_2$ denotes the family of all distributions that factor according to $G$. Then $D_1 \equiv D_2$, which can be expressed as:</p>
+
+<script type="math/tex; mode=display">P(X)=\prod_{i=1:d}P(X_i \vert X_{\pi_i})</script>
+
+<p>This means separation properties in the graph imply independence properties about the associated variables.</p>
+
+<h2 id="conditional-probability-tables-cpts">Conditional Probability Tables (CPTs)</h2>
+
+<p>This is an example with discrete probabilities.</p>
+
+<figure id="cp1">
+  <div class="row">
+    <div class="col three">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/CP_1.png" />
+    </div>
+  </div>
+</figure>
+
+<h2 id="conditional-probability-densities-cpds">Conditional Probability Densities (CPDs)</h2>
+
+<p>The probabilities can also be a continuous function, e.g. the Gaussian distribution.</p>
+
+<figure id="cp2">
+  <div class="row">
+    <div class="col three">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/CP_2.png" />
+    </div>
+  </div>
+</figure>
+
+<h2 id="summary-of-bn">Summary of BN</h2>
+
+<ul>
+  <li>
+    <p>Conditional independencies imply factorization.</p>
+  </li>
+  <li>
+    <p>Factorization according to $G$ implies the associated conditional independencies.</p>
+  </li>
+</ul>
+
+<h2 id="soundness-and-completeness-of-d-separation">Soundness and Completeness of D-separation</h2>
+<p>Soundness and completeness are two desirable properties of d-separation, formally defined in <a href="#sound">Section 3.3.2</a></p>
+
+<ul>
+  <li>
+    <p><strong>Soundness:</strong> If a distribution $P$ factorizes according to $G$, then $I(G) \subseteq I(P)$.</p>
+  </li>
+  <li>
+    <p><strong>“Completeness”:</strong>
+(“Claim”) For any distribution $P$ that factorizes over $G$, if $(X \perp Y \vert Z) \in I(P)$, then $\text{d-sep}_{\mathcal{G}} (X; Y \vert Z)$)</p>
+  </li>
+  <li>
+    <p>Actually, the “Completeness” is not holding true all the time. “Even if a distribution factorizes over <script type="math/tex">G</script>, it can still contain additional independencies that are not reflected in the structure.”</p>
+  </li>
+</ul>
+
+<h3 id="example-follows-example-33-from-textbook">Example (follows Example 3.3 from textbook):</h3>
+
+<p>Consider a distribution $P$ over two independent variables $A$ and $B$. Recall that every independence we can observe from an I-map is by definition encoded in $P$ (see Definition 3.2-3.3 from the readings below).
+One I-map for $P$ would be the DAG $A \rightarrow B$ since it encodes no independencies.
+This is because $\varnothing$ is a subset of every set.</p>
+
+<p>However, we can manipulate the conditional probability table so that independencies hold in <script type="math/tex">P</script> which do not follow from D-separation. One such conditional probability table would be:</p>
+
+<figure id="cpt-example">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-02/CPT.png" />
+    </div>
+  </div>
+</figure>
+
+<p>Observe that in this table, $B$ is independent of $A$. But this is not reflected in the I-map $A \rightarrow B$.</p>
+
+<h5 id="theorem">Theorem</h5>
+<p>Let $G$ be a BN graph. If $X$ and $Y$ are not d-separated given $Z$ in $G$, then $X$ and $Y$ are dependent in  <strong>some</strong> distribution $P$ that factorizes over $G$.</p>
+
+<h5 id="theorem-1">Theorem:</h5>
+<p>For <strong>almost all</strong> distributions $P$ that factorize over $G$, i.e., for all distributions except for a set of “measure zero” in the space of CPD parameterizations, we have that $I(P)=I(G)$.</p>
+
+<hr />
+
+<h1 id="readings">Readings</h1>
+<h2 id="the-bayesian-network-representation-">The Bayesian network representation <d-cite key="Koller:2009:PGM:1795555"></d-cite></h2>
+<p><a name="indep"></a></p>
+
+<h3 id="311--exploiting-independence-properties">3.1.1  Exploiting independence Properties</h3>
+<h4 id="standard-vs-compact-parametrization-of--independent-random-variables">Standard vs compact parametrization of  independent random variables</h4>
+<p>Given random variables $X_i$ each representing the outcome of an independent coin toss, the standard parametrization of their joint distribution would be as follows:</p>
+
+<d-math block="">
+\begin{aligned}
+P(X_1, \dots X_n) &amp;= P(X_1=x_1, X_2=x_2, \dots, X_n=x_n) \\
+                  &amp;= P(X_1=x_1) P(X_2=x_2) \dots P(X_n=x_n)
+\end{aligned}
+</d-math>
+
+<p>Note there are 2 possibilities for each outcome $x_i$, this representation requires $2^n$ parameters. However, only $2^n -1$ will be independent parameters since the last probability is fully determined by the first $2^n$ (all probabilities sum to 1).</p>
+
+<p>One simple way to reduce the number of parameters needed, would be to represent the probability that each coin toss lands heads as $ \theta_1, … \theta_n $.  Then we have the following compact representation requiring only $n$ parameters:</p>
+
+<script type="math/tex; mode=display">P(X_1, ... X_n) = \prod_i \theta_{X_i}</script>
+
+<h3 id="313-naive-bayes">3.1.3 Naive Bayes</h3>
+<p>We can further express the joint distribution in terms of conditional probabilities. This is done in the Naive Bayes model.</p>
+
+<p>Instances of this model will include:</p>
+<ul>
+  <li>class: some category $ C \in {c^1, …c^k} $ which gives a prior on the value of each feature</li>
+  <li>features: observed properties $X_1, … X_k$</li>
+</ul>
+
+<p>The model makes the strong  ‘naive’ conditional independence assumption:</p>
+
+<script type="math/tex; mode=display">P(x_i | C,  x_1, \dots, x_n) = P(x_i | C)</script>
+
+<p>In words, <em>features are conditionally independent, given the class of the instance of this model</em>.
+Thus the joint distribution of the Naive Bayes model factorizes as follows:
+<a name="BN"></a>
+<script type="math/tex">P(C, X_1, ... X_n) = P(C) \prod_i P(X_i |C)</script></p>
+
+<h3 id="321-bayesian-networks">3.2.1 Bayesian networks</h3>
+
+<p>Bayesian networks use a graph whose nodes are the random variables in the domain, and whose edges represent conditional probability  statements. Unlike in the Naive Bayes model, Bayesian networks can also represent distributions that do not satisfy the naive conditional independence assumption.</p>
+
+<h4 id="definition-31-bayesian-network-bn">Definition 3.1: Bayesian Network (BN)</h4>
+<p>A bayesian network $\mathcal{G}$ is a directed acyclic graph, whose nodes represent random variables $X_1, …X_n $.
+Let $Pa_{X_i}^{\mathcal{G}}$ denote the parents of $X_i \in \mathcal{G}$ and $NonDescendants_{X_i}$ denote the variables in the graph which are not descendants of $X_i$. Then $\mathcal{G}$ encodes the following set of conditional independence assumptions, also called the ‘local independencies’ and denoted by $I_l(\mathcal{G})$:</p>
+
+<p>For each variable $X_i: (X_i \perp NonDescendants_{X_i} \vert \text{Pa}_{X_i}^{\mathcal{G}})$
+<a name="imap"></a></p>
+<h3 id="323-graphs-and-distributions">3.2.3 Graphs and Distributions</h3>
+
+<p>In this section it is shown that the distribution $P$ satisfies the local independencies associated with  $\mathcal{G} \iff P$ is representable as a set of conditional probability distributions (CPDs) associated with $\mathcal{G}$.</p>
+
+<p><a name="imap_fact"></a></p>
+<h4 id="definition-32-33-i-map">Definition 3.2-3.3: I-Map</h4>
+<p>Let $P$ be a distribution over $\mathcal{X}$. We define $I(P)$ to be the set of independence assertions of the form $X \perp Y \vert Z$ that hold in $P$.</p>
+
+<p>Let $\mathcal{K}$ be any graph object associated with a set of independencies $I(\mathcal{K})$. We say $\mathcal{K}$ is an I-map for $I$ if $I(\mathcal{K}) \subseteq I$.</p>
+
+<p><strong>Note this means that $\mathcal{G}$ is an I-map for $P $ if $\mathcal{G}$ is an I-map for $I(P)$.</strong></p>
+
+<h4 id="i-map-to-factorization">I-Map to factorization</h4>
+
+<p>In this section  it is proven (see text) that the conditional independence assumptions implied by the BN structure $\mathcal{G}$ allow us to factorize the distribution $P$ for which $\mathcal{G}$ is an I-map into conditional probability distributions.</p>
+
+<h5 id="definition-34-factorization">Definition 3.4 Factorization</h5>
+<p>Let $P$ be a distribution and $\mathcal{G}$ be a BN graph over random variables $X_1, …X_n $. We say that $P$ <em>factorizes</em> according to $\mathcal{G}$ if $P$ can be expressed as a product:</p>
+
+<script type="math/tex; mode=display">P(X_1, ... X_n) = \prod_i P( X_i | \text{Pa}_{X_i}^{\mathcal{G}})</script>
+
+<h5 id="reduction-in-number-of-parameters">Reduction in number of parameters</h5>
+<p>In a distribution over $n$ binary variables, specifying the joint distribution will require $2^n - 1$ independent parameters (as stated in 3.1.1). However if the distribution factorizes according to  $\mathcal{G}$ where each node has at most $k$ parents, then the number of independent parameters is $ &lt; 2^k$. <strong>Since $k$ is usually small, this represents an exponential reduction in number of parameters.</strong></p>
+
+<h4 id="factorization-to-i-map">Factorization to I-map</h4>
+<p>The converse also holds as given by the following :</p>
+<h5 id="theorem-32">Theorem 3.2</h5>
+<p>Let  $\mathcal{G}$ be a BN graph over random variables $X $ and $P$ be a distribution over the same space. If $P$ factorizes according to $\mathcal{G}$ then $\mathcal{G}$ is an I-map for  $P$.</p>
+
+<h3 id="box-3c-knowledge-engineering">Box 3.C Knowledge engineering</h3>
+
+<p>Building a BN in the real world requires many steps including:</p>
+
+<ul>
+  <li><em>picking variables precisely</em>: we need some variables that can be observed, and their domain should be specified. Sometimes introducing hidden variables will help to render the observed variables conditionally independent.</li>
+  <li><em>picking a structure consistent with the causal order</em>: choose enough variables to approximate the causal relationships.</li>
+  <li><em>picking probability estimates for events in the network</em>: data collection may be difficult but small errors have little effect (though the network is sensitive to events assigned a zero probability, and to relative size of probabilities of events)</li>
+</ul>
+
+<p>Done correctly, the model will be useful as well as not too complex to use (see Box 3.D).</p>
+
+<h3 id="331-d-separation">3.3.1 D-separation</h3>
+
+<p><strong>Objective:</strong> determine which independencies hold for every distribution $P$ which factorizes over $G$.</p>
+
+<h4 id="definition-216-trail">Definition 2.16 Trail</h4>
+<p><a name="active_trail"></a>
+We say that $X_1, … X_k$ form a trail in the graph $\mathcal{K} = (\mathcal{X}, \mathcal{E}) $ if for every $i = 1, … , k-1$ we have that $ X_i \rightleftharpoons X_{i+1}$.</p>
+
+<h4 id="types-of-active-two-edge-trails">Types of active two edge trails</h4>
+
+<p>By examining 2-edge connections between nodes $X,Y,Z$ four types of active trails, i.e. trails along which influence can flow from $X$ to $Z$, are apparent:</p>
+
+<ol>
+  <li>Causal trail $X \rightarrow Z \rightarrow Y$ : active iff Z is not observed.</li>
+  <li>Evidential trail $X \leftarrow Z \leftarrow Y$ : active iff Z is not observed.</li>
+  <li>Common cause $X \leftarrow Z \rightarrow Y$ : active iff Z is not observed.</li>
+  <li>Common effect $X \rightarrow Z \leftarrow Y$ : active iff Z or one of its descendants is observed.</li>
+</ol>
+
+<p>For influence to flow through a longer trail $ X_1 \rightleftharpoons … \rightleftharpoons X_n  $, every two-edge trail within must allow influence flow. This is summarized as follows:</p>
+
+<h4 id="definition-36-active-trail">Definition 3.6 active trail</h4>
+<p>Let $\mathcal{G}$ be a BN structure and. $ X_1 \rightleftharpoons  … \rightleftharpoons X_n  $ be a trail in $\mathcal{G}$. Let $Z$ be a subset of observed variables. Then the trail $ X_1 \rightleftharpoons  … \rightleftharpoons  X_n$ is active given $Z  $ if:</p>
+
+<ul>
+  <li>Whenever we have a v-structure $ X_{I-1}  \to X_i \leftarrow X_{I+1}  $ then $X_i$ or one of its descendants are in $Z$</li>
+  <li>No other node along the trail is in $Z$</li>
+</ul>
+
+<p><a name="dsep"></a></p>
+
+<p>Further, for directed graphs that may have more than one trail between nodes “directed separation” (d-separation) gives a notion of separation between nodes.</p>
+
+<p><a name="sound"></a></p>
+<h4 id="definition-37-d-separation">Definition 3.7 D-separation</h4>
+<p>Let $X,Y,Z$ be three sets of nodes in $\mathcal{G}$. We say that <em>$X, Y$</em> are d-separated given $Z$ (denoted $ \text{d-sep}_{\mathcal{G}} (X; Y \vert Z) $ ) if there is no active trail between any node X $ \in X $ and Y $ \in Y $ given $Z$.</p>
+
+<h3 id="332-soundness-and-completeness">3.3.2 Soundness and Completeness</h3>
+<p>As a method d-separation has the following properties (proof in text):</p>
+
+<p><strong>Soundness:</strong> $ X, Y $ are d-separated given $ Z \implies X \perp Y \vert Z $ i.e. independence determined by d-separation is satisfied by the underlying distribution.</p>
+
+<p><strong>Completeness:</strong>  If $ X \perp Y \vert Z $ then they are d-separated, i.e. d-separation detects all possible independencies.</p>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-01-16-lecture-02.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

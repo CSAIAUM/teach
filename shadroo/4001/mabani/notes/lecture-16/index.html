@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 16: Building Blocks of Deep Learning</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-16/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 16: Building Blocks of Deep Learning",
+      "description": "Overview of CNNs, RNNs, and attention.",
+      "published": "March 18, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Zhiting Hu"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Scott Sun"
+        },
+        
+        {
+          "author": "Raunaq Bhirangi"
+        },
+        
+        {
+          "author": "Nikolai Vogler"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Paul Liang"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 16: Building Blocks of Deep Learning</h1>
+        <p align='right' dir="rtl">Overview of CNNs, RNNs, and attention.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <h1 id="convolutional-neural-networks-cnns">Convolutional Neural Networks (CNNs)</h1>
+
+<p>CNNs are biologically-inspired variants of MLPs that exploit the strong spatial local correlations present in images.
+The biological concept of the receptive field states that the visual cortex contains a complex arrangement of cells
+that are sensitive to small sub-regions that are tiled to cover the visual field.
+CNNs enjoy sparse connectivity, shared weights, and a hierarchy of representation. Stacking multiple layers can result in
+lower layers learning low-level features, while upper layers learn high-level representations. Using the biological analogue,
+simple cells detect local features while complex ones pool the outputs of simpler cells.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/cnn_hierarchy.png" />
+      <figcaption>
+        <strong>Figure 1</strong>
+        Hierarchy of Features in CNNs
+      </figcaption>
+    </div>
+   </div>
+</figure>
+
+<p>One type of layer in a CNN is the convolutional layer. These involve taking taking filter kernels and convolving them over the image. This has the effect of filtering an image and preserves
+the local connectivity of an image. The use of convolutions also allows for parameter sharing, whereby the same parameters (i.e., each filter kernel) can be 
+applied to multiple parts of the same image to greatly reduce the model’s complexity. This process creates a feature map from the responses for each filter, which can be fed into a pooling layer.
+The pooling layer helps to reduce the dimensionality of the input space by downsampling the feature maps at each layer. For example, max pooling with a kernel size of 2x2
+only takes the max pixel response in each set of 2x2 pixels. This downsamples the image by a factor of 4. Average pooling would instead take the average of the pixels in a kernel. 
+The advantage of pooling is to improve robustness to the exact spatial location of features, as anything that is “close enough” would be pooled into the same output.
+Many CNNs involve stacking multiple alternating convolution and pooling layers together to build the aforementioned hierarchy of representation.</p>
+
+<p>Examples of ConvNets show a trend towards ever increasing numbers of layers:</p>
+<ul>
+  <li>AlexNet, 8 layers <d-cite key="alexnet"></d-cite></li>
+  <li>VGG, 19 layers <d-cite key="vgg"></d-cite></li>
+  <li>GoogLeNet, 22 layers <d-cite key="googlenet"></d-cite></li>
+  <li>ResNet, 152 layers <d-cite key="resnet"></d-cite></li>
+</ul>
+
+<h1 id="recurrent-neural-networks-rnns">Recurrent Neural Networks (RNNs)</h1>
+<p>The temporal (or sequential) analogue to the CNN is the RNN. RNNs can have a variable number of computation steps unlike CNNs.
+Unlike MLPs and CNNs, RNN outputs depend not only on the current input, but also on the previous states of hidden layers.</p>
+
+<h2 id="lstms-and-the-vanishingexploding-gradient-problem">LSTMs and the Vanishing/Exploding Gradient Problem</h2>
+<p>Unrolling an RNN for several steps results in multiple products with W and applying tanh multiple times. The hidden states
+that are passed on to each successive cell follow this expression:</p>
+
+<script type="math/tex; mode=display">h_t = tanh(W^{hh} h_{t-1} + W^{hx} x_t)</script>
+
+<p>As you backpropagate backward to $h_0$, there will be many repeated factors of W and tanh. 
+If the singular value of the W matrix is greater than 1, this can result in exploding gradients; similarly, singular values under 1 can result in vanishing gradients.
+This is because product over the W matrices during backprop will result in either exponential growth/decay in value.
+A solution to this problem is to use <strong>gradient clipping</strong> <d-cite key="lstm_gradient"></d-cite>. In the case of exploding gradients, this involves checking if the 
+norm of the gradient is greater than some threshold. If so, the gradient is scaled by the threshold divided by the norm.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/rnn_grad_flow.png" />
+    </div>
+   </div>
+</figure>
+
+<p>LSTMs are designed to solve the long-term dependency problem by creating a path with uninterrupted gradient flow during backpropagation <d-cite key="lstm"></d-cite>.
+Internally, they are more complicated than a vanilla RNN.</p>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/rnn_lstm.png" />
+      <figcaption>
+        <strong>Figure </strong>
+        RNN vs LSTM
+      </figcaption>
+    </div>
+   </div>
+</figure>
+
+<p>They use linear memory cells and multiplicative gates to store read, write, and reset information.</p>
+<ul>
+  <li><strong>Forget gate</strong>: decides what must be removed from $h_{t-1}$.</li>
+</ul>
+
+<script type="math/tex; mode=display">f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)</script>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/forget_gate.png" />
+    </div>
+   </div>
+</figure>
+
+<ul>
+  <li><strong>Input gate</strong>: whether to write to cell and what information should be stored</li>
+</ul>
+
+<d-math block="">
+\begin{aligned}
+    i_t &amp;= \sigma(W_i \cdot [h_{t-1}, x_t] + b_i) \\
+    \tilde{C}_t &amp;= tanh(W_c \cdot [h_{t-1}, x_t] + b_c) 
+\end{aligned}
+</d-math>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/input_gate.png" />
+    </div>
+   </div>
+</figure>
+
+<ul>
+  <li><strong>Update cell state</strong>: $f_t$ controls how much of $C_{t-1}$ is forgotten. $i_t$ scales our new candidate values by how much we 
+want to update each state value.</li>
+</ul>
+
+<script type="math/tex; mode=display">C_t = f_t \times C_{t-1} + i_t \times \tilde{C}_t</script>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/lstm_update.png" />
+    </div>
+   </div>
+</figure>
+
+<ul>
+  <li><strong>Output gate</strong>: decides what to output from the cell state</li>
+</ul>
+
+<d-math block="">
+\begin{aligned}
+    o_t &amp;= \sigma(W_o \cdot [h_{t-1}, x_t] + b_o) \\
+    h_t &amp;= o_t \times tanh(C_t)
+\end{aligned}
+</d-math>
+<p>The sigmoid in $o_t$ decides which part of the cell state will be outputted.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/output_gate.png" />
+    </div>
+   </div>
+</figure>
+
+<p>As can be seen, LSTMs allow for a path with uninterrupted gradient flow, which helps mitigate the long-term dependency problem.
+There is no need to multiply by the W matrix during backprop, which was the source of the growth/decay; 
+instead, you multiply by the different values of the gates. 
+While this does not totally eliminate the vanishing/exploding gradient problem, it makes it much less likely, 
+as there is usually a path where the gradient does not explode/vanish.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/lstm_grad_flow.png" />
+    </div>
+   </div>
+</figure>
+
+<h2 id="different-flavors-of-rnns">Different Flavors of RNNs</h2>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/rnn.png" />
+      <figcaption>
+        <strong>Figure </strong>
+        Some Conventional Variants of RNNs
+      </figcaption>
+    </div>
+   </div>
+</figure>
+
+<ul>
+  <li><strong>Bi-directional RNN</strong>: The hidden state is the concatenated result of both forward and backward hidden states so that 
+it can capture past and future information.</li>
+</ul>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/bilstm.png" />
+    </div>
+   </div>
+</figure>
+
+<ul>
+  <li><strong>Tree-structured RNN</strong>: Allows for the hidden states to be conditioned on an input and the hidden states of <em>arbitrarily</em>
+many child units. The standard LSTM, for example, is a special case conditioned on only one child unit.</li>
+</ul>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/tree_lstm.png" />
+    </div>
+   </div>
+</figure>
+
+<ul>
+  <li><strong>RNNs for 2D Sequences</strong>: Fixed structures for 2D images that capture different dependencies and hierarchical relations.</li>
+</ul>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/2d_lstm.png" />
+    </div>
+   </div>
+</figure>
+
+<ul>
+  <li><strong>RNNs for Graph Structures</strong>: Used in image segmentation.</li>
+</ul>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/graph_lstm.png" />
+    </div>
+   </div>
+</figure>
+
+<h1 id="attention-mechanisms">Attention Mechanisms</h1>
+
+<p>Attention mechanisms are techniques that are used to focus on particular features in the data. They has been show to drastically improve performance in tasks such as machine translation, image captioning and speech recognition. They allow to accomodate for long-range dependencies, and dealing with the problem of vanishing gradients, seen in RNNs. By allowing for fine-grained localized representations of portions of data, like patches in images or words in sentences, attention improves feature recognition in the model.</p>
+
+<h2 id="attention-computation">Attention Computation</h2>
+
+<p>Attention can be computed for a machine translation task using the following procedure:</p>
+<ul>
+  <li>Encode each token in the input sentence into a key vector.</li>
+  <li>When decoding, compare the query vector with the encoder states, and generate alignment scores corresponding to each key vector.</li>
+  <li>Compute the attention weights by normalizing the alignment scores.</li>
+  <li>Treat the encoder states as value vectors and compute a weighted sum, using the attention weights.</li>
+  <li>Use this weighted sum in the decoder to generate the next token.</li>
+</ul>
+
+<h2 id="attention-variants">Attention Variants</h2>
+<p>There are a number of different alignment score functions that may be used to generate scores. Some of these are shown in the table below:</p>
+
+<figure id="att-variants" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/att-variants.png" />
+    </div>
+   </div>
+</figure>
+
+<p>Soft and hard attention are variants of attention that respectively use deterministic and stochastic methods in computing the weights for each token. The computation described above is for soft attention. Instead of using the attention weights to compute a weighted average, hard attention uses these as probabilities and samples from the corresponding features using this distribution. A comparison for attention used on images can be illustrated below. Notice how soft attention can be diffuse, and assign nonzero weights to significant weights to large portions of the image at times, while hard attention focuses on a particular equally-sized part of the image in each case. Soft attention is presently the more popular variant, primarily because it allows for simpler backpropagation in the network.</p>
+
+<figure id="soft-hard-att" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/hard-soft.png" />
+    </div>
+   </div>
+</figure>
+
+<h2 id="applications-in-computer-vision">Applications in Computer Vision</h2>
+<p>Attention can be used in conjunction with conventional CNNs in image processing. Features extracted from the CNN are used as key vectors and attention is used to sequentialy compute the caption as tokens. It can also be used in image paragraph generation, which is the generation of a long paragraph to describe an image. This is a challenging task because it involves long-term reasoning about language and visual features. Each sentence needs to be grounded on visual features to ensure contentful descriptions. One technique for doing this, presented in Xu et al. (2017) <d-cite key="paragraphGAN"></d-cite>, proceeds as follow:</p>
+<ul>
+  <li>The image is first segmented into semantic regions, and each region is locally captioned with phrases</li>
+  <li>Attention is applied on the visual regions and the text phrases and the resulting features fed to a generator which generates sentences</li>
+  <li>These sentences are then fed to a sentence discriminator and a recurrent topic-transition discriminator for assessing sentence plausibility and topic coherence respectively</li>
+  <li>A paragraph description corpus is adopted to provide linguistic knowledge about paragraphgeneration, which depicts the true data distribution of the discriminators</li>
+</ul>
+
+<p>The entire pipeline can be seen in the figure below:</p>
+<figure id="img-paragraph" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/img-paragraph.png" />
+    </div>
+   </div>
+</figure>
+
+<h1 id="transformers-multi-headed-attention">Transformers: Multi-Headed Attention</h1>
+
+<h2 id="transformer">Transformer</h2>
+
+<p>Recently, Vaswani et al. (2017) <d-cite key="transformer"></d-cite> debuted a novel, non-recurrent neural network architecture composed purely of 
+self-attention called the Transformer. The Transformer has attained state-of-the-art results in many sequence-to-sequence natural language processing tasks, 
+such as machine translation. Since the Transformer architecture lacks recurrent structure, it can be more amenable to learning long-range 
+dependencies over sequences while also improving training and inference speed.</p>
+
+<p>As shown below, the Transformer employs multi-headed self-attention, in which multiple attention layers run in parallel. Intuitively, this can enable different heads to focus on different parts of the sequence.</p>
+
+<figure id="transformerattn" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/transformerattn.png" />
+    </div>
+   </div>
+</figure>
+
+<p>Formally, multiple heads of Queries <script type="math/tex">Q</script>, Keys <script type="math/tex">K</script> of dimension <script type="math/tex">d_k</script>, and Values <script type="math/tex">V</script> can be packed together into separate matrices to allow for attention to be computed efficiently using the scaled dot-product variant, which they suggest prevents diminished gradients during training:</p>
+
+<script type="math/tex; mode=display">\text{Attention}(Q, K, V) = \text{softmax}(\frac{QK^\top}{\sqrt{d_k}}) V</script>
+
+<p>Multi-headed attention can then jointly attend to information from multiple different representations at different positions by:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{aligned}
+\text{MultiHead}(Q, K, V) &= \text{Concat}(\text{head}_1, \ldots, \text{head}_h) W^O \\
+\text{where head}_i &= \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)
+\end{aligned} %]]></script>
+
+<p>Vaswani et al. (2017) obtain a single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, which is two orders of magnitude less training time than recurrent approaches.
+They visualize the weights of the multiple attention heads to try to explain that each head learns separate information, such as long-term dependencies.
+Also, they demonstrate the Transformer’s ability to learn structured outputs for English constituency parsing by beating all other discriminative recurrent sequence-to-sequence methods.</p>
+
+<h2 id="bert-pre-training-of-deep-bidirectional-transformers-for-language-understanding">BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</h2>
+
+<h3 id="unsupervised-language-model-pre-training">Unsupervised Language Model Pre-training</h3>
+
+<p>Recently, language representation via unsupervised language model pre-training has revolutionized the field of natural language processing.
+Parameters learned during the training of large language models using self-supervision have been shown to be extremely effective when transferred to other NLP prediction tasks. <d-cite key="ulmfit,gpt,elmo,bert,gpt2"></d-cite>
+Since language modeling requires the resolving of long-term dependencies, hierarchical relations, and sentiment, it can be seen as an ideal source task for transfer learning in NLP. <d-cite key="ulmfit"></d-cite></p>
+
+<p>ELMo <d-cite key="elmo"></d-cite> introduce deep contextualized word representations, which are learned functions of the internal states of a deep bidirectional LSTM language model trained to predict both the next word in a sentence given its history and the previous word in a sentence given its future words.
+These contextualized representations can then be frozen and used as embeddings for other downstream tasks like question answering, textual entailment, and sentiment analysis.
+Instead of just transferring word embeddings for a new task, Howard and Ruder’s (2018) ULMFiT aims to transfer the language model itself for new tasks.
+Particularly, the authors train an AWD-LSTM <d-cite key="awdlstm"></d-cite> language model on 103 million words of Wikipedia data, fine-tune on a smaller amount of task-specific data using different learning rates for different layers of the model, and add a final classifier on the end of the network for the target task.
+Thus, while ELMo requires task-specific architectures when transferring to new tasks, ULMFiT simply adds a classifier on top of the language model to obtain state-of-the-art results on six benchmarks.
+OpenAI then adapted this method (dubbed Generative Pre-training or GPT) to work with the popular Transformer <d-cite key="transformer"></d-cite> architecture, an auxiliary language modeling loss during fine-tuning to obtain even better results, and adaptation to more difficult tasks such as machine translation. <d-cite key="gpt"></d-cite>
+Just this year, OpenAI followed up their work with GPT2, which is the highest performing language model to date.
+They use a similar but much higher capacity model to GPT as they find that capacity improves performance log-linearly.
+Due to its high, human-like language generation performance, they controversially decided to not release their largest model: a 1.5B parameter Transformer trained on 8 million documents of web text.</p>
+
+<h3 id="bert">BERT</h3>
+
+<p>In BERT (Bidirectional Encoder Representations from Transformers), Devlin et al. (2018) <d-cite key="bert"></d-cite> used a bidirectional Transformer architecture to great advantage in order to obtain improved contextualized word 
+embeddings in an extension to OpenAI GPT <d-cite key="gpt"></d-cite>.
+The paper introduces two new objectives to adapt the traditional task of predicting the next word in language modeling to benefit from bidirectionality.
+After encoding each word in a given sentence into a contextualized representation, they have the model both predict a random masked word from the original sentence and perform a binary classification on two sentences to identify whether or not one sentence follows the other.
+Although the masked language model objective requires more pre-training steps since each prediction is no longer sequential, they find that performance increases over the traditional objective are immediate.
+They find that the next sentence classification objective is particularly beneficial to tasks like natural language inference and question answering since they require multi-sentence reasoning.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-16/BERT.png" />
+        <figcaption>
+        Example of the masked language model objective. Image credit: The Illustrated Transformer by Jay Alammar.
+      </figcaption>
+    </div>
+   </div>
+</figure>
+
+<p>In the paper, the authors report using both Wikipedia data (2.5B words) and eBook data (800M words) for training a 
+Transformer encoder with hundreds of millions of parameters.
+An ablation study on model size empirically shows that extreme model sizes lead to large improvements on even very small scale tasks, provided that the model has been sufficiently pre-trained.
+Although training takes many more steps to converge than a traditional language model objective, BERT, with only single output layer modifications, performs at the state-of-the-art for eleven NLP tasks including sentiment, question answering, and natural language inference.
+While Google is able to train BERT in just 4 days on 4 TPU pods, training is impractical for academics with traditional GPU resources,
+For example, a standard 4 GPU desktop with an RTX 2080Ti would take almost 99 days to complete training!</p>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-03-18-lecture-16.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

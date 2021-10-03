@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 22: Bayesian non-parametrics</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-22/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 22: Bayesian non-parametrics",
+      "description": "An introduction to Bayesian non-parametrics and the Dirichlet process.",
+      "published": "April 8, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Yao Chong Lim"
+        },
+        
+        {
+          "author": "Yue Wu"
+        },
+        
+        {
+          "author": "Dongshunyi Li"
+        },
+        
+        {
+          "author": "Steve Landers"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Maruan Al-Shedivat"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 22: Bayesian non-parametrics</h1>
+        <p align='right' dir="rtl">An introduction to Bayesian non-parametrics and the Dirichlet process.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <h2 id="motivation">Motivation</h2>
+
+<h3 id="clustering">Clustering</h3>
+<p>Bayesian non-parametrics used to be a popular topic in machine learning. The topic is not as popular right now but it is still useful since it’s connected to a wide range of techniques we use today; for example, Gaussian Process can be applied to DNNs to make the layers infinitely wide.</p>
+
+<p>Let’s start from a simpler problem (clustering). We already know a number of algorithms to solve this problem. Cluster analysis or clustering is the task of grouping a set of objects in such a way that objects in the same group (called a cluster) are more similar (in some sense) to each other than to those in other groups (clusters). Algorithms we’ve seen before (e.g. K-means, GMMs) solves if the number of groups was specified.</p>
+
+<p>However, in the real world, identifying the optimal number of clusters is still an open problem. In a two dimensional case, we can usually identify the number of clusters through direct visualization, but it becomes hard to tell when the data is high-dimensional. Nevertheless, we can choose $k$ (number of groups) through some heuristics by comparing the results of different $k$ values, or compactness measures such as intra-cluster distances and inter-cluster distances, but these methods make the problem even harder by inducing an objective/measure that is different from the original object the algorithm tries to optimize.</p>
+
+<p>Moreover, when we are dealing with streaming data (e.g. new/media analysis), the clusters change every day. The algorithm constantly needs to delete and add clusters. People often run K-means on the data every day to accommodate changes, but this induces “the mapping problem”, since outputs of different K-means instances may not be aligned (i.e. Cluster 1 today might correspond to cluster 2 tomorrow).</p>
+
+<h3 id="from-gmm-to-bayesian-mixture-model">From GMM to Bayesian Mixture Model</h3>
+
+<p>We first start from the formulation of a Mixture of Gaussian (over infinite data) for the clustering problem:</p>
+
+<d-math block="">
+\begin{aligned}
+P(x_1, \dots, x_N, \pi, \{ \mu_k \}, \{ \Sigma_k \}) &amp;= \prod_{n=1}^{\infty} \sum_{k=1}^K \pi_k ~ \mathcal{N} \left( x_k \mid \mu_k, \Sigma_k \right)
+\end{aligned}
+</d-math>
+
+<p>This above GMM is known as a parametric model. We estimate fixed number of parameters from the data.</p>
+
+<p>A Bayesian way of estimating the mixing weights and mixture parameters is to put a prior on them and integrate them out and then do MLE.</p>
+
+<d-math block="">
+\begin{aligned}
+P(x_1, \dots, x_N) &amp;= P(x_1, \dots, x_N \mid \pi, \{\mu_k\}, \{\Sigma_k\}) \\
+&amp;= \int \int \int \prod_{n=1}^\infty \sum_{k=1}^K \pi_k ~ \mathcal{N}\left(x_k \mid \mu_k,\Sigma_k\right) p(\pi) p(\mu_{1:k}) p(\Sigma_{1:K}) ~ d\pi \, d\mu_{1:k} \, d\Sigma_{1:K}
+\end{aligned}
+</d-math>
+
+<p>For convenience we use conjugate priors. Note that $\pi$ follows a multinomial distribution, so the conjugate prior is a Dirichlet prior. For $\mu,\Sigma$ which parametrize a Gaussian, there is also a conjugate prior known as the Normal-inverse-Wishart distribution.</p>
+
+<p>Note that we still have no clue how to estimate $K$, and therefore $K$ is normally treated as a hyperparameter determined during tuning.</p>
+
+<h2 id="the-dirichlet-distribution">The Dirichlet distribution</h2>
+
+<h3 id="reason-for-examining-the-dirichlet-distribution">Reason for examining the Dirichlet distribution</h3>
+
+<p>The Dirichlet distribution is a distribution over vectors with values between 0 and 1 that sum to 1, meaning these vectors can be used as the probabilities of a discrete distribution.  Because of this, the Dirichlet distribution can be seen as a distribution over distributions.</p>
+
+<h3 id="details-of-the-dirichlet-distribution">Details of the Dirichlet distribution</h3>
+
+<p>The Dirichlet distribution is defined as</p>
+
+<script type="math/tex; mode=display">\frac {\Gamma(\sum^K_{k=1} \alpha_k)} {\prod^K_{k=1} \Gamma(\alpha_k)} \prod^K_{k=1} \pi_k^{\alpha_k-1}</script>
+
+<p>where:</p>
+
+<ul>
+  <li>$[\alpha_0 … \alpha_k]$ are the parameters of the Dirichlet distribution.  $\alpha_k \geq 0$, and $\sum_k \alpha_k \gt 0$.</li>
+  <li>$[\pi_0 … \pi_k]$ are the values the Dirichlet distribution describes the probability of.  $\sum_k \pi_k = 1$, and can be seen as members of the $K-1$ standard simplex (generalized triangle).</li>
+</ul>
+
+<h3 id="properties-of-the-dirichlet-distribution">Properties of the Dirichlet distribution</h3>
+
+<ul>
+  <li>Probability is evenly distributed when $\alpha_k = 1$ for all $k$.</li>
+  <li>$\alpha_k$ values less than 1 spread the probability away from the center.</li>
+  <li>$\alpha_k$ values greater than 1 gather the probability in the center.</li>
+  <li>If the value of $\alpha_i$ is greater than $\alpha_j$, probability will gather more towards vertex $j$ of the simplex.</li>
+</ul>
+
+<figure id="dir-alpha-same" class="l-body">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_0_1.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_0_25.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_0_5.png" />  
+    </div>
+  </div>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_1.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_5.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_10.png" />  
+    </div>
+  </div>
+  <figcaption>
+      3D Dirichlet PDF for alpha values which are all the same.  Blue is zero, red is infinity.  X and Y are 1 at the right and top of the image, and Z is 1 at the bottom left.
+    </figcaption>
+</figure>
+
+<figure id="dir-alpha-vertex" class="l-body">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_x_2.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_y_2.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_z_2.png" />  
+    </div>
+  </div>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_x_50.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_y_50.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_z_50.png" />  
+    </div>
+  </div>
+  <figcaption>
+    If one alpha value is greater than another, probability will gather near the vertex of the simplex with the same index as the alpha value.
+  </figcaption>
+</figure>
+
+<figure id="dir-alpha-cross" class="l-body">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_x_y_25.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_y_z_25.png" />  
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/alpha_x_z_25.png" />  
+    </div>
+  </div>
+  <figcaption>
+    Mixed alpha values allow probability peaks that straddle vertices.
+  </figcaption>
+</figure>
+
+<p>Expectation:</p>
+
+<script type="math/tex; mode=display">\mathbb{E}\big[(\pi_1,...,\pi_k)\big] = \frac {(\alpha_1,...,\alpha_k)} {\sum_k \alpha_k}</script>
+
+<p>The Dirichlet distribution is the conjugate prior to the multinomial and categorical distributions.</p>
+
+<h3 id="dirichlet-distribution-as-a-distribution-over-distributions">Dirichlet distribution as a distribution over distributions</h3>
+
+<p>Vectors sampled from the Dirichlet distribution can be used to represent distributions over the parameters of other distributions.  For example, each probability in a sampled vector could be associated with the mean and variance of a normal distribution, and that normal distribution could itself be used to produce the parameters of another distribution.  In this way, the Dirichlet distribution can act as a distribution over distributions of parameters.</p>
+
+<h3 id="operations-on-the-dirichlet-distribution">Operations on the Dirichlet distribution</h3>
+
+<p>The dimension of the Dirichlet distribution can be modified while maintaining some properties of the distributions it describes.</p>
+
+<h4 id="collapsing">Collapsing</h4>
+
+<p>If $(\pi_1,…,\pi_k) \sim Dirichlet(\alpha_1,…,\alpha_k)$, then</p>
+
+<p>$(\pi_1 + \pi_2, \pi_3,…,\pi_k) \sim Dirichlet(\alpha_1 + \alpha_2, \alpha_3,…,\alpha_k)$</p>
+
+<h4 id="splitting">Splitting</h4>
+
+<p>If $(\pi_1,…,\pi_k) \sim Dirichlet(\alpha_1,…,\alpha_k)$ and</p>
+
+<p>$(\theta_1,…,\theta_m) \sim Dirichlet(\alpha_1 \beta_1,…,\alpha_1 \beta_m)$, then</p>
+
+<p>$(\pi_1 \theta_1,…,\pi_1 \theta_m, \pi_2,…,\pi_k) \sim Dirichlet(\alpha_1 \beta_1,…,\alpha_1 \beta_m, \alpha_2,…,\alpha_k)$</p>
+
+<h4 id="renormalization">Renormalization</h4>
+
+<p>If $(\pi_1,…,\pi_k) \sim Dirichlet(\alpha_1,…,\alpha_k)$ then</p>
+
+<p>$\frac {(\pi_2,…,\pi_k)} {\sum^K_{k=2} \pi_k} \sim Dirichlet(\alpha_2,…,\alpha_k)$</p>
+
+<h2 id="parametric-vs-non-parametric">Parametric vs non-parametric</h2>
+<p>In this class, we started with parametric models, which assume all data can be represented with a fixed, finite number of parameters. Models of this type include Gaussian Mixture Models (GMM), generalized linear models (GLMs) with exponential families and so on.</p>
+
+<p>On the other hand, number of parameters of non-parametric models can grow with sample size and may be random. An example of pure non-parameteric method is kernel density estimation, where the estimation of the probability density function(pdf) of a random variable is made solely based on a finite sample of data points and some parameters including bandwidth determining the smoothness and a kernel function for weighting the distance from the observations to a particular value the random variable may take. However, non-parametric models are sometimes cumbersome to estimate and are inflexible, especially for data with strong patterns such as those with clusters.</p>
+
+<p>Bayesian non-parametrics is an approach combining the advantages of both parametric and non-parametric modeling. This type of model also allows infinite number of parameters in that the prior is a device defining a random distribution on an infinite space of possible parameters. But the finite dataset that the model will fit will only use a finite subset of those parameters. Given the Bayesian setting, we can integrate out the intermediate layers of random variables if using conjugate-priors, leaving just the hyper-parameters and the data. In this way, we bypass the need to specify the infinite space and can still do inference. By using this type of methods, we can marginalize on something hard to operationalize, focus on only on the more intuitive and direct example hyperparameters and still achieve the same statistical effect of infinite modeling.</p>
+
+<h2 id="the-dirichlet-process">The Dirichlet process</h2>
+
+<h3 id="background">Background</h3>
+<p>By using Bayesian non-parametrics for mixture models, we can write down the posterior probability of the observation as the following: $p(x_n \mid\pi,{\mu_k},{\Sigma_k})=\sum_{k=1}^{\infty}\pi_k \ \mathcal{N}(x_n \mid \mu_k,\Sigma_k)$. Instead of using a finite number of possible clusters, here we use $\infty$. But we should bear in mind that actually a finite subset of them will be used. Dirichlet prior allows us implicitly define an infinte number of parameters and not necessarily store or maintain them.</p>
+
+<h3 id="construct-an-appropriate-prior">Construct an appropriate prior</h3>
+<p>The process of construction starts with a 2-dimensional Dirichlet distribution paramterized by $\alpha$. We then split each dimenstion to get $K$ dimensions. For example, a 4-dimensional Dirichlet can be obtained by sampling a pair of beta parameters and apply them to the 2 components according to the splitting rule. By repeating the process, we can finally have a $K$-dimensional Dirichlet distribution parametrized by $\alpha$, the concentration parameter, and $K$. As $K$ goes to infinity, we get a vector with infinitely many components. This operation allows us to extrapolate a finite Dirchlet into infinite without increasing the number of parameters.</p>
+
+<h3 id="the-dirichlet-process-1">The Dirichlet process</h3>
+<p>Considering a mixture model, given a Dirichlet prior $\pi$ with potentially infinte number of dimensions, we accompany the infinite number of weights with infinite number of centroids drew from a distribution $H$ on some space $\Omega$, e.g. a Gaussian distribution on the real line. Each sample from $H$ will be discrete and corresponding to 1 dimension in the prior $\pi$. Then $G:=\sum_{k=1}^{\infty}\pi_k\delta_{\theta_k}$ is a discrete infinite distribution over $\Omega$, with $\delta_{\theta_k}$ as an indicator for a particular element equivalent to $\theta_k$. Intuitively, when $H$ is Gaussian, the distribution looks like a set of spikes whose positions determined by Gaussian $H$ and the hights determined by the weights $\pi$.</p>
+
+<p>The discrete distribution enables sampling centroids with some clustering effect. This cannot be achieved with sampling from a continuous distribution such as Gaussian, since every sample will differ from each other. While with sampling from the Dirichlet process, chances are same posititions will be repeatively sampled.</p>
+
+<h3 id="sample-from-the-dirichlet-process">Sample from the Dirichlet process</h3>
+<p>We call the point masses in the resulting distribution ‘atoms’ and the corresponding weights ‘sizes’. ‘Sizes’ are determined by the concentration parameter $\alpha$. Sampling from bigger $\alpha$ leads to atoms spread out more.</p>
+
+<h3 id="properties-of-the-dirichlet-process">Properties of the Dirichlet process</h3>
+<p>Sampling from Dirichlet process results in partitions of $\Omega$, which is the space of $H$.  The partition is discrete and  difffernt mass is assigned for different partite. Denote the base measure for partite $A_1$ as $H(A_1)$. Then the mass assigned for each partitie follows the Dirichlet distribution $\textbf{Dir}(\alpha H(A_1),..,\alpha H(A_k))$, where $\alpha$ is the concentration parameter, i.e.$(P(A_1),…,P(A_k))\sim\textbf{Dir}(\alpha H(A_1),..,\alpha H(A_k))$. $k$ can $\infty$.</p>
+
+<p>Through this, we don’t need to express the infinity of the dimentionality in the partition. Instead, we can express by a finite number of partitions, say $k-1$ and put all the rest into the last single partition.</p>
+
+<h3 id="conjugacy-of-the-dirichlet-process">Conjugacy of the Dirichlet process</h3>
+<p>Using the conjugacy property of $\textbf{Dir}(\alpha H(A_1),..,\alpha H(A_k))$, we can express the posterior distribution of the partitions after seeing an example easily. For example, if we see an observation in the $J^{th}$, then the posterior distribution of $(P(A_1),…,P(A_j),…,P(A_k))$ follows $\textbf{Dir}(\alpha H(A_1),…,\alpha H(A_j) + 1,…,\alpha H(A_k))$. Intuitively, we can understand it as a prenormalized mass $\alpha H(A_j)$ plus an evidence. In general, this is written as $G \mid X_1 = x \sim DP(\alpha + 1, \frac{\alpha H + \delta_x}{\alpha +1})$.</p>
+
+<h3 id="predictive-distribution">Predictive distribution</h3>
+<p>Using Dirichlet Process (DP), we can define a easy and handy predictive distribution. Instead of maintaining $(P(A_1),…,P(A_j),…,P(A_k))$ which is high dimensional, we can use Bayesian trick to integrate out variables and make sampling easier. Suppose we start from nothing. Operationally, we want to do point-sampling of an atom in the space $\Omega$.</p>
+
+<p>Unlike $k$-means where we predefined the number of clusters $k$ and then put all data in, here we process each data point one by one. For the first data point, we start by a new cluster and sample a parameter $\theta_1$ for that cluster. Then we have our first partition: $\theta_1$ and everything else $\theta^c$. Let $\pi_1$ be the size of atom at $\theta_1$. Then the combined mass of all the other atoms is $\pi_* =1-\pi_1$. For the distribution over these masses, the prior is $(\pi_1, \pi_* ) \sim \textbf{Dir}(0,\alpha)$. Given $H$ is continuous, the mass of a particular point is 0. After assigning the first data point to the first cluster, the posterior becomes $(\pi_1, \pi_* ) \mid X_1=\theta_1 \sim \textbf{Dir}(1,\alpha)$.</p>
+
+<p>The second data point can have 2 choices, either join the existing cluster or a new cluster. We have</p>
+
+<d-math block="">
+\begin{aligned} P(X_2=\theta_k \mid X_1=\theta_1)&amp;=\int P(X_2=\theta_k,(\pi,\pi_* )X=\theta_1)\,d\pi_1 \\ 
+&amp;= \int P(X_2=\theta_k (\pi,1-\pi_1),X_1=\theta_1)P((\pi,1-\pi_1) \mid X_1=\theta_1)\, d\pi_1 \\
+&amp;= \int P(X_2=\theta_k \mid (\pi,1-\pi_1))P((\pi,1-\pi_1) \mid X_1=\theta_1)\, d\pi_1 \\ 
+&amp;= \int \pi_k\textbf{Dir}((\pi,1-\pi) \mid 1,\alpha)\, d\pi_1 \\ 
+&amp;= \mathbb{E}_{\textbf{Dir}(1,\alpha)} [\pi_k]
+\end{aligned}
+</d-math>
+
+<p>Thus, $P(X_2=\theta_k \mid X_1=\theta_1)=\frac{1}{1+\alpha}$ if $k=1$ or $\frac{\alpha}{1+\alpha}$ for new $k$. Note that here we use the posterior after seeing the first data point as prior for the second data point. And the posterior after seeing the second will be used as the prior for the third data point. Say for the second data point, we choose to start a new cluster and sample a new parameter $\theta_2$ for that cluster. Let $\pi_2$ be the size of the atom $\theta_2$. For the third data point, we use the posterior from seeing the second point $(\pi_1,\pi_2,\pi_* ) \mid X_1 = \theta_1, X_2=\theta_2 \sim \textbf{Dir}(1,1,\alpha)$ as the prior. Using the same integration trick, we integrate out $\pi = (\pi,\pi_2,\pi_* )$ and have $P(X_3 = \theta_k \mid X_1=\theta_1, X_2=\theta_2)=\mathbb{E}_{\textbf{Dir}(1,1,\alpha)} [\pi_k]$. That is to say, $P(X_3 = \theta_k \mid X_1=\theta_1, X_2=\theta_2)$ equals to $\frac{1}{2+\alpha}$ if $k=1$ or $k=2$ and equals to $\frac{\alpha}{2+\alpha}$ for new $k$.</p>
+
+<p>By applying the integration trick over $\pi$,  we can focus on the prior distribution from the last step, which is parametrized by the number of clusters seeing so far and the counts for data points belonging to each cluster and $\alpha$. In general, if $m_k$ is the number of times we have seen $X_i=k$ and $K$ is the total number of observed values. We have:</p>
+
+<d-math block="">
+\begin{aligned}
+P(X_{n+1}=\theta_k \mid X_1,..,X_n) &amp;= \mathbb{E}_{\textbf{Dir}(m_1,..,m_K,\alpha)} [\pi_k]
+\end{aligned}
+</d-math>
+
+<p>Thus, $P(X_{n+1}=\theta_k \mid X_1,..,X_n)$ equals $\frac{m_k}{n+\alpha}$, the weight defines by the $k$-th atom, if $k \leq K$ and it equals to $\frac{\alpha}{n+\alpha}$, an residual probability, for yet another new cluster. In this way, we can keep attributing labels of new data points purely depending on observed data points and the concentration parameter $\alpha$. $\pi$ are not needed and we don’t need to worry about sampling $\pi$. However, we still need to try a few numbers to pick $\alpha$.</p>
+
+<h2 id="metaphors-for-the-dirichlet-process">Metaphors for the Dirichlet process</h2>
+
+<p>There are many ways to visualize the Dirichlet process. Three common metaphors are the Pólya urn scheme, the Chinese restaurant process, and the stick-breaking process.</p>
+
+<h3 id="pólya-urn-scheme">Pólya urn scheme</h3>
+
+<figure id="polya-gm" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/polya_gm.png" />
+      <figcaption>
+      Graphical model for the Pólya urn scheme.
+      </figcaption>
+    </div>
+  </div>
+</figure>
+
+<!-- The predictive distribution given by the Dirichlet process can be understood intuitively using the Polya urn scheme (also called the Blackwell-MacQueen urn scheme). -->
+
+<p>In the Pólya urn scheme (also called the Blackwell-MacQueen urn scheme)<d-cite key="blackwell1973"></d-cite>, imagine we have an urn initially containing a black ball of mass $\alpha$. To generate each sample $X_n$, sample a ball from the urn with probability proportional to its mass. The color of the ball is the partition that $X_n$ comes from. If the ball is black, choose a new previously-unseen color for the sample, and return the black ball and a unit-mass ball of that new color to the urn. If the ball is not black, just return it and another unit-mass ball of the same color to the urn.</p>
+
+<p>Then, after sampling $n$ balls, the joint distribution of the balls’ colors (i.e. the cluster the balls belong to) follows a Dirichlet process.</p>
+
+<p>From this scheme, we can also easily see the self-reinforcing property that the Dirichlet process exhibits: new samples are more likely to be drawn from partitions that already have many existing samples.</p>
+
+<h3 id="the-chinese-restaurant-process">The Chinese restaurant process</h3>
+
+<!-- [image?] -->
+
+<p>The Chinese restaurant process is an equivalent description of the Pólya urn scheme.</p>
+
+<p>Imagine a restaurant with an infinite number of tables, all initially empty. The first customer enters the restaurant, and picks a table to sit at. When the $(n-1)$-th customer enters, they either 1) sit at an occupied table $k$ with probability $\frac{m_k}{n + \alpha}$, where $m_k$ is the number of people that are currently sitting at table $k$, or 2) start a new table with probability $\frac{\alpha}{n + \alpha}$. We can see that this description is equivalent to the Pólya urn scheme above.</p>
+
+<!-- We can generalize the Chinese restaurant process as follows: The probability now depends on both the number of people  -->
+
+<h3 id="note-on-exchangeability">Note on Exchangeability</h3>
+
+<p>Even though the two descriptions above have a notion of an <em>order</em> of the drawn samples, it turns out that the distribution over the partitions of the first $N$ samples does not <em>depend on the order of the samples</em>. However this does not mean the samples are independent, since we have seen the self-reinforcing property of the Dirichlet process - samples tend to be drawn from partitions that already have many existing samples.</p>
+
+<p>Distributions that do not depend on the order of the samples are called <strong>exchangeable</strong> distributions.</p>
+
+<p>De Finetti’s theorem states that if a sequence of observations are exchangeable, then there must exist a distribution given which the samples are i.i.d. In this case, the samples are i.i.d. given the Dirichlet process.</p>
+
+<h3 id="the-stick-breaking-process">The stick-breaking process</h3>
+
+<figure id="stick-breaking-gm" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-22/stick_breaking_gm.png" />
+      <figcaption>
+      Graphical model for the stick-breaking process.
+      </figcaption>
+    </div>
+  </div>
+</figure>
+
+<p>The two metaphors above primarily show the distribution of the data points among the resulting partitions. The stick-breaking process shows how the partitions of the DP can be constructed, along with their associated parameters, to give the parameters of the resulting distribution $G$<d-cite key="sethuraman1994"></d-cite>.</p>
+
+<!-- Another alternative view of the Dirichlet process is the stick-breaking process to construct the partitions of the DP and their associated parameters<d-cite key="sethuraman1994"></d-cite>. -->
+
+<p>Imagine we begin with a stick of unit length, which represents our total probability. We then repeatedly break off fractions of the stick, and assign parameters to each broken-off fraction according to our base measure.</p>
+
+<p>Concretely, to construct the $k$-th partition:</p>
+<ol>
+  <li>Sample a Beta$(1, \alpha)$ random variable $\beta_k \in [0, 1]$.</li>
+  <li>Break off a fraction $\beta_k$ of the remaining stick. This gives us the $k$-th partition. We can calculate its atom size $\pi_k$ using the previous fractions $\beta_1, …, \beta_k$.</li>
+  <li>Sample a random parameter $\theta_k$ for the partition for this atom from our base measure $G_0$.</li>
+  <li>Recur on the remaining stick.</li>
+</ol>
+
+<p>In summary,</p>
+<d-math block="">
+\begin{aligned}
+\beta_k &amp;\sim \text{Beta}(1, \alpha) \\
+\pi_k &amp;= \beta_k \prod_{\ell=1}^{k-1} (1 - \beta_{\ell}) \\
+\theta_k &amp;\sim G_0 \\
+G &amp;= \sum_{k=1}^{\infty} \pi_k \delta_{\theta_k} \sim \text{DP}(\alpha, G_0)
+\end{aligned}
+</d-math>
+
+<p>The stick-breaking metaphor shows us how we can approximate a Dirichlet process. The final distribution $G$ is obtained from a weighted sum of the sampled parameters $\theta_k$, weighted by the atom size $\pi_k$. Since the atom sizes of the created partitions in the stick-breaking process are monotonically decreasing, we can get a good approximation of $G$ by just using the first $k$ sampled parameters and atom sizes.</p>
+
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-04-08-lecture-22.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 8: Causal Discovery and Inference</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-08/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 8: Causal Discovery and Inference",
+      "description": "Learning and inference algorithms for causal discovery.",
+      "published": "February 11, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Abhilasha Ravichander"
+        },
+        
+        {
+          "author": "Aniruddh Shetty"
+        },
+        
+        {
+          "author": "Tom Yan"
+        },
+        
+        {
+          "author": "Kin Gutierrez Olivares"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Lisa Lee",
+          "editorURL": "http://leelisa.com"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 8: Causal Discovery and Inference</h1>
+        <p align='right' dir="rtl">Learning and inference algorithms for causal discovery.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <p>Causation implies correlation (or dependence), but correlation does not imply causation. For example, consider the case of chocolate consumption vs. the number of Nobel Laureates in the country:</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-08/scribe1.jpg" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Chocolate Consumption vs. # of Nobel Laureates</strong>
+  </figcaption>
+</figure>
+
+<p>From this plot, we can see that they are highly correlated. But it is absurd to say that if we want to increase the number of Nobel Laureates in a country, we need to eat more chocolate. This is where the idea of causality comes in. They are correlated, but chocolate consumption is not the cause of Nobel Laureates. The following equations capture this difference mathematically:</p>
+
+<p>$X$ and $Y$ are <strong>dependent</strong> if and only if $ \exists x_1 $ different than $ x_2 $ such that:</p>
+
+<script type="math/tex; mode=display">P(Y \mid X=x_{1}) \text{ different than } P(Y \mid X=x_2)</script>
+
+<p>$X$ is a <strong>cause</strong> of $Y$ if and only if $ \exists x_1 $ different than $ x_2 $ such that:</p>
+
+<script type="math/tex; mode=display">P(Y \mid do(X=x_1) \text{ different than } P(Y \mid X=x_2)</script>
+
+<p>The definition requires just a single pair of distinct $ x_1, x_2 $ to have different conditional distributions of $Y$. $Y$ may have the same conditional distribution over a range of $X$ values, but if we find even a single pair for which the conditional distribution is different, $X$ and $Y$ are dependent. The same goes for causation.</p>
+
+<p>The causation definition is circular in the sense that, if we don’t know the causal relation of the other variables, we can’t define the intervention of $X$ and thus can’t find the causal relation of $X$ and $Y$. So in order to define one causal relation, we need all other causal relations.</p>
+
+<h2 id="causal-thinking">Causal Thinking</h2>
+<h3 id="simpsons-paradox">Simpson’s Paradox</h3>
+<p><strong>Example 1</strong>: Suppose there are two types of patients, one with small kidney stones and the other with large kidney stones. There are two types of treatments to choose from, A and B. From the data we can see that, if we consider the patient categories separately, treatment A has a higher recovery rate in both cases. But if we combine the categories of patients, we see that the treatment B has a higher recovery rate 83% (289/350). So, as a doctor, which treatment would you suggest to a patient?</p>
+
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-08/scribe2.PNG" />
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-08/scribe3.PNG" />
+    </div>
+  </div>
+</figure>
+
+<p><strong>Example 2</strong>: We plot cholesterol levels vs. the amount of exercise for people of different age groups. For each age group, we see that the more you exercise, the less cholesterol you have. But if we combine all the plots (of different age groups), we see the opposite result: the more you exercise, the more cholesterol you have.</p>
+
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-08/scribe4.PNG" />
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-08/scribe5.PNG" />
+    </div>
+  </div>
+</figure>
+
+<p>In both examples, there was a common cause between the quantities we were comparing, and due to this common cause, the relationship between the quantities can be arbitrary. We should fix the value of the common cause, and then see the relation between the quantities we want to compare.</p>
+
+<h3 id="strange-dependence">Strange Dependence</h3>
+<p><strong>Example</strong>: If we go back 50 years, we observe that female college students score higher on IQ tests than male students on average. Gender and IQ are two very different quantities, and we can safely assume that they are independent. But given a common cause, like say going to college, now they become dependent. A simple way to understand this is as follows: Two independent variables $X$ and $Y$ become dependent if we condition on the sum of $X$ and $Y$.</p>
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-08/scribe6.PNG" />
+    </div>
+  </div>
+</figure>
+
+<h4 id="monty-hall-problem">Monty Hall problem</h4>
+<p>The setup is as follows. There are 3 doors, behind one of which there is $1000. If we select that door, we get the prize money. So we make our initial guess, then the game show host opens one of the empty doors and shows there is no money behind that door. Should we stick with our initial choice or switch to the other door?</p>
+
+<p>The answer is to switch our choice. If we switch, our probabilty of winning becomes 2/3 rather than the 1/3 if we stick to our choice. We can think of it as follows. There are three options to select from initially, two empty doors and one with the prize money. If we are always switching, we will end up with the prize money if we have initially chosen the empty door and we will lose if we have initially selected the door with the prize money. So to win, we need to select the empty door at first whose probability is 2/3. So the chance of us winning the car if we switch is 2/3.</p>
+
+<h3 id="causal-models">Causal Models</h3>
+<p>If we have causal models, it is very easy to do intervention. We just need to delete all the incoming edges into the nodes which we are intervening and then do inference on the obtained graphical structure.</p>
+
+<p>Also if we know the causal structure, we can apply some of the known distributions into new scenarios. This idea is used in transfer learning.</p>
+
+<h3 id="prediction">Prediction</h3>
+<p>This answers the question of $ P(Y \mid X) $ which means the probability of $Y$ if $X$ happens to take a particular value. This can be found out just from the observational data. We don’t need any graphs, or causal realtions to find this value.</p>
+
+<h3 id="intervention">Intervention</h3>
+<p>This answers the question of $ P(Y \mid do(X)) $ which means what is the probability of $Y$ if $X$ is set to a particular value keeping all the other variables same. For this, we definitely need to know all the causal relations of all the variables.</p>
+
+<h3 id="counterfactual-thinking">Counterfactual Thinking</h3>
+<p>This answers the question of $ P(y_x \mid x’, y’) $, which is the probability that event $Y$ = $Y$ would be observed had $X$ been x, given that we actually observed $X$ to be $ x’ $ and and $Y$ to be $ y’ $. For this, again we require causal relations via the structural equation model.</p>
+
+<h2 id="identification-of-causal-relation">Identification of Causal Relation</h2>
+
+<h3 id="causal-dags">Causal DAGs</h3>
+<p>Each edge in a causal DAG corresponds to direct causal influence between the nodes and it is asymmetric.
+Let $ P_x(V) $ be the distribution resulting from intervention $ do(X=x) $. Then a DAG is a causal DAG if</p>
+<ul>
+  <li>
+    <p>$ P_x(V) $ is Markov relative to G. This distribution is still factorizable according to the Markov property (product of proabbility of each node given its parents) with respect to G</p>
+  </li>
+  <li>
+    <p>$ P_x(V_i = v_i) = 1 $ for $ V_i \in $X$ $ and $ v_i $ consistent with X=x. This is so because we have performed intervention on $X$ and we have set that to $X$. Hence we know those variables with absolute certainty.</p>
+  </li>
+  <li>
+    <p>$ P_x(V_i \mid PA_i) = P(V_i \mid PA_i) $ for all $ V_i \notin $X$ $ where $ PA_i $ represents the parents of $ V_i $. That means the conditional distributions of all the nodes not included in the intervention remains the same before and after the intervention. We can see this graphically since while doing intervention, we just delete all the incoming edges into the nodes on which intervention is performed. So the other nodes remain unchanges(in terms of parents)</p>
+  </li>
+</ul>
+
+<h3 id="randomized-control-experiments">Randomized Control Experiments</h3>
+<p>We change a controlled variable and observe the change in an outcome variable. All the other variables that influence the outcome variable is either fixed or varied at random. So now any change observed in the outcome variable must have been due to the change in the controlled variable.</p>
+
+<p>Its disadvantage is that its expensive and in many cases impossible to do. The outcome variable can depend on many other variables. So, to find one causal relation, we would need a lot of data and we need to ensure that the other variables are fixed or varied randomly across the experiments which is a very hard task.</p>
+
+<h3 id="kidney-stone-experiment">Kidney Stone Experiment</h3>
+<p>Let’s revisit the kidney stone treatment example. Let R = Recovery, T = Treatment and S = Stone size, then</p>
+
+<script type="math/tex; mode=display">P(R \mid T) = \sum_S P(R \mid S,T)P(S \mid T)</script>
+
+<script type="math/tex; mode=display">P(R \mid do(T)) = \sum_S P(R \mid S,T)P(S)</script>
+
+<p>Note that while intervening, we cut off all incoming edges into the treatment node. So, now S and T are independent.</p>
+
+<h3 id="causal-effect-identifiability">Causal Effect Identifiability</h3>
+<p>An aspect of a statistical model is identifiable, if it cannot be changed without there also being some change in the distribution of the observed variables. So if we can express a quantity as a function of the distributions of observed variables, then we can say that quantity is identifiable. Thus the causal effect is identifiable if and only if we can represent $ P(Y \mid do(X)) $ in terms of the distribution of observed variables. i.e. if</p>
+
+<p>$ P_{M1}(Y \mid do(X)) = P_{M2}(Y \mid do(X)) $ for every pair of models M1 and M2 with the dame graph and the same distibution of observed variables(Unobserved / Latent variable distributions can be changed)</p>
+
+<p>Example - If we have just two random variables $X$ and Y(both observed) where $X$ is the cause of $Y$ and there is no confounder.So, $ P(Y \mid do(X)) = P(Y \mid X) $ and we know this is identifiable because for changing $ P(Y \mid X) $, we would have to change the distribution of P(X,Y).</p>
+
+<p>But, now lets say we have a confounder C, which is the common cause of both $X$ and $Y$. And this is not observed. Now, we can change the distribution of C such that P(X,Y) is unchanged but we get different $ P(Y \mid do(X)) $
+$ P(Y \mid do(X)) $ can also be written as $ P(y \mid \hat{x}) $</p>
+
+<h4 id="back-door-criterion">Back-Door Criterion</h4>
+<p>A set of variables $Z$ satisfies the <strong>back-door criterion</strong> relative to an ordered pair of variables $(X_i, X_j)$ if</p>
+
+<ul>
+  <li>No node in $Z$ is a descendant of $X_i$</li>
+  <li>$Z$ blocks every path between $X_i$ and $ X_j $ that contains an arrow into $X_i$ (Hence the name back-door)</li>
+</ul>
+
+<p>If the set of nodes $Z$ follows these two conditions then $ P (y \mid \hat{x}) = \sum_z P(y \mid x,z)P(z) $
+Same as we saw earlier in the case of kidney stone treatment. And thus $ P(y \mid \hat{x}) $ is now identifiable because of this back-door adjustment.</p>
+
+<h4 id="front-door-criterion">Front-Door Criterion</h4>
+<p>A set of variables $Z$ satisfies the front-door criterion relative to an ordered pair of variables $(X_i, X_j)$ if</p>
+<ul>
+  <li>$Z$ intercept all directed paths from $X$ to $Y$ (hence the name front-door)</li>
+  <li>There is no back-door path from $X$ to $Z$</li>
+  <li>All back-door paths from $Z$ to $Y$ are blocked by X
+If the set of nodes $Z$ follows these two conditions then</li>
+</ul>
+
+<script type="math/tex; mode=display">P(y \mid \hat{x}) = \sum_z P(z \mid x)\sum_{x'}P(y \mid x',z)P(x')</script>
+
+<h4 id="unification">Unification</h4>
+
+<p>A sufficient condition under which the causal effect $ P(y \mid do(x)) $ is identifiable is that there exist no bi-directed path between $X$ and any of its children. For more information, this is presented in the paper “A General Identification Condition for Causal Effect”.</p>
+
+<h4 id="propensity-score">Propensity Score</h4>
+<p>The Average Causal Effect (ACE), defined as:</p>
+
+<script type="math/tex; mode=display">\mathbb{E} \left[ $Y$ \mid do(x) \right] - \mathbb{E} \left[ $Y$ \mid do(x') \right]</script>
+
+<p>Given that $ P(Y \mid do(x)) = \sum_{c} P(Y \mid x,c)P(c) $ might not share the same $ P(c) $, one solution for an estimator of the ACE can be through direct matching. If $ C $ is a high dimensional space one can use the propensity score to achieve unconfoundedness and estimate ACE.</p>
+<h3 id="causal-discovery">Causal Discovery</h3>
+
+<p>Causal discovery relies on two assumptions:</p>
+<ul>
+  <li>
+    <p><strong>Causal Markov condition</strong>: Each variable is independent of its non-descendants given its parents.</p>
+  </li>
+  <li>
+    <p><strong>Faithfulness condition</strong>: All observed (conditional) independencies are captured in the causal graph. Roughly speaking, faithfulness allows you to go back from independence to causal graph.</p>
+  </li>
+</ul>
+
+<p>The above two conditions allows us to determine a list of candidate causal structures, with the same causal skeleton. Following this, we need to determine the causal direction. This step involves finding v-structure and doing orientation propagation.</p>
+
+<p>The following example as given in lecture for reasoning about independence conditions:</p>
+
+<p>Suppose you have four variables $ X_1, X_2, X_3, X_4 $ such that:
+<script type="math/tex">X_1 \perp X_2</script></p>
+
+<script type="math/tex; mode=display">X_1 \perp X_4 \mid X_3</script>
+
+<script type="math/tex; mode=display">X_2 \perp X_4 \mid X_3</script>
+
+<p>The question is: can there exist a confounder behind $X_3$ and $X_4$?</p>
+
+<p>The answer is no. As if there is a confounder C which is the parent of both $ X_3 $ and $ X_4 $, then the path between $ X_1, X_3, C, X_4 $  is open, thus $ X_1 \not\perp X_4 \mid X_3  $.</p>
+
+<p>This is one example where the independence conditions allow us to reason about the structure of the graph.</p>
+
+<p>Nevertheless, this does not mean we can always determine the graph as two DAGs may have the same skeleton and v-structure. We can sometimes only recover graphs of the same equivalence class.</p>
+
+<h4 id="constraint-based-causal-discovery">Constraint-Based Causal Discovery</h4>
+<p>Constraint-Based Causal Discovery makes use of conditional independence constraints. It relies on causal Markov condition + faithfulness assumption.</p>
+
+<p>Remember,</p>
+
+<p><strong>Causal Markov condition</strong>: each variable is independent of its non-descendants (non-effects) conditional on its parents (direct causes)</p>
+
+<p><strong>Faithfulness</strong>: all observed (conditional) independencies are entailed by Markov condition in the causal graph</p>
+
+<p>(Conditional) independence constraints give us candidate causal structures. Discovery is done using the PC Algorithm.</p>
+
+<h4 id="pc-algorithm">PC Algorithm</h4>
+
+<p>This algorithm relies on markov assumption and faithfulness assumption. Moreover, it relies on the key idea that if $ (X, Y) $ not adjacent then $X$ and $Y$ are d-separated either given pa(X) or
+pa(Y ):</p>
+
+<p>Then the algorithm involves:</p>
+<ul>
+  <li>For each pair (X, Y), test $ $X$ \perp $Y$ \mid \varnothing $, if the independence holds, remove the edge.</li>
+  <li>For each pair (X,Y) adjacent, with $ \text{max}  \mid Adj(X) \mid, \mid Adj(Y) \mid  \geq 2 $, test $ $X$ \perp $Y$ \mid S $ where $ \mid S \mid = 1 $ and $ S \subseteq Adj(X) $ or $ S \subseteq Adj(Y) $.</li>
+  <li>…</li>
+  <li>For each pair (X,Y) adjacent, with $ \text{max} \mid Adj(X) \mid, \mid Adj(Y) \mid  \geq k+1 $, test $ $X$ \perp $Y$ \mid S $ where $ \mid S \mid = k $ and $ S \subseteq Adj(X) $ or $ S \subseteq Adj(Y) $.</li>
+</ul>
+
+<p>We stop when we reach k s.t for all (X,Y), $ \text{max} \mid Adj(X) \mid, \mid Adj(Y) \mid &lt; k+1 $ (since it’s enough to find one set of nodes that make $X$ and $Y$ independent to remove their edge).</p>
+
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-02-11-lecture-08.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

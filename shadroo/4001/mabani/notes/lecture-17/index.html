@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 17: Deep generative models (part 1)</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-17/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 17: Deep generative models (part 1)",
+      "description": "Overview of the theoretical basis and connections of deep generative models.",
+      "published": "March 20, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Yue Li"
+        },
+        
+        {
+          "author": "Tianwei Yue"
+        },
+        
+        {
+          "author": "Xuanyue Yang"
+        },
+        
+        {
+          "author": "Hyun Woong Kim"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Maruan Al-Shedivat",
+          "editorURL": "https://www.cs.cmu.edu/~mshediva/"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 17: Deep generative models (part 1)</h1>
+        <p align='right' dir="rtl">Overview of the theoretical basis and connections of deep generative models.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <p>In this lecture, we will bring an overview of the theoretical basis and connections between several popular generative models.</p>
+
+<h2 id="theoretical-basis-of-deep-generative-models">Theoretical Basis of deep generative models</h2>
+
+<h3 id="deep-generative-models">Deep Generative Models</h3>
+
+<p>GANs and VAE models are heard by many as well as considered by some as one of the most exciting development in machine learning or at least in deep learning over the past decade, and you will see a reason today. But in terms of mathematics, they are not so complicated.</p>
+
+<p>There are <em>deep connections between almost every piece of deep learning and their counterpart machine learning method</em> invented decades ago. For example, deep neural network corresponds to infinite deep computing graph of a one-layer RBM, and infinitely wide deep neural network is actually a finite width Gaussian process.</p>
+
+<p>Deep generative models</p>
+<ul>
+  <li>Define probabilistic distributions over a set of variables;</li>
+  <li><em>Deep</em> means multiple layers of hidden variables. (So it is a graphical model.)</li>
+</ul>
+
+<h3 id="early-forms-of-deep-generative-models">Early forms of deep generative models</h3>
+
+<p>To ground to a few concrete example, we introduce some early forms of deep generative models.</p>
+
+<ul>
+  <li>Hierarchical Bayesian models
+    <ul>
+      <li>
+        <p>Sigmoid brief nets <d-cite key="neal1992"></d-cite>
+We have learned already sigmoid belief network where the lower layer is conditioning on the previous layer using a conditional distribution defined by a sigmoid function. The lower layer follows a Bernoulli distribution whose parameters are dependent and defined by the sigmoid function. See details below.</p>
+
+        <figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/sigmoid_belief_net.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Sigmoid brief nets <d-cite key="neal1992"></d-cite></strong>
+  </figcaption>
+</figure>
+
+        <p>Deep belief network is one of the first deep learning models in its current sense. Train block-wise RBMs and stack them on top of each other and then retrain them using auto-regressive functions or some other heuristics.</p>
+
+        <p>Graphical models have mathematical properties to tell you the behavior, and then the deep learning model/technique is a heuristic  extension of that. (The very word ?model? itself is not very proper sometimes because sometimes it is only a technique built on a principled model.)</p>
+      </li>
+    </ul>
+  </li>
+  <li>Neural network models
+    <ul>
+      <li>
+        <p>Helmholtz machines <d-cite key="dayan1995"></d-cite>: <em>alternative inference/learning methods</em></p>
+
+        <p>The model is just an undirected Markov random field of multiple layers. The interesting point is that, the model is learned in a particular way. Inference of large graphical model usually involves a two-passage process. For example, in EM algorithm, we approximate the hidden variables and re-estimate the parameters. In variational inference, we introduce what is known as variational approximation to approximate the posterior distribution, and then impute the hidden variables, and still go to the M-step.</p>
+
+        <p>Helmholtz machine essentially takes the approach of using a special variational approximation which is a new model called inference model that you basically learn $p$ 
+and $q$ separately and use $q$ to impute hidden variables. So it is an alternative inference or learning method, whose parallel is MCMC and other similar technique. It is not a different model.</p>
+
+        <figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/helmholtz_machine.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Helmholtz machines <d-cite key="dayan1995"></d-cite></strong>
+  </figcaption>
+</figure>
+      </li>
+      <li>
+        <p>Predictability minimization <d-cite key="schmidhuber1996"></d-cite>: <em>alternative loss functions</em></p>
+
+        <p>Ideally hidden variables should be independent to each other; one way to quantify their dependence is using each of the random variables to predict the other random variables.</p>
+
+        <p>There is a competition between two forces: you want to learn a model such that the set of random variables are able to predict the remaining ones; one the other hand, the remaining ones are taking the value that makes it very hard to predict.</p>
+
+        <p>Schmidhuber thought the idea behind the GAN model is no difference from this PM machine, because it is about predictability and able to tell truthfully tell whether it is a real or fake source.</p>
+      </li>
+      <li>
+        <p>The word <em>model</em> is here not very rigorous anymore! Sometimes the model is the same, but depending on what technique you use you get very different things.</p>
+      </li>
+    </ul>
+  </li>
+  <li>Training of DGMs via an EM style framework
+    <ul>
+      <li>Sampling / data augmentation</li>
+    </ul>
+    <d-math block="">
+  \begin{aligned}
+  &amp;\boldsymbol{z} = \boldsymbol{z}_1 + \boldsymbol{z}_2, \\
+  &amp;\boldsymbol{z}_1^{new} \sim p(\boldsymbol{z}_1|\boldsymbol{z}_2, \boldsymbol{x}), \\
+  &amp;\boldsymbol{z}_2^{new} \sim p(\boldsymbol{z}_2|\boldsymbol{z}_1^{new}, \boldsymbol{x}).
+  \end{aligned}
+  </d-math>
+
+    <ul>
+      <li>
+        <p>Variational inference</p>
+
+        <script type="math/tex; mode=display">\log p(x) \geq \mathbb{E}_{ q_{\phi}(z|x)} \left[ \log p(\theta|x, z) \right] - KL(q_{\phi}(z|x)||p(z)) := \mathcal{L}(\theta, \phi, x),</script>
+      </li>
+    </ul>
+
+    <p>and the objective is $\max_{\theta, \phi}\mathcal{L}(\theta, \phi; x).$</p>
+
+    <ul>
+      <li>Wake sleep: variational inference does one relaxation to the true loss. Wake sleep does one more           relaxation. Minimize two losses and they converge somewhere eventually, but we don’t actually know 
+  what they are. Pure procedure rather than specific algorithm.</li>
+    </ul>
+
+    <d-math block="">
+  \begin{aligned}
+  &amp;\text{Wake Phase}:  \max_{\theta}\mathbb{E}_{q_{\phi}(z|x)}\left[ \log p_{\theta}(x|z)\right];\\
+  &amp;\text{Sleep Phase}: \max_{\phi}\mathbb{E}_{q_{\phi}(z|x)}\left[ \log p_{\theta}(x|z)\right].
+  \end{aligned}
+  </d-math>
+  </li>
+</ul>
+
+<h3 id="resurgence-of-deep-generative-models">Resurgence of deep generative models</h3>
+
+<ul>
+  <li>Restricted Boltzmann machines (RBMs)<d-cite key="smolensky1986"></d-cite>
+    <ul>
+      <li>Building blocks of deep probabilistic models</li>
+    </ul>
+  </li>
+  <li>Deep belief networks (DBNs) <d-cite key="hinton2006"></d-cite>
+    <ul>
+      <li>Hybrid graphical model</li>
+      <li>Inference in DBNs is problematic due to explaining away</li>
+    </ul>
+  </li>
+  <li>Deep Boltzmann Machines (DBMs) <d-cite key="salakhutdinov2009"></d-cite>
+    <ul>
+      <li>
+        <p>Undirected model</p>
+
+        <figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/dbn_dbm.png" />
+    </div>
+  </div>
+</figure>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Variational autoencoders (VAEs) <d-cite key="kingma2013auto"></d-cite></p>
+
+    <p>Neural Variational Inference and Learning (NVIL) <d-cite key="mnih2014"></d-cite></p>
+
+    <p>In fact, what VAE is doing is very similar to Helmholtz machine. For both there is a generative model and a inference model. Helmholtz machine directly solves the inference model using wake-sleep algorithm, while VAE introduces another technique to simplify the procedure so that you don?t have to solve the second relaxation. It is still solving the same lower bound of the data likelihood, but you are going to constrain the inference model so that it is easier to solve. Not a new model but an inference algorithm.</p>
+  </li>
+  <li>
+    <p>Generative adversarial networks (GANs) <d-cite key="goodfellow2014generative"></d-cite></p>
+
+    <p>Instead of having explicit hidden variables and conditional distributions, it uses something fancier. To parts of GAN:</p>
+    <ul>
+      <li>Stochastic noise $Z$ and $Z$ go through a deterministic transition $G$</li>
+      <li>A discriminator $D$ which qualifies the resultant samples, such that it wants the fake samples to be distinguished from true data.</li>
+    </ul>
+  </li>
+  <li>Generative moment matching networks (GMMNs) <d-cite key="li2015generative"></d-cite><d-cite key="dziugaite2015"></d-cite></li>
+  <li>Autoregressive neural networks</li>
+</ul>
+
+<h3 id="synonyms-in-the-literature">Synonyms in the literature</h3>
+
+<p>Since people in research community, either intentionally or unconciously, always come up with new names for existing old stuff, so we make some clarifications here in order to help you link current knowledge to historical literatures of origins of these techniques.</p>
+
+<h4 id="inference-model">Inference model</h4>
+
+<p>The inference model refers to learn the posterior distribution. 
+When estimating $p(X|Z)$ through the posterior distribution 
+$p(Z|X)$, 
+people can model $q(Z|X)$ to approximate the posterior, which is named as variational approximation (or variational inference). Synonyms of the inference model include</p>
+
+<ul>
+  <li>Variational approximation</li>
+  <li>Recognition model</li>
+  <li>Inference network (if parameterized as neural networks)</li>
+  <li>Recognition network (if parameterized as neural networks)</li>
+  <li>(Probabilistic) encoder</li>
+</ul>
+
+<h4 id="generative-model">Generative model</h4>
+
+<p>The generative model usually include prior + conditional (or joint), it is naturally understood as a likelihood model. Synonyms of the generative model include</p>
+
+<ul>
+  <li>The (data) likelihood model</li>
+  <li>Generative network (if parameterized as neural networks)</li>
+  <li>Generator</li>
+  <li>(Probabilistic) decoder</li>
+</ul>
+
+<p>Note that encoder and decoder is a pair, usually correspond to “visible to latent” and “latent to visible”, respectively.</p>
+
+<h3 id="recap-of-variational-inference">Recap of Variational Inference</h3>
+
+<h4 id="variational-lower-bound">Variational Lower Bound</h4>
+
+<p>Variational inference is a way to approximate the posterior $q(z|x)$ of a generative model. 
+The approximation is defined variationally as a solution of an oprimization problem. Specifically, we <strong>define</strong> and <strong>maximize</strong> the <strong>lower bound</strong> for the log likelihood,</p>
+
+<d-math block="">
+\begin{aligned}
+\log p(x) 
+&amp;= KL({q_{\phi}(z|x)}\,||\,{p_{\theta}(z|x)})
+ +\int_{z} q_{\phi}(z|x) \log \frac{p_{\theta}(z|x)}{q_{\phi}(z|x)}\\
+&amp;\geq\int_{z} q_{\phi}(z|x) \log \frac{p_{\theta}(z|x)}{q_{\phi}(z|x)}\\
+&amp;:= \mathcal{L}(\theta,\phi;x)
+\end{aligned}
+</d-math>
+
+<p>which is also equivlent to <strong>mimizing</strong> the <strong>free energy</strong></p>
+
+<script type="math/tex; mode=display">F(\theta,\phi;x)=-\log p(x)+ KL({q_{\phi}(z|x)}\,||\,{p_{\theta}(z|x)}).</script>
+
+<p>Note that the KL divergence term in free energy will vanish if your approximation is equivalent to the true posterior.</p>
+
+<h4 id="solve-vi-with-em">Solve VI with EM</h4>
+<p>We can maximize the variational lower bound by EM steps. Specifically,</p>
+
+<p><strong>E-step</strong>: maximize $\mathcal{L}$ wrt. 
+$\phi$, with
+$\theta$ fixed, <em>i.e.</em> <script type="math/tex">\max_{\phi} \mathcal{L}(\theta,\phi;x)</script></p>
+
+<p>Note that if closed form solutions exist, then it takes <script type="math/tex">q_{\phi}^*(z|x)\propto \exp[\log p_{\theta}(x,z)].</script></p>
+
+<p><strong>M-step</strong>: maximize $\mathcal{L}$ wrt. 
+$\theta$ with
+$\phi$, fixed, <em>i.e.</em> <script type="math/tex">\max_{\theta} \mathcal{L}(\theta,\phi;x)</script></p>
+
+<p>Variational inference for generative models are still considered numerically or algebrically difficult for many complex settings, and algorithms include Wake Sleep, VAEs, GANs, which we are going to introduce, are all relaxiation or surrogate of this.</p>
+
+<h3 id="wake-sleep-algorithm">Wake Sleep Algorithm</h3>
+
+<p>While the variational inference performs one relaxation to the true loss, Wake sleep algorithm performs one more relaxation. Recall that the free energy is</p>
+
+<script type="math/tex; mode=display">F(\theta,\phi;x)=-\log p(x)+ KL({q_{\phi}(z|x)}\,||\,{p_{\theta}(z|x)}).</script>
+
+<h4 id="wake-phase">Wake Phase</h4>
+
+<p><strong>Wake Phase</strong> (correspond to the variational <strong>M step</strong>): 
+minimize the free energy $F(\theta,\phi;x)$ wrt. 
+$\theta$.</p>
+
+<p>This equals to maximize the data likelihood</p>
+
+<script type="math/tex; mode=display">\max_{\theta} \mathbb{E}_{q_{\phi}(z|x)}\left[ \log p_{\theta}(x|z)\right].</script>
+
+<p>Typically: we get samples from $q_{\phi}(z|x)$ through inference on hidden variables, 
+then use them as targets for updating the generative model $p_{\theta}(z|x)$. 
+This is named as a <em>Wake Phase</em> since 
+<em>we know $x$</em> and 
+condition on the distribution of $x$ to draw samples.</p>
+
+<h4 id="sleep-phase">Sleep Phase</h4>
+
+<p><strong>Sleep Phase</strong> (correspond to the variational <strong>E step</strong>): 
+minimize the free energy $F(\theta,\phi;x)$ wrt. 
+$\phi$.</p>
+
+<script type="math/tex; mode=display">\max_{\phi}\mathbb{E}_{q_{\phi}(z|x)}\left[ \log p_{\theta}(x|z)\right]</script>
+
+<p>While the Wake Phase simply involves a MLE estimation, however, the Sleep Phase runs into some difficulties since the parameter $\phi$ we are trying to maximizing with regard to is <strong>under the expectation</strong>, rather than originally in the term <em>inside the expectation</em>.</p>
+
+<p>Either a sampling technique or a specific deterministic approximation step, there is a log term $\log p_{\theta}$ which has arbitrary scale and will lead to the negative effect of high variance. 
+Then any mistake your model made in estimating $\theta$ will be amplified by the log term to get a large numerical value for the gradient of the update, which will further escalate the instability of your estimation.</p>
+
+<p>To deal with this issue, Wake-Sleep use a new trick that inverts the direction of KL. So the free energy becomes,</p>
+
+<script type="math/tex; mode=display">F(\theta,\phi;x)=-\log p(x)+ KL( {p_{\theta}(z|x)} \,||\, {q_{\phi}(z|x)} ),</script>
+
+<p>then we can alternatively mazimize</p>
+
+<script type="math/tex; mode=display">\max_{\phi}\mathbb{E}_{p_{\theta}(z,x)}\left[ \log q_{\phi}(z|x) \right].</script>
+
+<p>We need to “Dreaming” up samples 
+from $p_{\theta}(x|z)$ through top-down pass, then use them as targets for updating the inference model.</p>
+
+<h4 id="vi-vs-wake-sleep">VI v.s. Wake-Sleep</h4>
+
+<p>Here is a comparision of variational inference and Wake Sleep algorithm:</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/vae-wake-sleep.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Variational Inference v.s. Wake-Sleep</strong>
+  </figcaption>
+</figure>
+
+<p>Note that Wake-Sleep is not guaranteed to converge, since inverting the two terms in KL has no theoratically gaurantee. You can consider Wake-Sleep as a heuristic algorithm.</p>
+
+<h3 id="variational-autoencoders">Variational autoencoders</h3>
+
+<p>VAEs uses variational inference with an inference model, it is similar to Wake-Sleep but they differ in estimating the inference model. As we said before, its hard to estimate the inference model due to high variance of the gradient. Here, instead of changing the loss function (as the new trick of Wake-Sleep), the author of VAEs used reparameterization trick to reduce variance. 
+Other alternatives for reducing variance include using control variates as in reinforcement learning:</p>
+<ul>
+  <li>Variational Bayesian inference with stochastic search <d-cite key="paisley2012variational"></d-cite>.</li>
+  <li>Neural variational inference and learning in belief networks <d-cite key="mnih2014"></d-cite></li>
+</ul>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/vae.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Variational Auto-Encoders</strong>
+  </figcaption>
+</figure>
+
+<h4 id="reparameterization-trick">Reparameterization trick</h4>
+
+<p>Reparameterization trick assumes that the latent variables are resulted from a deterministic transformation of the inputs plus some noise. The deterministic transformation is a parameterization transformation that you can design, which makes calculating derivatives of everything much easier.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/reparameterization.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Reparameterization trick</strong>
+  </figcaption>
+</figure>
+
+<h4 id="algorithms">Algorithms</h4>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/vae-algo.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Reparameterization trick</strong>
+  </figcaption>
+</figure>
+
+<h4 id="applications-blurred-generations">Applications: Blurred Generations</h4>
+
+<ul>
+  <li>
+    <p>Computer Vision: Images generated by VAEs are always blurred due to the mode convering behavior, which is not favored. For eaxmple, celebrity faces generation <d-cite key="radford2015unsupervised"></d-cite></p>
+  </li>
+  <li>
+    <p>Natural Langugae Processing: The blurred generation is favored in NLP since these blurred interpolation might some interesting outputs. Ambiguity is appreicated in languages but not in images <d-cite key="bowman2015generating"></d-cite></p>
+  </li>
+</ul>
+
+<h3 id="generative-adversarial-networks">Generative adversarial networks</h3>
+
+<p>Generative adversarial networks (GANs) are composed of two models: the generative model (generator) and the discriminative model (discriminator). The generative model $G$ first samples latent variables $z$ from a prior distribution $p(z)$. Then it generates new data by $G_\theta(z)$ where $\theta$ are the parameters of the model. The discriminative model $D$ estimates the probability that a data $x$ came from the training data not from $G$. The figure below shows how GANs work.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/gan-train.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>GANs network</strong>
+  </figcaption>
+</figure>
+
+<h4 id="learning-gans">Learning GANs</h4>
+<p>The discriminator is trained to maximize the (log) probability of assigning correct labels to samples from the training dataset and samples generated from the generator. We use a cross-entropy-like objective function. This could be written as:</p>
+
+<script type="math/tex; mode=display">\max_D\mathcal{L}_D = \mathbb{E}_{\mathbf{x} \sim p_{data}(\mathbf{x})}[\log D(\mathbf{x})] + \mathbb{E}_{\mathbf{z} \sim p(\mathbf{z})}[\log (1-D(G(\mathbf{z})))]</script>
+
+<p>The generator is trained to fool the discriminator, i.e., to minimize $\log(1-D(G(z))$. This can be written as:</p>
+
+<script type="math/tex; mode=display">\min_G\mathcal{L}_G = \mathbb{E}_{\mathbf{z} \sim p(\mathbf{z})}[\log (1-D(G(\mathbf{z})))]</script>
+
+<p>In the early training phase where $G$ generates poor samples, this function saturates and thus it is hard to optimize with gradient descent. Therefore we use a equivalent problem instead that is:</p>
+
+<script type="math/tex; mode=display">\max_G\mathcal{L}_G = \mathbb{E}_{\mathbf{z} \sim p(\mathbf{z})}[\log D(G(\mathbf{z}))]</script>
+
+<p>In short, learning GANs can be thought as a minimax game between the discriminator and the generator.
+Note that the generator defines an implicit distribution  $p_{g_\theta}(\textbf{x})$. The minimax game described above has a global optimum at $p_{g_\theta}(\textbf{x}) = p_{data}(\textbf{x})$. In this case the discriminator cannot distinguish the two distributions, so</p>
+
+<script type="math/tex; mode=display">D(\textbf{x}) = \frac{p_{data}(\textbf{x})}{p_{data}(\textbf{x})+p_{g_\theta}(\textbf{x})} = \frac{1}{2}</script>
+
+<p>An example of optimization of GANs using stochastic gradient descent from <d-cite key="goodfellow2014generative"></d-cite> is shown below.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="three">
+    <div class="col three">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/gan-train-algo.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>GANs training <d-cite key="goodfellow2014generative"></d-cite>.</strong>
+  </figcaption>
+</figure>
+
+<h2 id="a-unified-view-of-deep-generative-models">A unified view of deep generative models</h2>
+<p>For a unified view of deep generative models, we will reformulate GANs in the ‘variational-EM’ format. Let’s first define the conditional distribution of $\textbf{x}$ given $y$ as</p>
+
+<d-math block="">
+p_\theta(\textbf{x}|y) = 
+\begin{cases}
+  p_{g_\theta}(\textbf{x}) &amp; y=0 \quad \textrm{(generated data)} \\
+  p_{data}(\textbf{x}) &amp; y=1 \quad \textrm{(training data)}
+\end{cases}
+</d-math>
+
+<p>where 
+$p_{g_\theta}(\textbf{x})$ is defined as 
+$\textbf{x} \sim G_\theta(\textbf{z})$ where $\textbf{z} \sim p(\textbf{z}|y=0)$.</p>
+
+<p>Define the discrimnator distribution $q_{\phi}(y|\textbf{x})$ 
+where $\phi$ are parameters. Then the minimax problem of optimizing GANs formulates as</p>
+
+<script type="math/tex; mode=display">\max_{\phi}\mathcal{L}_\phi = \mathbb{E}_{p_\theta(\textbf{x}|y)p(y)}[\log q_\phi(y|\textbf{x})]\\
+\max_{\theta}\mathcal{L}_\theta = \mathbb{E}_{p_\theta(\textbf{x}|y)p(y)}[\log (1-q_\phi(y|\textbf{x}))]</script>
+
+<h3 id="gan-vs-variational-em">Gan v.s. Variational EM</h3>
+
+<p>Recall that in variational EM, we optimize one single objective</p>
+
+<script type="math/tex; mode=display">\mathcal{L}_{\boldsymbol{\phi},\boldsymbol{\theta}
+} = \mathbb{E}_{q_\boldsymbol{\phi}(\mathbf{z}|\mathbf{x})}[\log p_\boldsymbol{\theta}(\mathbf{x}|\mathbf{z})] +\mathrm{KL}(q_\boldsymbol{\phi}(\mathbf{z}|\mathbf{x})\parallel p(\mathbf{z}))</script>
+
+<p>w.r.t to the inference parameter $\boldsymbol{\phi}$ 
+and the generative parameter $\boldsymbol{\theta}$ alternately:</p>
+
+<script type="math/tex; mode=display">\max_\boldsymbol{\phi} \mathcal{L}_{\boldsymbol{\phi},\boldsymbol{\theta}}, \\
+\max_\boldsymbol{\theta} \mathcal{L}_{\boldsymbol{\phi},\boldsymbol{\theta}}.</script>
+
+<p>Now consider the above new formulation for GAN, objectives could be written</p>
+
+<script type="math/tex; mode=display">\max_\boldsymbol{\phi} \mathcal{L}_\boldsymbol{\phi} = \mathbb{E}_{p_\boldsymbol{\theta}(\mathbf{x}|y)p(y)}[\log q_\boldsymbol{\phi}(y|\mathbf{x})], \\
+\max_\boldsymbol{\phi} \mathcal{L}_\boldsymbol{\theta} = \mathbb{E}_{p_\boldsymbol{\theta}(\mathbf{x}|y)p(y)}[\log q^\mathrm{r}_\boldsymbol{\phi}(y|\mathbf{x})].</script>
+
+<p>Following the similar terms in variational EM, we could interpret the $q_\boldsymbol{\phi}(y|\mathbf{x})$ as the generative model 
+and $p_\boldsymbol{\theta}(\mathbf{x}|y)$ as the inference model, 
+since we are taking the expectation of $\log q_\boldsymbol{\phi}$ 
+over $p_\boldsymbol{\theta}$, 
+and now the $y$ is observed 
+while the $\mathbf{x}$ is latent. In light of this, 
+the $\mathbf{x}$ is the latent variable 
+and and generation of $\mathbf{x}$ 
+is the inference over $\mathbf{x}$.</p>
+
+<p>In variational EM we minimize $-\log p(\mathbf{x}) + \mathrm{KL}(q_\boldsymbol{\phi}(\mathbf{z}|\mathbf{x})\parallel p_\boldsymbol{\theta}(\mathbf{z}|\mathbf{x}))$ so as to minimize the KLD from the inference model to the posterior. Also we could rewrite the objective of GAN in the form of minimizing KLD as that of variational EM. For each optimization step of $p_\boldsymbol{\theta}(\mathbf{x}|y)$ 
+starting from an initial point $(\boldsymbol{\theta}_0, \boldsymbol{\phi}_0)$,</p>
+
+<p>let $p(y)$ be a uniform prior distribution, and</p>
+
+<script type="math/tex; mode=display">p_{\boldsymbol{\theta}=\boldsymbol{\theta}_0}(\mathbf{x}) 
+= \mathbb{E}_{p(y)}[p_{\boldsymbol{\theta}\\
+=\boldsymbol{\theta}_0}(\mathbf{x}|y)], \\
+q^\mathrm{r}(\mathbf{x}|y)\propto q^\mathrm{r}(y|\mathbf{x})p_{\boldsymbol{\theta}=\boldsymbol{\theta}_0}(\mathbf{x}),</script>
+
+<p>we would have the equivalent update rule for $\boldsymbol{\theta}$ as in Lemma 1:</p>
+
+<p><strong>Lemma 1</strong>:</p>
+
+<d-math block="">
+\begin{aligned}
+&amp;\nabla_\boldsymbol{\theta} (-\mathbb{E}_{p_\boldsymbol{\theta}(\mathbf{x}|y)p(y)}[\log q^\mathrm{r}_{\boldsymbol{\phi}=\boldsymbol{\phi}_0}(y|\mathbf{x})])\mid_{\boldsymbol{\theta}=\boldsymbol{\theta}_0} \\
+=&amp;\nabla_\boldsymbol{\theta}(\mathbb{E}_{p(y)}[\mathrm{KL}(p_\boldsymbol{\theta}(\mathbf{x}|y)\parallel q^\mathrm{r}(\mathbf{x}|y))]-\mathrm{JSD}(p_\boldsymbol{\theta}(\mathbf{x}|y=0)\parallel p_\boldsymbol{\theta}(\mathbf{x}|y=1)))\mid_{\boldsymbol{\theta}=\boldsymbol{\theta}_0}.
+\end{aligned}
+</d-math>
+
+<p>Here the generative model $p_\boldsymbol{\theta}(\mathbf{x}|y)$ becomes 
+the variational approximation distribution for the posterior $q^\mathrm{r}(\mathbf{x}|y)$. We show that minimizing the KLD drives the generator $p_{g_\boldsymbol{\theta}}(\mathbf{x})$ to 
+the true data distribution $p_\text{data}(\mathbf{x})$. 
+For a uniform $y$ (being equally real or generated),</p>
+
+<script type="math/tex; mode=display">p_{\boldsymbol{\theta}=\boldsymbol{\theta}_0}(\mathbf{x}) = \mathbb{E}_{p(y)}[p_{\boldsymbol{\theta}=\boldsymbol{\theta}_0}(\mathbf{x}|y)] = {p_{g_{\boldsymbol{\theta}=\boldsymbol{\theta}_0}}(\mathbf{x})  + p_\text{data}(\mathbf{x})\over 2},</script>
+
+<p>and thus we could break the KLD into two terms:</p>
+
+<d-math block="">
+\begin{aligned}
+&amp;\mathrm{KL}(p_\boldsymbol{\theta}(\mathbf{x}|y=1)\parallel q^\mathrm{r}(\mathbf{x}|y=1)) = 
+\mathrm{KL}(p_\text{data}(\mathbf{x})\parallel q^\mathrm{r}(\mathbf{x}|y=1)) = \text{const.},\\
+&amp;\mathrm{KL}(p_\boldsymbol{\theta}(\mathbf{x}|y=0)\parallel q^\mathrm{r}(\mathbf{x}|y=0)) = 
+\mathrm{KL}(p_{g_\boldsymbol{\theta}}(\mathbf{x})\parallel q^\mathrm{r}(\mathbf{x}|y=0)),
+\end{aligned}
+</d-math>
+
+<p>where</p>
+
+<script type="math/tex; mode=display">q^\mathrm{r}(\mathbf{x}|y=0)\propto q^\mathrm{r}(y=0|\mathbf{x})p_{\boldsymbol{\theta}=\boldsymbol{\theta}_0}(\mathbf{x})</script>
+
+<p>could be seen as a mixture of $p_{g_\boldsymbol{\theta}}(\mathbf{x})$ 
+and $p_\text{data}(\mathbf{x})$ 
+weighted by $q^\mathrm{r}(y=0|\mathbf{x})$. 
+During the update we are drving the generator $p_{g_\boldsymbol{\theta}}(\mathbf{x})$ 
+towards $q^\mathrm{r}(\mathbf{x}|y=0)$ by minimizing the KLD, 
+thus driving it towards the thue distribution $p_\text{data}(\mathbf{x})$, as shown below.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/gan.png" />
+    </div>
+  </div>
+</figure>
+
+<p>This KLD formulation allow GAN to recover the major modes, while also lead GAN to miss some minor modes of $p_\text{data}(\mathbf{x})$, 
+where $p_{g_\boldsymbol{\theta}}(\mathbf{x})$ 
+and $q^\mathrm{r}(\mathbf{x}|y=0)$ are small and already give a small KLD.</p>
+
+<h3 id="gan-vs-vae">GAN v.s. VAE</h3>
+
+<p>Recap the VAE objective</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/vaeobj.png" />
+    </div>
+  </div>
+</figure>
+
+<p>Similar to GAN, 
+we assum accordingly a perfect discriminator $q_{\star}(y|\mathbf{x})$ telling 
+whether $\mathbf{x}$ is real or generated, 
+and $q_{\star}^\mathrm{r}(y|\mathbf{x}) = q_{\star}(1-y|\mathbf{x})$, 
+noticing that here $q_*$ is degenerate since we are always 
+generating fake $\mathbf{x}$. 
+We could write $\mathcal{L}^\text{vae}_{\boldsymbol{\theta}, \boldsymbol{\eta}}$ as</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/vaekld.png" />
+    </div>
+  </div>
+</figure>
+
+<p>where the posterior</p>
+
+<script type="math/tex; mode=display">p_\boldsymbol{\theta}(\mathbf{z}|\mathbf{x},y) \propto p_\boldsymbol{\theta}(\mathbf{x}|\mathbf{z},y)p(\mathbf{z}|y)p(y)</script>
+
+<p>is basically determined by the generative model $p_\boldsymbol{\theta}(\mathbf{z}|\mathbf{x},y)$ while the other two terms are fixed priors. In this way, VAE has the generative model on the right side of KLD, different to GAN. 
+As shown below, GAN would provide a “sharp” distribution (blue curve)of covering major modes while missing minor modes of the true distribution (red curve) $p_\text{data}$, 
+now VAE would provide a blurred distribution (green curve) to cover all the modes while less precisely covering area where $p_\text{data}$ is small.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/ganvae.png" />
+    </div>
+  </div>
+</figure>
+
+<p>The below table summarizes the comparion.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-17/ganvaetab.png" />
+    </div>
+  </div>
+</figure>
+
+<h3 id="vaegan-vs-wake-sleep">VAE/GAN v.s. Wake-Sleep</h3>
+
+<p>Look back at the wake-sleep algorithm:</p>
+
+<script type="math/tex; mode=display">\text{Wake}: \max_\boldsymbol{\theta} \mathbb{E}_{q_\boldsymbol{\lambda}(\mathbf{h}|\mathbf{x})p_\text{data}(\mathbf{x})}[\log p_\boldsymbol{\theta}(\mathbf{x}|\mathbf{h})], \\
+\text{Sleep}: \max_\boldsymbol{\theta} \mathbb{E}_{p_\boldsymbol{\theta}(\mathbf{x}|\mathbf{h})p(\mathbf{h})}[\log q_\boldsymbol{\lambda}(\mathbf{h}|\mathbf{x})].</script>
+
+<p>VAE only deals with the wake phase and extend it by also learning the inference parameter $\boldsymbol{\eta}$ (as in the KLD term in the original variational free energy):</p>
+
+<script type="math/tex; mode=display">\max_{\boldsymbol{\theta}, \boldsymbol{\eta}}\mathcal{L}^\text{VAE}_{\boldsymbol{\theta},\boldsymbol{\eta}}=\mathbb{E}_{q_\boldsymbol{\eta}(\mathbf{z}|\mathbf{x})p_\text{data}(\mathbf{x})}[\log p_\boldsymbol{\theta}(\mathbf{x}|\mathbf{z})]-\mathbb{E}_{p_\text{data}(\mathbf{x})}[\mathrm{KL}(q_\boldsymbol{\eta}(\mathbf{z}|\mathbf{x})\parallel p(\mathbf{z}))]</script>
+
+<p>GAN only deals with the sleep phase and extend it by also learning the generative parameter $\boldsymbol{\theta}$:</p>
+
+<script type="math/tex; mode=display">\max_\boldsymbol{\phi} \mathcal{L}_\boldsymbol{\phi} = \mathbb{E}_{p_\boldsymbol{\theta}(\mathbf{x}|y)p(y)}[\log q_\boldsymbol{\phi}(y|\mathbf{x})], \\
+\max_\boldsymbol{\phi} \mathcal{L}_\boldsymbol{\theta} = \mathbb{E}_{p_\boldsymbol{\theta}(\mathbf{x}|y)p(y)}[\log q^\mathrm{r}_\boldsymbol{\phi}(y|\mathbf{x})].</script>
+
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-03-20-lecture-17.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 25: Spectral Learning for Graphical Models</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-25/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 25: Spectral Learning for Graphical Models",
+      "description": "Overview of the spectral learning for graphical models.",
+      "published": "April 17, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Mengzhou Xia"
+        },
+        
+        {
+          "author": "Ziyu Xu"
+        },
+        
+        {
+          "author": "Liu Cao"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Hao"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 25: Spectral Learning for Graphical Models</h1>
+        <p align='right' dir="rtl">Overview of the spectral learning for graphical models.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <h2 id="spectral-learning-for-graphical-models">Spectral Learning for Graphical Models</h2>
+
+<h3 id="motivation">Motivation</h3>
+
+<p>Latent variable models allows us to explicitly model the latent structure of the task, which gives us explainability in addition to learning the relationships between events. However, since latent variables are not directly observed in the data, we need to use Expectation Maximazation (EM) algorithms to learn the relationships, and that is computationally expensive.</p>
+
+<p><strong>Spectral learning</strong> is using linear algebra to learn latent variable models. Its advantages are</p>
+
+<p>both theoretical…</p>
+<ul>
+  <li>Provably consistent</li>
+  <li>Deeper insight into identifiability</li>
+</ul>
+
+<p>and practical…</p>
+<ul>
+  <li>Local minima free</li>
+  <li>10-100x speedup over EM</li>
+  <li>Model non-Gaussian continuous data using kernels</li>
+</ul>
+
+<p>Spectral learning’s goal is to preserve the explanative properties and theoretical guarantees provided by latent variables, but avoid the computational cost that comes with latent variables.</p>
+
+<p>We notice that in most tasks, the solution to the task itself does not require any information about latent variables - it only exists for modeling purposes.</p>
+
+<h3 id="example-hidden-markov-models">Example: Hidden Markov Models</h3>
+
+<p>Let’s consider Hidden Markov Models (HMMs) as an example of a latent variable model. With latent variables, we can see that it is a computationally tractable to perform inference on HMMs since its maximum cliques are very small (size 2).</p>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-25/diagram.png" />
+    </div>
+  </div>
+</figure>
+
+<p>The problem arises from marginalizing out the latent (white) variables in the diagram - in the graph, we seem to arrive at a clique.</p>
+
+<p>However, if looking at a simple latent variable model with one hidden, and 3 observed states depending on that hidden state, we can see that there is a relationship between the number of hidden states for $H$ and the complexity of the relationship between the observed variables once $H$ is margnialized.</p>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-25/hmm-rv.png" />
+    </div>
+  </div>
+</figure>
+<p>If we have 1 state, then the marginal distribution is equal to the conditional distribution of the observed variables on $H$, which means they’re all independent. On the other hand if $H$ has $m^3$ states, where $m$ is the number of states for each observed variable, then the marginalization would have enough parameters to fully paramterize any relationship between the observed variables, and thus forming a clique.</p>
+
+<p>Clearly, there is also an intermediate case between these two extremes - how can we exploit this relationship between observed variables?</p>
+
+<h3 id="a-matrix-view-of-probability-rules">A matrix view of probability rules</h3>
+
+<h4 id="sum-rule">Sum Rule</h4>
+
+<ul>
+  <li>Probability form: <script type="math/tex">\mathbb{P}[X] = \sum\limits_Y \mathbb{P}[X\mid Y]\mathbb{P}[Y]</script></li>
+  <li>Matrix algebra form : <script type="math/tex">\mathcal{P}[X] = \mathcal{P}[X\mid Y] \times \mathcal{P}[X]</script> where $\times$ is the matrix dot product.</li>
+</ul>
+
+<h4 id="chain-rule">Chain Rule</h4>
+
+<ul>
+  <li>Probability form: <script type="math/tex">\mathbb{P}[X, Y] = \mathbb{P}[X \mid Y]\mathbb{P}[Y] = \mathbb{P}[Y\mid X]\mathbb{P}[Y]</script></li>
+  <li>Matrix algebra form: <script type="math/tex">\mathcal{P}[X, Y] = \mathcal{P}[X \mid Y] \times \mathcal{P}[\mathbin Y]</script> where $\mathcal{P}[Y]$ is a diagonal matrix w/ the probabilities on the diagonal.</li>
+</ul>
+
+<h4 id="two-variable-examples">Two variable examples</h4>
+
+<p>If we consider a relationship between two variables $A, B$, we can observe a relationship between the ranks and the variable relationships:</p>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-25/two_variable_example.png" />
+    </div>
+  </div>
+</figure>
+
+<p>If we consider the intermediate case where we have an intermediate variable $X$ with $k$ states:</p>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-25/intermediate_case.png" />
+    </div>
+  </div>
+</figure>
+
+<p>We can claim that <script type="math/tex">rank(\mathcal{P}[A, B]) \leq k</script></p>
+
+<p><strong>Proof</strong>: We can use the matrix interpretation of the chain rule from above.</p>
+
+<p>We know that</p>
+
+<script type="math/tex; mode=display">\mathcal{P}[A, B] = \mathcal{P}[A\mid X]\mathcal{P}[X]\mathcal{P}[B\mid X]^T</script>
+
+<p>We also note that each of these factor matrices have rank $\leq k$, which means that matrix characterizing the joint distribution must have rank $\leq k$.</p>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-25/intermediate_case_2.png" />
+    </div>
+  </div>
+</figure>
+
+<p>Thus, we can see that latent variable models encode <em>low rank dependencies</em> among variables, and we can use our linear algebra toolkit to exploit the low rank structure.</p>
+
+<h2 id="factorization-without-latent-variable">Factorization without latent variable</h2>
+
+<h3 id="how-to-factorize-with-latent-variables">How to factorize with latent variables</h3>
+
+<p>For the above example, assume $m&gt;k$, we can easily factorize the giant joint distribution table into several small tables by introducing latent variable $H_2$:</p>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_{\{1,2\}}, X_{\{3,4\}}] = \mathcal{P}[X_{\{1,2\}} | H_2] \mathcal{P}[\oslash H_2]\mathcal{P}[X_{\{3,4\}}|H_2]^T</script>
+
+<p>where <script type="math/tex">\oslash</script> is means on diagonal.</p>
+
+<p>The tables can be learned through EM algorithm. However, the factorization is not unique, since for any factorization 
+<script type="math/tex">M=LR</script>
+we can add any invertible transformation:
+<script type="math/tex">M=LSS^{-1}R</script></p>
+
+<p>This insight gives us the hope that there might be some way of factorizations which do not require us to introduce any hidden variables. <strong>The magic of spectral learning is that there exist an alternative factorization that only depends on observed variables.</strong></p>
+
+<h3 id="how-to-factorize-without-latent-variables">How to factorize without latent variables</h3>
+<p>The goal is to decompose a giant matrix $\mathcal{P}[X_{{1,2}}, X_{{3,4}}]$ into the product of several small matrices. One observation is that:</p>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_{\{1,2\}}, X_{3}] = \mathcal{P}[X_{\{1,2\}} | H_2] \mathcal{P}[\oslash H_2]\mathcal{P}[X_{3}|H_2]^T</script>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_{2}, X_{\{3,4\}}] = \mathcal{P}[X_{2} | H_2] \mathcal{P}[\oslash H_2]\mathcal{P}[X_{\{3,4\}}|H_2]^T</script>
+
+<p>It can be seen that for the terms on the right hand sides of the above equations,</p>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_{\{1,2\}} | H_2] \mathcal{P}[\oslash H_2]\mathcal{P}[X_{\{3,4\}}|H_2]^T = \mathcal{P}[X_{\{1,2\}}, X_{\{3,4\}}]</script>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_{2} | H_2] \mathcal{P}[\oslash H_2]\mathcal{P}[X_{3}|H_2]^T=\mathcal{P}[X_{2}, X_{3}]</script>
+
+<p>which leads to:
+<script type="math/tex">\mathcal{P}[X_{\{1,2\}}, X_{\{3,4\}}] = \mathcal{P}[X_{\{1,2\}}, X_{3}]\mathcal{P}[X_{2}, X_{3}]^{-1}\mathcal{P}[X_{2}, X_{\{3,4\}}]</script></p>
+
+<p>which gives a factorization that only contains observed variables, indicating there is no need to learn latent variables using EM, hence it is more efficient an no local optimal problem. The caveat is that <script type="math/tex">\mathcal{P}[X_{2}, X_{3}]</script> have to be invertible. We call this factorization <strong>observable factorization</strong>.</p>
+
+<p>There are also other ways of observable factorization, e.g.
+<script type="math/tex">\mathcal{P}[X_{\{1,2\}}, X_{\{3,4\}}] = \mathcal{P}[X_{\{1,2\}}, X_{4}]\mathcal{P}[X_{1}, X_{4}]^{-1}\mathcal{P}[X_{1}, X_{\{3,4\}}]</script></p>
+
+<p>By “combining” different observable factorizations, we might do better empirically.</p>
+
+<h3 id="relationship-between-observable-factorization-and-factorization-with-latent-variable">Relationship between observable factorization and factorization with latent variable</h3>
+
+<p>Let
+<script type="math/tex">M := \mathcal{P}[X_{\{1,2\}}, X_{\{3,4\}}]</script>
+<script type="math/tex">L := \mathcal{P}[X_{\{1,2\}} | H_2] \mathcal{P}[\oslash H_2]</script>
+<script type="math/tex">R := \mathcal{P}[X_{\{3,4\}}|H_2]^T</script>
+The original factorization with latent variables can be represented as 
+<script type="math/tex">M = \mathcal{P}[X_{\{1,2\}} | H_2] \mathcal{P}[\oslash H_2]\mathcal{P}[X_{\{3,4\}}|H_2]^T=LR</script></p>
+
+<p>Let
+<script type="math/tex">S:=\mathcal{P}[X_3|H_2]</script>
+Then</p>
+
+<p><script type="math/tex">LS = \mathcal{P}[X_{\{1,2\}}, X_{3}]</script>
+<script type="math/tex">S^{-1}R = \mathcal{P}[X_{2}, X_{3}]^{-1}\mathcal{P}[X_{2}, X_{\{3,4\}}]</script>
+Therefore, the observable factorization can be represented as:
+<script type="math/tex">M=\mathcal{P}[X_{\{1,2\}}, X_{\{3,4\}}] = \mathcal{P}[X_{\{1,2\}}, X_{3}]\mathcal{P}[X_{2}, X_{3}]^{-1}\mathcal{P}[X_{2}, X_{\{3,4\}}]=LSS^{-1}R</script></p>
+
+<h2 id="training--testing-with-spectral-learning">Training / Testing with Spectral learning</h2>
+<h3 id="training">training</h3>
+<p>For observable factorization:
+<script type="math/tex">\mathcal{P}[X_{\{1,2\}}, X_{\{3,4\}}] = \mathcal{P}[X_{\{1,2\}}, X_{3}]\mathcal{P}[X_{2}, X_{3}]^{-1}\mathcal{P}[X_{2}, X_{\{3,4\}}]</script></p>
+
+<p>we can simply obtain MLE of the matrices on the right hand side by counting from samples.</p>
+
+<h3 id="testing">testing</h3>
+<p>To compute the probability of a observed data $(x_1,x_2,x_3,x_4)$, we can simply plug in the data into the MLE of the matrices:</p>
+
+<script type="math/tex; mode=display">\hat{\mathcal{P}}_{spec}[X_{\{1,2\}}, X_{\{3,4\}}] = \mathcal{P}_{MLE}[X_{\{1,2\}}, X_{3}]\mathcal{P}_{MLE}[X_{2}, X_{3}]^{-1}\mathcal{P}_{MLE}[X_{2}, X_{\{3,4\}}]</script>
+
+<h2 id="consistency">Consistency</h2>
+<p>Consistency means with the increase of the sample size, the joint probability table should converge in probability to the real joint distribution.</p>
+
+<h3 id="trivial-estimator">trivial estimator</h3>
+<p>A trivial estimator is to simply estimate the big probability table from data by naive counting:
+<script type="math/tex">\mathcal{P}_{MLE}[X_1,X_2;X_3,X_4] \rightarrow \mathcal{P}[X_1,X_2;X_3,X_4]</script>
+which is consistent but statistically inefficient.</p>
+
+<h3 id="factorization-with-latent-variables">factorization with latent variables</h3>
+<p>The estimator based on factorization with latent variables are given by EM, which will get stuck in local optima and is not guaranteed to obtain the MLE of the factorized model.</p>
+
+<script type="math/tex; mode=display">\mathcal{P}_{MLE}[X_{\{1,2\}} | H_2] \mathcal{P}_{MLE}[\oslash H_2]\mathcal{P}_{MLE}[X_{\{3,4\}}|H_2]^T \rightarrow \mathcal{P}[X_1,X_2;X_3,X_4]</script>
+
+<h3 id="spectral-learning">Spectral learning</h3>
+<p>Spectral learning estimator is consistent and computationally tractable, at some loss of statistical efficiency due to the dependence on the inverse.</p>
+
+<script type="math/tex; mode=display">\mathcal{P}\mathcal{P}_{MLE}[X_{\{1,2\}}, X_{3}]\mathcal{P}_{MLE}[X_{2}, X_{3}]^{-1}\mathcal{P}_{MLE}[X_{2}, X_{\{3,4\}}] \rightarrow \mathcal{P}[X_1,X_2;X_3,X_4]</script>
+
+<h3 id="conditional-tree-latent-models">Conditional tree latent models</h3>
+
+<p>Factorization can be applied to tree models as well, by creating triplets of parameters that are represented by tensors. Further reading on these case studies are <a href="https://arxiv.org/pdf/1401.3940.pdf">(Song et al.)</a> and <a href="http://www.cs.cmu.edu/~epxing/papers/2011/Parikh_Song_Xing_ICML11.pdf">(Parikh et al.)</a>.</p>
+
+<h3 id="when-does-the-inverse-exist">When Does the Inverse Exist</h3>
+<p><script type="math/tex">\mathcal{P}[X_2, X_3] = \mathcal{P}[X_2 | H_2] \mathcal{P}[\oslash H_2]\mathcal{P}[X_3|H_2]^T</script></p>
+
+<p>In order for the probability matrix on the left hand side invertible, all the matrices in the right hand side must have full rank. (This is a in general a requirement for spectral learning, although it can be somewhat relaxed.)</p>
+
+<p>Given the case that the dimension of the hidden state is $k$ and the dimension of the output variable is $m$, we discuss the following senarios.</p>
+
+<ul>
+  <li>When $m &gt; k$
+The inverse cannot exist, but this situation is easily fixable by projecting the matrix into a lower dimensional space.</li>
+</ul>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_{\{1, 2\}}, X_{\{3, 4\}}] =
+\mathcal{P}[X_{\{1, 2\}}, X_3]\mathbf{V}(\mathbf{U}^T \mathcal{P}[X_2, X_3]V)^{-1}U^T \mathcal{P}[X_2, X_{\{3, 4\}}]</script>
+
+<p>where $U, V$ are the top left/right k singular vectors of $\mathcal{P}[X_2, X_3]$.</p>
+
+<ul>
+  <li>When $k &gt; m$
+The inverse does exist. But it no longer satisfies the following property, which we used to derive the factorization.</li>
+</ul>
+
+<script type="math/tex; mode=display">\mathcal{P}(X_2, X_3)^{-1} = (\mathcal{P}[X_3 |H_2]^T)^{-1} \mathcal{P}[\oslash H_2]^{-1} \mathcal{P}[X_2|H_2]^{-1}</script>
+
+<p>This is much more difficult to fix, and intuitively corresponds to how the problem becomes intractable if $k \gg m$.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* Intuitively, larger $k$ and smaller $m$ means long range dependencies.
+* Consider the following generative process:
+    (1) With probability 0.5, let $S=X$, and with probability 0.5, let $S=Y$.
+    (2) Print A $n$ times.
+    (3) Print S.
+    (4) Go back to step (2)
+* With $n=1$ we either generate AXAXAX.... or AYAYAY....
+  With $n=2$ we either generate AAXAAXAA.. or AAYAAYAA..
+* HMM needs $2n$ states to to remember count as well as whether we picked $S=X$ or $S=Y$. However, number of observed states $m$ does not change, so our previous spectral algorithm will break for $n&gt;2$.
+* How can we deal with this in spectral framework?
+</code></pre></div></div>
+
+<h2 id="making-spectral-leanring-work-in-practice">Making Spectral Leanring Work in Practice</h2>
+<ul>
+  <li>
+    <p>We are only using marginals of pairs/triples of variables to construct the full marginal among the observed variables, which only works for the case of $k&lt;m$. However, in real problems we need to capture longer range dependencies.</p>
+  </li>
+  <li>
+    <p>Recall our factorization</p>
+  </li>
+</ul>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_{\{1, 2\}}, X_{\{3, 4\}}] = \mathcal{P}[X_{\{1, 2\}}, X_3] \mathcal{P}[X_2, X_3]^{-1}\mathcal{P}[X_2, X_{\{3, 4\}}]</script>
+
+<p>In order to use long-range features, we can construct feature vector of the left side $\phi_L$ and the feature vector $\phi_R$  of the right side.</p>
+
+<ul>
+  <li>Spectral Learning with Features</li>
+</ul>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_2, X_3] = \mathbb{E}[\delta_2 \otimes \delta_3] := \mathbb{E}[\delta_2 \delta_3^T]</script>
+
+<p>We can use more complex features to replace $\delta_2 \otimes \delta_3$. And $\mathcal{P}[X_{{1, 2}}, X_{{3, 4}}]$ can be represented as follows:
+<script type="math/tex">\mathcal{P}[X_{\{1, 2\}}, X_{\{3, 4\}}] = \mathbb{E}[\delta_{1 \otimes 2}, \delta_{3 \otimes 4}] = \mathbb{E}[\delta_{1 \otimes 2}; \phi_R] V (U^T \mathbb{E}[\phi_L \otimes \phi_R] V)^{-1} U^T \mathcal{P}[\phi_L, X_{\{3, 4\}}]</script></p>
+
+<h2 id="experimental-results">Experimental Results</h2>
+<p>Experimentally, it’s been shown by many authors that spectral methods achieve comparable results to EM but are 10-50X faster(Parikh et al. 2011, <a href="https://arxiv.org/pdf/1210.4884.pdf">Parikh et al. 2012</a>, Balle et al. 2012, Cohen et al. 2012, Cohen et al. 2013). We show some synthetic and real data results demonstraing the comparison between EM and spectral methods.</p>
+
+<ul>
+  <li>Synthetic data (<a href="https://arxiv.org/pdf/1210.4884.pdf">Parikh et al. 2012</a>)
+    <ul>
+      <li>A novel representation of latent variable models (junction tree specifically)</li>
+      <li>Train: Learn parameters of a given model given samples of observed variables.</li>
+      <li>Test: Evaluate likelihood of random samples drawn from model and compare to the true likelihood</li>
+      <li>Synthetic 3rd order HMM example (Spectral/EM/Online EM). Results of other sturctures are similar. We can see that the running time of spetral methods is less than that of Online EM and EM algorithms while the error rate keeps low.</li>
+    </ul>
+  </li>
+</ul>
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-25/f2.jpeg" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Multiple latent variable models.</strong>
+  </figcaption>
+</figure>
+
+<ul>
+  <li>Supervised Parsing (<a href="https://www.aclweb.org/anthology/N13-1015">Cohen et al. 2012/2013</a>)
+    <ul>
+      <li>Learn a latent variable Prbabilistic Context Free Grammar (latent PCFG) which is a PCFG augmented with additional latent states.</li>
+      <li>Train: Learn parameters given parse trees on training examples</li>
+      <li>Test: Estimate most likely parse structure on test sentences</li>
+      <li>Empirical results for latent PCFGs</li>
+    </ul>
+  </li>
+</ul>
+
+<figure id="example-figure" class="l-body-outset">
+<div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-25/f6.jpeg" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>PCFG and latent variable PCFG.</strong>
+  </figcaption>
+</figure>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-25/f7.jpeg" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Empirical Results for Latent PCFGs</strong>
+  </figcaption>
+</figure>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-25/f8.jpeg" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Timing Results for Latent PCFGs</strong>
+  </figcaption>
+</figure>
+<p>It shows that the results of spectral learning are at least comparable to EM algorithms. But the speed is much faster.</p>
+
+<h2 id="connection-to-hilbert-space-embeddings">Connection to Hilbert Space Embeddings</h2>
+<ul>
+  <li>Dealing with Nonparametric Continuous Variables
+    <ul>
+      <li>It is difficult to run EM if the conditional/marginal distribution are continuous and do not easily fit into a parametric family.</li>
+      <li>However, we will see that Hilbert Space Embeddings can easily be combined with spectral methods for learning nonparametric latent models.</li>
+    </ul>
+  </li>
+  <li>Recall that we could substitute features for variables</li>
+</ul>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_2, X_3] = \mathbb{E}[\delta_2 \otimes \delta_3] := \mathbb{E}[\delta_2 \delta_3^T]</script>
+
+<p>We can replace $\mathcal{P}[X_2, X_3]$ with</p>
+
+<script type="math/tex; mode=display">\mathcal{C}[X_2, X_3] = \mathbb{E}[\phi_{X_2} \otimes \phi_{X_3}]</script>
+
+<ul>
+  <li>Therefore, with discrete case, we have</li>
+</ul>
+
+<script type="math/tex; mode=display">\mathcal{P}[X_{\{1, 2\}}, X_{\{3, 4\}}] =
+\mathcal{P}[X_{\{1, 2\}}, X_3]\mathbf{V}(\mathbf{U}^T \mathcal{P}[X_2, X_3]V)^{-1}U^T \mathcal{P}[X_2, X_{\{3, 4\}}]</script>
+
+<p>and with continuous case, we have</p>
+
+<script type="math/tex; mode=display">\mathcal{C}[X_{\{1, 2\}}, X_{\{3, 4\}}] =
+\mathcal{C}[X_{\{1, 2\}}, X_3]\mathbf{V}(\mathbf{U}^T \mathcal{C}[X_2, X_3]V)^{-1}U^T \mathcal{C}[X_2, X_{\{3, 4\}}]</script>
+
+<h2 id="summary---em--spectral">Summary - EM &amp; Spectral</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>EM</th>
+      <th>Spectral</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Aims to find MLE, so more “statistically” efficient</td>
+      <td>Does not aim to find MLE, so less “statistically” efficient</td>
+    </tr>
+    <tr>
+      <td>Can get stuck in local optima</td>
+      <td>Local optima free</td>
+    </tr>
+    <tr>
+      <td>Lack of theoretical guarantees</td>
+      <td>Provably consistent</td>
+    </tr>
+    <tr>
+      <td>Slow</td>
+      <td>Very fast</td>
+    </tr>
+    <tr>
+      <td>Easy to derive for new models</td>
+      <td>Challenging to derive for new models (Unknown whether it can generalize to arbitrary loopy models)</td>
+    </tr>
+    <tr>
+      <td>No issues with negative numbers</td>
+      <td>Problems with negative numbers. Requires explicit normalization to compute likelihood</td>
+    </tr>
+    <tr>
+      <td>Allows for easy modelling with conditional distributions</td>
+      <td>Allows for easy modelling with marginal distributions</td>
+    </tr>
+    <tr>
+      <td>Difficult to incorporate long-range features (since it increases treewidth)</td>
+      <td>Easy to incorporate long-range features</td>
+    </tr>
+    <tr>
+      <td>Generalizes poorly to non-Gaussian continuous variables</td>
+      <td>Easy to generalize to non-gaussian continuous variables via Hilbert Space Embeddings</td>
+    </tr>
+  </tbody>
+</table>
+
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-04-17-lecture-25.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

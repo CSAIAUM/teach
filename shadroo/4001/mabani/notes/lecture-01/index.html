@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 1: Introduction to Graphical Models</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-01/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 1: Introduction to Graphical Models",
+      "description": "Introducing why graphical models are useful, and an overview of the main types of graphical models.",
+      "published": "January 14, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Daniel Martin"
+        },
+        
+        {
+          "author": "Yiwen Yuan"
+        },
+        
+        {
+          "author": "Youngseog Chung"
+        },
+        
+        {
+          "author": "Siddharth Satpathy",
+          "authorURL": "https://siddsatpathy.wixsite.com/portfolio"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Maruan Al-Shedivat",
+          "editorURL": "https://www.cs.cmu.edu/~mshediva/"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 1: Introduction to Graphical Models</h1>
+        <p align='right' dir="rtl">Introducing why graphical models are useful, and an overview of the main types of graphical models.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <h2 id="the-fundamental-questions-of-graphical-modeling">The Fundamental Questions of Graphical Modeling</h2>
+
+<p>A graphical model is a method of modeling a probability distribution for reasoning under uncertainty, which is needed in applications such as speech recognition and computer vision.
+We usually have a sample of data points: $D = {X_{1}^{(i)},X_{2}^{(i)},…,X_{m}^{(i)} }_{i=1}^N$.
+The relations of the components in each $X$ can be depicted using a graph $G$.
+We then have our model $M_G$.</p>
+
+<figure id="sample-graph" class="l-gutter">
+  <div class="row">
+    <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-01/sample-graph.png" />
+  </div>
+  <figcaption>
+    <strong> A graph for a model </strong>
+  </figcaption>
+</figure>
+
+<p>Graphical models allow us to address three fundamental questions:</p>
+
+<ol>
+  <li>How should I represent my data in a way that reflects domain knowledge while acknowledging uncertainty?</li>
+
+  <li>How do I make inferences from this data?</li>
+
+  <li>How can I learn the 'right' model for this data?</li>
+</ol>
+
+<p>Each of these questions can be rephrased as a question about probability distributions:</p>
+
+<ol>
+  <li>What is the joint probability distribution over my input variables?
+Which state configurations of the distribution are actually relevant to the problem?</li>
+
+  <li>How can we obtain the state probabilities?
+Do we use maximum-likelihood estimation, or can we use domain knowledge?</li>
+
+  <li>How can we compute conditional distributions of unobserved (latent) variable without needing to sum over a large number of state configurations?</li>
+</ol>
+
+<p>In the next section, we give an example to show how graphical models provide an effective way of answering these questions.</p>
+
+<hr />
+
+<h2 id="structure-within-a-cell-real-world-example-of-graphical-models-with-structure-among-the-rvs">Structure within a Cell: real world example of graphical models with structure among the RVs</h2>
+
+<figure id="cell-ex-figure" class="l-body-outset">
+  <div class="row">
+    <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-01/cell-ex.png" />
+  </div>
+  <figcaption>
+    <strong> Cell Structure Example </strong>
+  </figcaption>
+</figure>
+
+<p><strong>Receptors:</strong> Receive signal from cell surface</p>
+
+<p><strong>Kinase:</strong> Reads and decodes the signal</p>
+
+<p><strong>TF:</strong> Takes in the signal and triggers production of DNA with DNA template</p>
+
+<p><strong>Gene:</strong> DNA templates</p>
+
+<p>We can incorporate such domain knowledge to impose structure on the RVs $X_{1},…,X_{8}$.
+A preliminary way is to partition the RV’s into compartments they reside in within a cell.
+Then we can model edges(pathway) that model the dependencies(communication) among the RVs(nodes).</p>
+
+<p>With this structure, we can better express the joint probabilities among the RVs than with a full joint distribution table. The Factorization Law gives us a way to do so.
+The Factorization Law is a graph traversal algorithm that outputs a unique representation of the joint probability of the RVs. Concisely, we traverse the graph and identify the conditional probabilities of each node given its parent nodes and the marginal probabilities of nodes that do not have parents, then multiply all terms together for the joint probability of all nodes.</p>
+
+<p>There are 3 main benefits of representing the joint distribution in this manner (with a graph structure and conditional probabilities that tie parent nodes and child nodes)</p>
+
+<hr />
+
+<h2 id="three-main-benefits-of-graphical-models">Three Main Benefits of Graphical Models</h2>
+
+<p>The first benefit is the cost savings in representing the joint distribution.
+By modeling the dependencies among the RVs with a graph and conditionals, the number of parameters needed to describe the joint distribution is much fewer than when using a full joint distribution table.</p>
+
+<p>Assume all RVs are binary.</p>
+
+<d-math block="">
+\begin{aligned}
+  P(X_{1}) &amp;\rightarrow 1\ \text{parameter} \\
+  P(X_{2}) &amp;\rightarrow 1\ \text{parameter} \\
+  P(X_{3} \mid X_{1}) &amp;\rightarrow 2\ \text{parameters} \\
+  P(X_{4} \mid X_{2}) &amp;\rightarrow 2\ \text{parameters} \\
+  P(X_{5} \mid X_{2}) &amp;\rightarrow 2\ \text{parameters} \\
+  P(X_{6} \mid X_{3}, X_{4}) &amp;\rightarrow 4\ \text{parameters} \\
+  P(X_{7} \mid X_{6}) &amp;\rightarrow 2\ \text{parameters} \\
+  P(X_{8} \mid X_{5}, X_{6}) &amp;\rightarrow 4\ \text{parameters} \\
+\end{aligned}
+</d-math>
+
+<p>Thus, we have a total of 18 parameters.</p>
+
+<p>Meanwhile, with a full joint distribution table, we would need $2^{8}-1$ parameters.</p>
+
+<p>The second benefit is data integration.
+By factoring the joint distribution into modular terms, each term becomes self-contained and we can estimate each term with only the relevant data points (e.g. to estimate $P(X_{8}|X_{5}, X_{6})$ we only need data for $X_{8}, X_{5}, X_{6}$).
+Therefore, the problem of joint distribution estimation can be modularized into smaller pieces and integrated later by multiplication.</p>
+
+<p>Examples:</p>
+<ul>
+  <li>Cell molecules example
+    <ul>
+      <li>One lab can study the subtree formed by $X_{1}, X_{3}, X_{6}, X_{7}, X_{8}$ while another lab can study $X_{2}, X_{4}, X_{5}$, then fuse their estimations together by multiplying the terms by their dependencies.</li>
+    </ul>
+  </li>
+  <li>Cellphone usage
+    <ul>
+      <li>We can separately study the distribution represented by the user’s text, image and network data and fuse them together with a graphic model to derive the joint distribution.</li>
+    </ul>
+  </li>
+  <li>Genomics/biology
+    <ul>
+      <li>We routinely combine various data together with graphical models.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Finally, graphical models provide a generic method of representing knowledge and making inferences.</p>
+
+<p>We can encode our domain knowledge through priors and incorporate them into our inference via the Bayes Theorem:</p>
+
+<d-math block="" center="">
+  \begin{array}{rcl}
+    p(h|d) &amp;=&amp; \frac{p(d|h)p(h)}{p(d)} \\
+    p(h|d) &amp;=&amp; \text{  posterior} \\
+    p(d|h) &amp;=&amp; \text{  likelihood} \\
+    p(h) &amp;=&amp; \text{  prior} \\
+    p(d) &amp;=&amp; \text{  marginal probability of the data}=\int_{H}p(d|h)p(h)dh \\
+  \end{array}
+</d-math>
+
+<p>A graphical model provides a structured and efficient way for doing these computations.
+Therefore, a graphical model along with the Bayes Theorem provide a universal way of representing knowledge and computation.</p>
+
+<hr />
+
+<h2 id="pgms-vs-gms">PGM’s vs GM’s</h2>
+
+<p>Next, we will elaborate on the difference between Probabilistic Graphical Models (PGM) and Graphical Models (GM).
+In brief, a PGM adds structure to a multivariate statistical distribution, while a GM adds structure to any multivariate objective function.</p>
+
+<p>A PGM minimizes the cost of designing a probability distribution.
+Formally, a PGM is a family of distributions over a given set of random variables.
+These distributions must be compatible with all the independence relationships among the variables, which are encoded in a graph.</p>
+
+<p>In the graph itself, the type of edge used denotes the relationship among the variables.
+Directed edges denote causality, while undirected edges denote correlation.</p>
+
+<figure id="graph-families" class="l-body-outset">
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-01/dag.png" />
+      <figcaption>
+        <strong>Bayesian network</strong>
+        A directed acyclic graph (DAG).
+      </figcaption>
+    </div>
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-01/undirected.png" />
+      <figcaption>
+        <strong>Markov random field</strong>
+        An undirected graph.
+      </figcaption>
+    </div>
+  </div>
+</figure>
+
+<p>For instance, the Bayes net uses a directed acyclic graph (DAG).
+Each node in a Bayes net has a Markov blanket, composed of its parents, its children, and its children’s parents.
+Every node is conditionally independent of the nodes outside its Markov Blanket.
+Therefore, the local conditional probabilities as well as the graph structure completely determine the joint probability distribution.
+This model can be used to generate new data.</p>
+
+<p>By contrast, the Markov random field uses an undirected graph.
+Every node is conditionally independent of the other graph nodes, except for its immediate neighbors.
+To determine the joint probability distribution, we need to know local contingency functions as well as structural cliques.
+This model cannot explicitly generate new data.</p>
+
+<hr />
+
+<h2 id="equivalence-theorem--pgm-genealogy">Equivalence Theorem / PGM Genealogy</h2>
+
+<p>We will be discussing the Equivalence Theorem, stated as follows:</p>
+
+<p>For a graph $G$,</p>
+
+<ul>
+  <li>
+    <p>Let $D_1$ denote the family of all distributions that satisfy $I(G)$,</p>
+  </li>
+  <li>
+    <p>Let $D_2$ denote the family of all distributions that factor according to $G$,</p>
+  </li>
+</ul>
+
+<p>then $D_1 \equiv D_2$.</p>
+
+<p>The theorem is interpreted in two ways:</p>
+<ol>
+  <li>Separation properties in the graph imply independence properties about the associated variables.</li>
+  <li>For the graph to be useful, any conditional independence properties we can derive from the graph should hold for the probability distribution that the graph represents.</li>
+</ol>
+
+<p>The study of Graphical Models involves the following parts:</p>
+<ol>
+  <li>Density estimation with parametric and nonparametric methods</li>
+  <li>Regression: linear, conditional mixture, nonparametric</li>
+  <li>Classification with generative and discriminative approaches</li>
+  <li>Clustering</li>
+</ol>
+
+<p>A partial genealogy of graphical models is as follows:</p>
+
+<figure id="gmm" class="l-body">
+  <div class="row">
+    <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-01/gmm.png" />
+  </div>
+  <figcaption>
+    <strong> Genealogy of Graphical Models </strong>
+  </figcaption>
+</figure>
+
+<hr />
+
+<h2 id="fancier-gms-and-applications-of-gms">Fancier GMs and Applications of GMs</h2>
+
+<p>GMs can be applied in numerous more advanced ways to solve complex problems in areas like reinforcement learning, machine translation, genetic pedigrees and solid state physics.</p>
+
+<p>The applications of GMs include but are not limited to the following areas: Machine Learning, Computational Statistics, Computer Vision and Graphics, Natural Language Processing, Informational Retrieval, Robotic Control, etc.</p>
+
+<h2 id="why-should-we-study-graphical-models">Why should we study graphical models?</h2>
+
+<p>Design and analysis of algorithms in the fields of artificial intelligence, machine learning, natural language processing, etc. encounter issues like uncertainty and complexity. In graphical models, we use the idea of modularity, and view such complex problems as combinations of simpler parts. Tools from graphical models can be used for communication of information in networks. They can also be used to ease computation (simplify computational complexities and reduce time required for computations). As such, graphical model formalism can be used for development of efficient software packages for decision making and learning in problems rely on huge datasets.</p>
+
+<p>Below we mention a few prominent reasons why one can use probabilistic graphical models:</p>
+<ul style="list-style-type:square">
+  <li>In graphical models, we break tasks into combinations of simpler parts. Probability theory helps to connect these simple parts with each other in a coherent and consistent manner.</li>
+
+  <li>Graph theory gives an easy-to-understand interface in which models with multiple variables can be cast. Such interfaces help to uncover interactions, dependencies between difference sets of variables. As a consequence, graph theory also helps in the design of more efficient algorithms.</li>
+
+  <li>Formalisms in general graphical model can be used for tasks in a plethora of fields like information theory, cyber security, systems engineering, pattern recognition etc.</li>
+
+  <li>The generality of graphical model frameworks gives us a way to view different systems as occurrences of a common underlying formalism.</li>
+</ul>
+
+<h2 id="plans-for-class">Plans for class</h2>
+
+<p>In this course, we will see an in-depth exploration of issues related to learning within the probabilistic graphical model formalism. The course will be divided into three main sections: Fundamentals of graphical models, advanced topics in graphical models, popular graphical models and applications. An outline of the topics that will be covered in this class is given below:</p>
+<ul>
+  <li>Fundamentals of graphical models
+  <ul>
+    <li>Bayesian Network and Markov Random Fields</li>
+
+    <li>Discrete, Continuous and Hybrid models, Exponential family, Generalized Linear Models</li>
+
+    <li>Inference and Learning</li>
+  </ul>
+  </li>
+
+
+  <li>Advanced topics and latest developments in graphical models
+  <ul>
+    <li>Approximate inference</li>
+
+    <li>Infinite graphical models: nonparametric Bayesian models</li>
+
+    <li>Optimization-theoretic formulations for graphical models, e.g., Structured sparsity</li>
+
+    <li>Graphical models vs Deep nets</li>
+
+    <li>Nonparametric and spectral graphical models</li>
+
+    <li>Alternative graphical model learning paradigms</li>
+  </ul>
+  </li>
+
+
+  <li>Popular graphical models and applications
+  <ul>
+    <li>Multivariate gaussian models</li>
+
+    <li>Conditional random fields</li>
+
+    <li>Mixed-membership</li>
+  </ul>
+  </li>    
+<ul>
+</ul></ul>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-01-14-lecture-01.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

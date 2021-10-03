@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 28: A Civil Engineering Perspective on AI</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-28/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 28: A Civil Engineering Perspective on AI",
+      "description": "",
+      "published": "April 29, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Jiaxu Zou"
+        },
+        
+        {
+          "author": "Amanda Coston"
+        },
+        
+        {
+          "author": "Jeremy Cohen"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Maruan Al-Shedivat",
+          "editorURL": "https://www.cs.cmu.edu/~mshediva/"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 28: A Civil Engineering Perspective on AI</h1>
+        <p align='right' dir="rtl"></p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <h2 id="industrialization-of-ai">Industrialization of AI</h2>
+<h3 id="barriers-to-ai-solutions-today">Barriers to AI Solutions Today</h3>
+<p>According to a McKinsey CEO survey in 2018, only 39% of the companies made significant progress in implementing AI applications. Up to 7% of the companies made no progress.</p>
+
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/companies.png" />
+    </div>
+  </div>
+  <figcaption>
+    A Result of McKinsey CEO Survey
+  </figcaption>
+</figure>
+
+<p>In addition, according to the survey, top barriers to AI applications are lack of talent and knowledge as well as AI technology and maturity.</p>
+
+<p>To develop their AI applications, the companies need to either build their own AI systems or deploy their applications on a third-party platform. However, issues exist on both paths:</p>
+<ul>
+  <li><strong>Building is infeasible</strong>
+    <ul>
+      <li>Scarce resources in data scientists, ML engineers and system engineers</li>
+      <li>Little or no enterprise support from open source software</li>
+      <li>Major infrastructure requirements not satisfied</li>
+      <li>Long development timelines</li>
+      <li>High delivery risks</li>
+    </ul>
+  </li>
+  <li><strong>Lack of viable third-party platform</strong>
+    <ul>
+      <li>Limited to cloud deployment</li>
+      <li>Limited customization</li>
+      <li>Limited service</li>
+      <li>Limited scalability</li>
+      <li>Limited capabilities</li>
+    </ul>
+  </li>
+</ul>
+
+<figure>
+  <div class="row">
+    <div class="col">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/interoperability.png" />
+    </div>
+  </div>
+  <figcaption>
+    Inter-operability between diverse systems
+  </figcaption>
+</figure>
+
+<p>Inter-operability between diverse systems is another main concern when developing AI applications. As shown in the figure above, there are many communications between systems:</p>
+<ul>
+  <li>Communications between Data/ML Process Builder and ML Systems/DL Systems/Data Systems</li>
+  <li>Communications between Distributed Communications Backend and ML Systems/DL Systems</li>
+  <li>Communications between Hardware Resource Management Module and Data Systems</li>
+  <li>Communications between Containers &amp; Storage Volumes and Hardware Resource Management Module</li>
+  <li>Communications between Containers &amp; Storage Volumes and Distributed Communications Backend</li>
+</ul>
+
+<h3 id="transforming-ai-into-civil-engineering">Transforming AI into Civil Engineering</h3>
+<p><strong>Duty of a AI System Builder</strong>:</p>
+<ul>
+  <li><strong>Build</strong>
+    <ul>
+      <li>Build a full, engineering-wise sound solution, not a toy or a demo</li>
+      <li>Create Many copies</li>
+      <li>Build at low expense</li>
+      <li>Satisfy any client-specified conditions</li>
+    </ul>
+  </li>
+  <li><strong>Understand</strong>
+    <ul>
+      <li>Understand how a solution is built</li>
+      <li>Understand the feasibility of proposed solutions</li>
+      <li>Explain why the solution works and why not if undesirable outcome</li>
+    </ul>
+  </li>
+  <li><strong>Sustain</strong>
+    <ul>
+      <li>Operationalize the solution (deploy, train, etc.)</li>
+      <li>Guarantee reproducible results</li>
+      <li>Teach others to build the solution and reproduce the result</li>
+    </ul>
+  </li>
+</ul>
+
+<p>New generation of AI programs should be:</p>
+<ul>
+  <li><strong>Reusable</strong>: pluggable modules allowing enterprises to architect and customize AI rapidly</li>
+  <li><strong>Standard</strong>: instruction sets and pre-built functions ensuring outcomes are reproducible and sound</li>
+  <li><strong>Comprehensive</strong>: inventory of ML/System nuts and bolts meeting the needs for any data type, wide range of tasks, commodity hardware, and mission sizes.</li>
+</ul>
+
+<figure>
+  <div class="row">
+    <div class="col">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/first_principles.png" />
+    </div>
+  </div>
+  <figcaption>
+    Designing ML systems with first principles
+  </figcaption>
+</figure>
+
+<p><strong>First principles</strong>:<br />
+To enable such a transformation of AI into civil engineering, principled ML process is required. First principles are sound, explainable and verifiable. Consider the figure above. According to first principles, instead of mixing everything together in a ML system, we should first explicitly define components of a ML process and then incorporate different techniques to implement the components. E.g., we choose a margin loss as our loss function. we choose neural network as our model structure. We use sparsity constraints in the objective function. We use gradient descent as our algorithm to solve the problem. We observe the change of value of objective function to decide when to stop.</p>
+
+<p><strong>Basic ML principles</strong>: Consistency, Bias v/s variance, Sample complexity, Learning rate, Convergence, Error bound, Confidence, Stability, etc..</p>
+
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/PAC.png" />
+    </div>
+  </div>
+  <figcaption>
+    Relations among ML principles in PAC Learning Theory
+  </figcaption>
+</figure>
+
+<p>An example of managing different ML principles exists in Probably Approximately Correct (PAC) Learning Theory. Sample size $m$, representational complexity $H$, error rate $\epsilon$ and failure probability $\delta$ satisfy the following inequality:</p>
+
+<script type="math/tex; mode=display">m \geq \frac{1}{\epsilon}(ln|H|+ln(\frac{1}{\delta}))</script>
+
+<p><strong>Loss Augmentation</strong>:<br />
+In <strong>Bayesian Learning</strong>, distribution parameters $\theta$ is treated as a random variable. According to Bayes’ Rule, the posteriori distribution of $\theta$ after data is seen is:</p>
+
+<script type="math/tex; mode=display">p(\theta \mid D) = \frac{p(D \mid \theta)p(\theta)}{p(D)} = \frac{p(D \mid \theta)p(\theta)}{\int p(D \mid \theta)p(\theta)d\theta}</script>
+
+<p>In <strong>Frequentist Regularization</strong>, parameter $\theta$ is treated as an unknown constant. The regularized estimate of $\theta$ after data is seen is:</p>
+
+<script type="math/tex; mode=display">\mathop{\arg\max}\limits_{\theta} = \mathcal{L}(\{x_i, y_i\}_{i=1}^{N};\theta) + \Omega(\theta)</script>
+
+<p>The prior of $\theta$ $p(\theta)$ in Bayesian Learning, or the regularizer $\Omega(\theta)$ in Frequentist Regularization, encodes our prior knowledge about the domain.</p>
+
+<p><strong>Inference Methods</strong>:<br />
+In <strong>Variational Inference</strong>, we want to infer the distribution of latent variable $Z$ given the observable variable $X$ by maximizing the expectation of the log probability of $X$ under the posterior of $Z$.</p>
+
+<d-math block="">
+\begin{aligned}
+\mathbb{E}_{q_\phi(z \mid x)} log p(x)
+&amp;= \int q_\phi(z \mid x)logp(x)dz \\
+&amp;= \int q_\phi(z \mid x)log\frac{p_\theta(x, z)}{p_\theta(z \mid x)}dz \\
+&amp;= \int q_\phi(z \mid x)log\frac{p_\theta(x, z)}{q_\phi(z \mid x)}\frac{q_\phi(z \mid x)}{p_\theta(z \mid x)}dz \\
+&amp;= \int q_\phi(z \mid x)log\frac{p_\theta(x, z)}{q_\phi(z \mid x)}dz + \int q_\phi(z \mid x)log\frac{q_\phi(z \mid x)}{p_\theta(z \mid x)}dz \\
+&amp;= KL(q_\phi(z \mid x) || p_\theta(z \mid x)) + \mathbb{E}_{q_\phi(z \mid x)} log\frac{p_\theta(x, z)}{q_\phi(z \mid x)}
+\end{aligned}
+</d-math>
+
+<p>As shown above, since $KL(q_\phi(z \mid x) || p_\theta(z \mid x)) \geq 0$, we have the lower bound of the true objective function<br />
+is:</p>
+
+<script type="math/tex; mode=display">\mathcal{L}(\theta, \phi;x) = \mathbb{E}_{q_\phi(z \mid x)} log\frac{p_\theta(x, z)}{q_\phi(z \mid x)}</script>
+
+<p>We maximize this variational lower bound of the true objective function instead, or equivalently, minimize the free energy</p>
+
+<script type="math/tex; mode=display">F(\theta, \phi;x) = -\mathbb{E}_{q_\phi(z \mid x)} log p(x) + KL(q_\phi(z \mid x) || p_\theta(z \mid x))</script>
+
+<p>.We further transform the variational lower bound as the following:</p>
+
+<d-math block="">
+\begin{aligned}
+\mathcal{L}(\theta, \phi;x)
+&amp;= \int q_\phi(z \mid x)log\frac{p_\theta(x, z)}{q_\phi(z \mid x)}dz \\
+&amp;= \int q_\phi(z \mid x)log\frac{p_\theta(x \mid z)p(z)}{q_\phi(z \mid x)}dz \\
+&amp;= \int q_\phi(z \mid x)log p_\theta(x \mid z)dz + \int q_\phi(z \mid x)log\frac{p(z)}{q_\phi(z \mid x)}dz \\
+&amp;= \mathbb{E}_{q_\phi(z \mid x)} log p_\theta(x \mid z) - \int q_\phi(z \mid x)log\frac{q_\phi(z \mid x)}{p(z)}dz \\
+&amp;= \mathbb{E}_{q_\phi(z \mid x)} log p_\theta(x \mid z) - KL(q_\phi(z \mid x) || p(z))
+\end{aligned}
+</d-math>
+
+<p>E-step: We maximize $\mathcal{L}(\theta, \phi;x)$ w.r.t. $\phi$ with $\theta$ fixed.<br />
+M-step: We maximize $\mathcal{L}(\theta, \phi;x)$ w.r.t. $\theta$ with $\phi$ fixed.</p>
+
+<p><strong>Demistifying and Unifying different models</strong>:<br />
+As an example, we want to unifying the zoo of Deep Generative Models (DGMs): GANs, VAEs, WS, VI, etc..</p>
+
+<p>Commonness: All with implicit distributions and black-box Neural Network models in terms of the formulation.<br />
+Difference: Different space complexity and loss functions, e.g., GAN uses an adversarial loss while VAE uses a maximum likelihood loss.</p>
+
+<p><strong>Designing proper model/algorithms with Guarantees</strong>:<br />
+Assume we solve a regression problem as the following:</p>
+
+<script type="math/tex; mode=display">\mathop{\arg\max}\limits_{\theta} = \mathcal{L}(\{x_i, y_i\}_{i=1}^{N};\theta) + \Omega(\theta)</script>
+
+<p>To provide an algorithm with guarantees, we use an iterative-convergent gradient algorithm as the following:</p>
+
+<script type="math/tex; mode=display">\theta^{(t)} = \theta^{(t-1)} + \epsilon\nabla\mathcal{L}(\theta^{(t-1)}, D^{(t)})</script>
+
+<p><strong>Good Generalizability of models</strong>:</p>
+
+<figure>
+  <div class="row">
+    <div class="col">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/Overfitting.png" />
+    </div>
+  </div>
+  <figcaption>
+    Models with different generalizability
+  </figcaption>
+</figure>
+
+<p>We should avoid our models from underfitting and overfitting.</p>
+
+<p><strong>Case Analysis: Medical Imaging Report Generation</strong><br />
+In traditional way of generating imaging report, the radiology observations and findings regarding each area of the
+body are first examined in the imaging study, then the findings, the patient clinical history and the indication for the imaging study are combined to provide a diagnosis.</p>
+
+<p>However, there are difficulties in Automatic Imaging Report Generation:</p>
+<ul>
+  <li>Abnormal regions in medical images are difficult to identify.</li>
+  <li>The reports are typically long, containing multiple sentences.</li>
+  <li>Each sentence discusses a specific topic so localization of the image regions and tags that are relevant to this topic is required.</li>
+</ul>
+
+<figure>
+  <div class="row">
+    <div class="col">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/Imaging_Report_Generation.png" />
+    </div>
+  </div>
+  <figcaption>
+    Models with different generalizability
+  </figcaption>
+</figure>
+
+<p>Several models and techniques are used here:</p>
+<ul>
+  <li>Semi-supervised learning for lesion tag prediction.</li>
+  <li>Hierarchical LSTM for long-paragraph generation.</li>
+  <li>Visual-semantic co-attention to localize the relevant image regions and tags for each sentence to be generated.</li>
+</ul>
+
+<p><strong>Building v/s Crafting</strong>:<br />
+To realize AI version of civil engineering, understanding the term of “building” is extremely important. Building entails the design of the system structure, the plan of building the system, the budget for the system, the requirement for materials (data, knowledge, infrastructure, etc.), the methods used in the system, the implementation details, the integration of different modules, the refinement/tuning of the system to get optimal performance, the deployment of the system on other platforms, the test of the system under normal and stress case, the maintenance and upgrade of the system and the security of the system.</p>
+
+<p><strong>Case Analysis: Solving a ML Program</strong><br />
+Assume we are solving a Machine Learning Program as the following. Our model is represented in the objective, our data is $y$ and our parameter is $\theta$.</p>
+
+<script type="math/tex; mode=display">\mathop{\arg\max}\limits_{\theta} = \mathcal{L}(\{x_i, y_i\}_{i=1}^{N};\theta) + \Omega(\theta)</script>
+
+<p>We use an iterative convergent algorithm to solve it, usually <strong>Gradient Descent</strong> as the following.</p>
+
+<script type="math/tex; mode=display">\theta^{(t)} = \theta^{(t-1)} + \eta\nabla\mathcal{L}(\theta^{(t-1)})</script>
+
+<p>However, if the regularizer is not differentiable (e.g., L-1 norm), we cannot use gradient descent here. Here is how <strong>Proximal Gradient Descent</strong> comes into place.</p>
+
+<d-math block="">
+\begin{aligned}
+v^{(t)} &amp;\leftarrow \theta^{(t-1)} - \eta\nabla_{\theta^{(t-1)}}\mathcal{L}(\theta^{(t-1)}) \\
+\theta^{(t)} &amp;\leftarrow \mathop{\arg\min}\limits_{z}\frac{1}{2\eta}||v^{(t)} - z||^{2} + \Omega(z)
+\end{aligned}
+</d-math>
+
+<p>Here $\mathop{\arg\min}\limits_{z}\frac{1}{2\eta}||\theta^{(t)} - z||^{2} + \Omega(z)$ is the proximal map for $\theta$. For every iteration, we first compute the gradient of<br />
+$\theta$, and then projected $\theta$ onto the proximal map. The time complexity of Proximal Gradient Descent is $O(1/\eta t)$.</p>
+
+<p>To accelerate Proximal Gradient Descent, we have an accelerated version, which is also called <strong>Fast Iterative Shrinkage-Thresholding Algorithm (FISTA)</strong>.</p>
+
+<d-math block="">
+\begin{aligned}
+v^{(t)} &amp;\leftarrow \theta^{(t-1)} - \eta\nabla_{\theta^{(t-1)}}\mathcal{L}(\theta^{(t-1)}) \\
+u^{(t)} &amp;\leftarrow \mathop{\arg\min}\limits_{z}\frac{1}{2\eta}||v^{(t)} - z||^{2} + \Omega(z) \\
+\theta^{(t)} &amp;\leftarrow u^{(t)} + \frac{t-1}{t+2}(u^{(t)} - u^{(t-1)})
+\end{aligned}
+</d-math>
+
+<p>As shown above, for every iteration, the first two steps of the algorithm is the same with Proximal Gradient Descent. At the third step, the momentum is considered to update $\theta$. With acceleration, the time complexity is boosted to $O(1/\eta t^2)$.</p>
+
+<p>To use Moreau envelope as smooth approximation of the objective of Proximal Gradient Descent has a rich and long history in convex analysis. Inspired from proximal point algorithm, which is exactly the second step for every iteration of Proximal Gradient Descent, an approximation of the objective is given as the following:</p>
+
+<script type="math/tex; mode=display">\min\limits_{\theta} \mathcal{L}(\theta) + \Omega(\theta) \approx \min\limits_{\theta} M_{\mathcal{L}}^{\eta}(\theta) + \Omega(\theta)</script>
+
+<p>The <strong>Smooth Proximal Gradient Descent</strong> first computes the proximal map of the last $\theta$ on the differentiable part of the objective, and then computes the proximal map of the result of the first step on the non-differentiable part. Finally, it applies the momentum similar to Accelerated Proximal Gradient Descent.</p>
+
+<d-math block="">
+\begin{aligned}
+v^{(t)} &amp;\leftarrow \mathop{\arg\min}\limits_{z}\frac{1}{2\eta}||\theta^{(t-1)} - z||^{2} + \mathcal{L}(z) \\
+u^{(t)} &amp;\leftarrow \mathop{\arg\min}\limits_{z}\frac{1}{2\eta}||v^{(t)} - z||^{2} + \Omega(z) \\
+\theta^{(t)} &amp;\leftarrow u^{(t)} + \frac{t-1}{t+2}(u^{(t)} - u^{(t-1)})
+\end{aligned}
+</d-math>
+
+<p><strong>Data-Parallel for large-scale problems</strong>:</p>
+
+<figure>
+  <div class="row">
+    <div class="col">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/data_parallel.png" />
+    </div>
+  </div>
+  <figcaption>
+    Models with different generalizability
+  </figcaption>
+</figure>
+
+<p>If data is too large to fit in a single worker, divide it among P workers. For every iteration, each worker receives a stale sub-updates and all the sub-updates are aggregated to get the total update.</p>
+
+<h2 id="modularization-and-standardization">Modularization and Standardization</h2>
+<p>Our goal is to systematically order the nuts and bolts so that we can easily pick the components we need. There are three stages of nuts and bolts:</p>
+
+<latex-js style="border: 1px dashed #aaa;">
+\begin{itemize}
+  \item Data wrangling: projections, transformations and embeddings of data
+  \item Machine learning: loss functions, regularizers/priors, training algorithms
+  \item System harmonization: distributed ML, parameter servers
+\end{itemize}
+
+
+</latex-js>
+
+<p>Each stage can be further broken down into steps. Data wrangling steps are ingestion, cleaning and improvement, feature engineering, embedding, and integration. Machine learning steps are build, augment and tune, train, score, and experiment. The steps for system harmonization are deploy, storage, compatibility, user accounts and security, and project management.</p>
+
+<h3 id="interoperability">Interoperability</h3>
+<p>There should be standards for interfaces between nuts and bolts so that any algorithm can be used after any data wrangling method.</p>
+
+<h3 id="process">Process</h3>
+<p>There should be a workbench where people can easily create, experiment, explain and manage their tasks. A graphical interface may be useful for this process.</p>
+
+<h3 id="soundness">Soundness</h3>
+<p>If you have correctly modularized and implemented components, then you guarantee soundness of the system. You can use the theory and guarantees for each component to build the guarantees for the whole system.</p>
+
+<h2 id="real-world-example-texar">Real-World Example: Texar</h2>
+<p>Texar <d-cite key="hu2018texar"></d-cite> is a toolkit for text generation built on these principles.</p>
+
+<h3 id="language-model-example">Language model example</h3>
+<p>A language model computes the probability of a sentence $y = (y_1, y_2,….y_T)$ as $p_\theta(y) = \prod_{t=1}^T p_{\theta}(y_t \mid y_{t-1})$ according to the Markov assumption. In the simplest case, we can use an HMM to model this. We can allow more dependences by letting each hidden state be an LSTM. We can incorporate additional context by using a conditional language model that computes the conditional probability of a sentence $p_\theta(y \mid x) = \prod_{t=1}^T p_{\theta}(y_t \mid y_{t-1}, x)$. The language model can be viewed as a decoder and the context can be modeled as an encoder. With this formulation, we can plug in many different options into the encoder.</p>
+
+<h3 id="reinforcement-learning">Reinforcement learning</h3>
+<p>We can use reinforcement learning to create a closed loop between data sampling and evaluation that allows us to continuously train. For instance, if our test metric is BLEU, and we have a decoder that generates samples $\hat{y}$ which are used to evaluate the reward, then we can use a reinforcement learning process that automatically updates the decoder based on the BLEU metric after we sample a $\hat{y}$.</p>
+
+<p>The key idea is that the model should be modular and composable; instead of building from scratch, we should be assembling composable parts.</p>
+
+<h2 id="distributed-machine-learning">Distributed Machine Learning</h2>
+
+<p>You might have noticed that this year was the first <a href="https://www.sysml.cc/">SysML</a> conference (last year’s SysML was just a workshop).
+The goal of this new conference is to promote the co-design of machine learning systems and machine learning algorithms.
+One interesting area at the intersection of ML and systems is <em>distributed machine learning</em>.
+When implementing ML algorithms in a distributed system, there are a lot of interesting questions that arise such as which quantities to transfer between the machines, how often to transfer those quantities, etc.</p>
+
+<p>In this lecture, we’ll discuss two interesting architectures for distributed machine learning: the <em>parameter server</em>
+architecture and the <em>sufficient vector</em> architecture.</p>
+
+<h3 id="parameter-servers-and-bounded-asynchrony">Parameter servers and bounded asynchrony</h3>
+
+<p>Suppose that you’re trying to train an ML model on a huge dataset, and you have many machines at your disposal.
+One natural idea is to shard the data across many worker machines, but store the whole
+model on a single master machine called the <em>parameter server</em> (in practice, the PS could also be
+ group of machines if the model is too big to fit on a single machine).</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/parameter-server.png" />
+        </div>
+    </div>
+</figure>
+
+<p>(Interestingly, a very simple instance of the parameter server architecture occurs 
+ where you have a single machine with multiple worker threads accessing a model stored in shared memory.)</p>
+
+<p>In the most naive PS architecture, each worker retrieves the latest copy of the model from the master / parameter server,
+then computes model updates using its own subset of the dataset, and then sends its model update back
+to the master/parameter server, which aggregates all worker’s updates.</p>
+
+<p>One problem with this naive architecture is that there might be stragglers — some workers might take longer to compute their
+updates, and it’s inefficient force the remaining workers to wait for the straggler to get its updates in.
+The solution to this straggler problem is to permit some degree of asynchrony — model parameters are dispatched 
+asynronously to the workers, before all workers’ model updates from the previous iterataion are in.
+The trick to making this work is to enforce that the amount of asynchrony is bounded.
+With bounded asynchrony, you can prove convergence theorems.
+For example,  Theorem 5 in <d-cite key="dai"></d-cite> proves that the 
+difference between the current iterate’s objective value and the optimal objective value decreases exponentially.
+Notice that this bound depends explicitly on the expectation and variance of the delay between all workers in the cluster.
+These two numbers can be controlled by the operator of the system.</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/convergence.png" />
+        </div>
+    </div>
+</figure>
+
+<p>This theorem was the first of its kind when it was published in 2013. 
+It was unique because it modeled parameters of the <em>system</em>.
+Usually, ML theorems just make assumptions about the smoothness of a function or the properties of the data.
+But that type of theorem is not very useful in practice, because real computer systems can behave in very strange ways.
+This theorem is interesting because it brings parameters of the real computer system into the analysis.</p>
+
+<h3 id="sufficient-factor-broadcasting">Sufficient factor broadcasting</h3>
+
+<p>The trouble with the parameter server architecture is that it requires the whole model to be transmitted
+between each worker, and the parameter server, in every iteration.
+This is infeasible for huge models like DNNs which may be gigabytes in size.
+Fortunately, it turns out that for a certain class of models called <em>matrix parameterized models</em>,
+you can get away with just passing around a low-rank version of the model updates between the workers.
+This approach is called <em>sufficient factor broadcasting</em>.</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-28/sufficient-factors.png" />
+        </div>
+    </div>
+</figure>
+
+<p>In sufficient factor broadcasting, you do <strong>not</strong> have a parameter server which is the ground source 
+of truth for the model weights.
+Instead, each worker maintains its own copy of the model weights.
+In every iteration, each worker sends the model updates, computed over its subset of the dataset, as a message to every other worker.
+Now, it may seem at first as if this is completely impractical – if you do this in the naive way,
+the model update <script type="math/tex">\Delta W</script> is just as large as the model itself!</p>
+
+<p>However, it turns out that for so-called matrix parameterized models, each model update is low-rank,
+so rather than passing around the full update, each worker can just send the other workers the low rank factors.</p>
+
+<p>Matrix-parameterized models take the following form:</p>
+
+<script type="math/tex; mode=display">\min_W \frac{1}{N} \sum_{i=1}^N f_i (W a_i) + h(W)</script>
+
+<p>where <script type="math/tex">h</script> is a regularizer and <script type="math/tex">f_i</script> is the loss for the <script type="math/tex">i</script>-th data point (which may, for example, implicitly depend on that data point’s label).</p>
+
+<p>Examples of MPMs include distance metric learning, multi class logistic regression, topic models, sparse coding, neural networks, etc.
+In multiclass logistic regression, the rows of the parameter matrix are the coefficient vectors for the different classes; in sparse coding, the rows of the parameter matrix are the basis vectors used to reconstruct the observed data.</p>
+
+<p>The trick behind the sufficient factor broadcasting framework is that the SGD update in a matrix-parameterized model is low-rank:</p>
+
+<script type="math/tex; mode=display">\Delta W = u v^T \quad u = \frac{\partial f(W a_i)}{\partial (W a_i)} \quad v = a_i</script>
+
+<p>Therefore, rather than passing around <script type="math/tex">\Delta W</script>, you can just pass around <script type="math/tex">u</script> and <script type="math/tex">v</script>.</p>
+
+<p>Interestingly, it’s not only the SGD update that’s low-rank: the SDCA <d-cite key="Shalev"></d-cite> update is also low-rank.</p>
+
+<p><a href="http://www.cs.cmu.edu/~pengtaox/papers/uai16_sfb.pdf">This paper</a> provides a detailed analysis of the correctness of this approach.
+Interestingly, it turns out that each machine doesn’t need to send its updates to <em>every</em> other worker, only to its nearest neighbors.
+You can prove that the result you get from this protocol is equivalent, under certain conditions, to the result you’d get if you broadcasted the updates to every other worker.</p>
+
+<h3 id="parameter-server--sufficient-factor-hybrid">Parameter Server / Sufficient Factor Hybrid</h3>
+
+<p>The parameter server idea and the sufficient factor idea can be combined.
+For example, if you’re training a neural network, note that the parameters for the early, convolutional layers take up way less space than the parameters for the later, fully-connected layers.
+Therefore, you can transmit the convolutional parameters using a parameter server master/slave setup (each worker sends its weight update to the master server, which sends to all the workers), while you can transmit the fully-connected parameters using a peer-to-peer sufficient factor setup.</p>
+
+<h2 id="programming-interfaces-and-software-frameworks">Programming Interfaces and Software Frameworks</h2>
+
+<p>Another exciting research direction at the intersection of systems and machine learning are programaming interfaces
+and software frameworks for deep learning, such as Cavs, a DL framework recently developed by Petuum.</p>
+
+<p>Modern DL frameworks are either static graphs, like TensorFlow, or dynamic graphs, like PyTorch.
+The advantage of the static graph approach is that you can optimize the computational graph.
+However, the disadvantage is that it’s hard for frameworks based on static graphs to handle inputs of variable length, 
+such as sentences with variable number of words or images with a variable size.
+You have to resort to hacks like zero-padding all sentences to be the length of the largest possible sentence, or creating a number of different static graphs, one for each possible sentence length.</p>
+
+<p>Cavs takes a different approach, inspired by graph processing software frameworks.
+Graph-processing software often follows a vertex-centered approach called <em>vertex programming</em>.
+In vertex programming, the programmer defines each vertex’s role, in terms of its inputs from neighboring vertices
+and its outputs to neighboring vertices.</p>
+
+<p>In Cavs, the programmer writes a vertex program, which is optimized.
+However, at runtime, the graph that is fed to the vertex program can be of any size.
+Cavs therefore gives the best of both worlds — the optimizations of a static graph, but without the hasslse.</p>
+
+<p>As you can see from the comparison below, Cavs (green bars) is much faster than TensorFlow (brown bars):</p>
+
+<h2 id="explainable-ai">Explainable AI</h2>
+
+<p>Explainability is an important area of research/engineering these days.
+It’s important to keep in mind that explainability is not just about showing the weights of the model.
+There are several different types of explainability that are equally important:</p>
+
+<ul>
+  <li>Data explainability: how the data is processed</li>
+  <li>Model explainability: what you’ve learned, e.g. feature weights</li>
+  <li>Inference explainability: how each result is inferred</li>
+  <li>Process explainability: factors beyond or complementary to the mechanisms / mathematics of ML.</li>
+</ul>
+
+<h3 id="data-explainability">Data explainability</h3>
+
+<p>An example of a data explainability concern is: how is HTML transformed into an “ML-ready” form?  For example, you might first strip HTML tags, then remote stopwords/punctuation, then embed everything.</p>
+
+<p>In order to debug potential problems that arise, you need to be able to interactively visualize the input and output at every stage of this process.</p>
+
+<h3 id="model-explainability">Model explainability</h3>
+
+<p>Some model explainability concerns are:</p>
+<ul>
+  <li>Weights: which input features are most important to the result?</li>
+  <li>Boundaries: which input values cause the result to change qualitatively?</li>
+  <li>Bases: what are the concepts and examples that are important to the model?</li>
+</ul>
+
+<h3 id="inference-explainability">Inference explainability</h3>
+
+<p>For explainability, it’s not sufficient to just look at the static weights of the model, as different input points may take different paths through the model.
+Therefore, you need to understand what happens as data travels through the model:</p>
+<ul>
+  <li>Which weights are activated by the data</li>
+  <li>Which decision boundaries are close to the data?</li>
+  <li>What bases are activated by the data?</li>
+</ul>
+
+<p>Recent work on contextual explanation networks <d-cite key="alshedivat2017contextual"></d-cite> allow you to incorporate explanations directly into the model.  Intuitively, you train a “personalized” model for every data point.</p>
+
+<h3 id="process-explainability">Process explainability</h3>
+
+<p>How do factors beyond data, model, and inference affect ML results?</p>
+<ul>
+  <li>Are there multiple users/tenants sharing the cloud or datacenter resources?</li>
+  <li>What if one of the computers crashes or becomes slow?</li>
+  <li>What if the computer network becomes unreliable or slow?</li>
+  <li>What if there are security breaches? Data outages?</li>
+</ul>
+
+<p>These questions all arise in multi-tenant environments like the cloud or a corporate network.</p>
+
+<h2 id="summary">Summary</h2>
+<p>There is still much to do in AI. 
+We are still in the alchemy stage as opposed to the chemistry stage, and certainly not at the chemical engineering stage yet.
+In the future, when we hopefully will have greater insight into the “periodic table” of machine learning, we will be able to reason about what happens when we combine different ML components, just like chemists know what happens when you combine two different chemicals.
+But we are not there yet.</p>
+
+<p>Once the <em>science</em> of AI is more mature, the real <em>engineering</em> of AI can commence.
+Just like in 2019 you don’t need a physics professor to fix the wiring in your house, in the future one hopefully won’t need a PhD
+in machine learning in order to know how to build AI systems.</p>
+
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-04-29-lecture-28.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 5: Parameter Estimation in Fully Observed Bayesian Networks</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-05/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 5: Parameter Estimation in Fully Observed Bayesian Networks",
+      "description": "Introduction to the problem of Parameter Estimation in fully observed Bayesian Networks",
+      "published": "January 30, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Chentao Ye"
+        },
+        
+        {
+          "author": "Muqiao Yang"
+        },
+        
+        {
+          "author": "Qingtao Hu"
+        },
+        
+        {
+          "author": "Sailun Xu"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Hao Zhang",
+          "editorURL": "https://www.cs.cmu.edu/~hzhang2/"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 5: Parameter Estimation in Fully Observed Bayesian Networks</h1>
+        <p align='right' dir="rtl">Introduction to the problem of Parameter Estimation in fully observed Bayesian Networks</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <h2 id="introduction">Introduction</h2>
+<p>Last class, we presented two major types of graphical model task, <strong>Inference</strong> and <strong>Learning</strong>, and we mainly discussed about inference. In this lecture, we start to introduce the learning task, and explore some learning techniques used in <strong>fully observable Bayesian Networks</strong>.</p>
+
+<h2 id="learning-graphical-models">Learning Graphical Models</h2>
+<p>Before we get started, it’s better for us to get some intuition about what learning is and which goal learning is achieving.</p>
+
+<h3 id="the-goal">The goal</h3>
+<p>The goal: Given a set of independent samples (assignments of random variables), find the best (or the most likely) Bayesian Network (both DAG and CPDs).</p>
+
+<p>As shown in the figure below, we are given a set of independent samples (assignments of binary random variables). Assume it’s a DAG, we are going to learn the directed links (causality relationships) between nodes, this process is called <strong>Structural Learning</strong>. Learning the conditional possibility is another task called <strong>Parameter learning</strong>.</p>
+
+<figure>
+<div class="row">
+<div class="col two">
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/goal.png" />
+</div>
+</div>
+<figcaption>
+<strong>The goal</strong>
+</figcaption>
+</figure>
+
+<h3 id="overview">Overview</h3>
+<p>As listed below, there’re several learning scenarios we are interested in:</p>
+<ol>
+  <li>Completely observed GMs:
+    <ul>
+      <li>1.1. directed</li>
+      <li>1.2. undirected</li>
+    </ul>
+  </li>
+  <li>Partially or unobserved GMs:
+    <ul>
+      <li>1.1. directed</li>
+      <li>1.2. undirected (an open research topic)</li>
+    </ul>
+  </li>
+</ol>
+
+<p>Some useful estimation principles are also listed here:</p>
+<ol>
+  <li>Maximal likelihood estimation (MLE)</li>
+  <li>Bayesian estimation</li>
+  <li>Maximal conditional likelihood</li>
+  <li>Maximal “Margin”</li>
+  <li>Maximum entropy</li>
+</ol>
+
+<p>We use <strong>learning</strong> as a name for the process of estimating the <strong>parameters</strong>, and in some cases, the <strong>topology</strong> of the network, from data.</p>
+
+<h2 id="parameter-learning">Parameter Learning</h2>
+
+<p>In this section, we are going to introduce <strong>Parameter Learning</strong>, and some useful related models.</p>
+
+<p>When doing parameter learning, we assume that the Graphical model <strong>G</strong> itself is known and fixed, <strong>G</strong> could come from either expert design or an intermediate outcome of iterative structure learning.</p>
+
+<p>The goal of parameter learning is to estimate parameters from a dataset of <script type="math/tex">N</script> independent, identically distributed (i.i.d.) training samples $D = {x_1, \cdots, x_N}$.</p>
+
+<p>In general, each training case <script type="math/tex">\mathbf{x}_n = (x_{n,1}, \cdots, x_{n, M})</script> is a vector of <script type="math/tex">M</script> values, one per node. Depending on the model, elements in <script type="math/tex">\mathbf{x}_n</script> could be all known (no missing values, no hidden variables) if the model is completely observable, or partially known ($\exists i, x_{n,i}$ is not observed) if the model is partially observable.</p>
+
+<p>In this class, we mainly consider learning parameters for a <strong>BN</strong> that is <strong>completely observable</strong> with a given structure.</p>
+
+<h2 id="exponential-family-distributions">Exponential Family Distributions</h2>
+<p>There are various density estimation tasks that can be viewed as single-node GMs (see the <a href="#supplementary">supplementary section</a> for examples), and they are in fact instances of <strong>Exponential Family Distributions</strong>.</p>
+
+<p>Exponential Family Distributions are building blocks for general GMs, and have nice properties allowing us to easily do MLE and Bayesian estimation.</p>
+
+<h3 id="definition">Definition</h3>
+<p>For a numeric random variable $X$,</p>
+
+<script type="math/tex; mode=display">p_X(x|\eta) = h(x)\exp\{\eta^T T(x) - A(\eta)\}=\frac{1}{Z(\eta)}h(x)\exp\{\eta^T T(x)\}</script>
+
+<p>Function $T(x)$ is a sufficient statistic (will be explained in <a href="#sufficiency">sufficiency section</a>).</p>
+
+<p>Function $A(\eta) = \log{Z(\eta)}$ is the log normalizer.</p>
+
+<h3 id="examples">Examples</h3>
+
+<p>We can see lots of probability distributions actually belonging to this family (including Bernoulli, Multinomial, Gaussian, Poisson, Gamma).</p>
+
+<p><strong>Example 1: Multivariate Gaussian Distribution</strong></p>
+
+<p>For a continuous vector random variable $X \in R^k$:</p>
+
+<d-math block="">
+\begin{aligned}
+p_X(x|\mu,\Sigma)
+&amp;= \frac{1}{(2\pi)^{k/2}|\Sigma|^{1/2}}\exp\left\{-\frac{1}{2}(x-\mu)^T \Sigma^{-1}(x-\mu)\right\} \\
+&amp;= \frac{1}{(2\pi)^{k/2}} \exp\left\{-\frac{1}{2}tr(\Sigma^{-1}xx^T)+\mu^T\Sigma^{-1}x-\frac{1}{2}\mu^T\Sigma^{-1}\mu-\log{|\Sigma|}\right\}
+\end{aligned}
+</d-math>
+
+<p>Exponential family representation:</p>
+
+<d-math block="">
+\begin{aligned}
+\eta &amp;= [\Sigma^{-1}\mu;-\frac{1}{2}vec(\Sigma^{-1})] = [\eta_1,vec(\eta_2)], \eta_1 = \Sigma^{-1}\mu, \eta_2 = -\frac{1}{2}\Sigma^{-1} \\
+T(x) &amp;= [x;vec(xx^T)] \\
+A(\eta) &amp;= \frac{1}{2}\mu^T\Sigma^{-1}\mu+\log{|\Sigma|}=-\frac{1}{2}tr(\eta_2\eta_1\eta_1^T)-\frac{1}{2}\log{(-2\eta_2)} \\
+h(x) &amp;= (2\pi)^{-k/2}
+\end{aligned}
+</d-math>
+
+<p>After this conversion, we see that the Multivariate Gaussian Distribution indeed belongs to exponential family.</p>
+
+<p>Note that a $k$-dimension Multivariate Gaussian Distribution has a $k + k^2$-dimensional natural parameter (and sufficient statistic). However, as <script type="math/tex">\Sigma</script> has to be symmetric and PSD, parameters actually have a lower degree of freedom.</p>
+
+<p><strong>Example 2: Multinomial Distribution</strong></p>
+
+<p>For a binary vector random variable $x\sim multinomial(x \vert \pi)$,</p>
+
+<script type="math/tex; mode=display">p(x|\pi) = \pi_1^{x_1}\pi_2^{x_2} \cdots \pi_K^{x_K}= \exp\{\sum_k x_k\ln\pi_k\}</script>
+
+<script type="math/tex; mode=display">=\exp\{\sum_{k=1}^{K-1}x_k\ln\pi_k+(1-\sum_{k=1}^{K-1}x_k)\ln(1-\sum_{k=1}^{K-1}\pi_k)\}</script>
+
+<script type="math/tex; mode=display">=\exp\{\sum_{k=1}^{K-1}x_k\ln(\frac{\pi_k}{\sum_{k=1}^{K-1}\pi_k)})+\ln(1-\sum_{k=1}^{K-1}\pi_k)\}</script>
+
+<p>Exponential family representation:</p>
+
+<script type="math/tex; mode=display">\eta = [\ln(\pi_k/\pi_K);0]</script>
+
+<script type="math/tex; mode=display">T(x) = [x]</script>
+
+<script type="math/tex; mode=display">A(\eta) = -\ln(1-\sum_{k=1}^{K-1}\pi_k) = \ln(\sum_{k=1}^{K}e^{\eta_k})</script>
+
+<script type="math/tex; mode=display">h(x) = 1</script>
+
+<h3 id="properties-of-exponential-family">Properties of exponential family</h3>
+<p><strong>Moment generating property</strong></p>
+
+<p>The <script type="math/tex">q^{th}</script> derivative of exponential family gives the <script type="math/tex">q^{th}</script> centered moment.</p>
+
+<script type="math/tex; mode=display">\frac{dA(\eta)}{d\eta} = mean</script>
+
+<script type="math/tex; mode=display">\frac{d^2A(\eta)}{d\eta^2} = variance</script>
+
+<script type="math/tex; mode=display">\cdots</script>
+
+<p>So we can take this advantage to compute moments of any exponential family distribution by taking the derivatives of the log normalizer <script type="math/tex">A(\eta)</script>.</p>
+
+<p>Note: when the sufficient statistic is a stacked vector, partial derivatives need to be considered.</p>
+
+<p><strong>Moment vs. canonical parameters</strong></p>
+
+<p>Applying the moment generating property, the moment parameter <script type="math/tex">\mu</script> can be derived from the natural (canonical) parameter by:</p>
+
+<script type="math/tex; mode=display">\frac{dA(\eta)}{d\eta} = \mu</script>
+
+<p>Note that <script type="math/tex">A(\eta)</script> is convex since</p>
+
+<script type="math/tex; mode=display">\frac{d^2A(\eta)}{d\eta^2} = Var[T(x)]>0</script>
+
+<p>Thus we can invert the relationship and infer the canonical parameter from the moment parameter (1-to-1):</p>
+
+<script type="math/tex; mode=display">\eta = \psi(\mu)</script>
+
+<p>So we can say that a distribution in the exponential family can be parameterized not only by <script type="math/tex">\eta</script> - the canonical parameterization, but also by <script type="math/tex">\mu</script> - the moment parameterization.</p>
+
+<h3 id="mle-for-exponential-family">MLE for Exponential Family</h3>
+<p>For i.i.d. data, we have the log-likelihood:</p>
+
+<script type="math/tex; mode=display">\ell(\eta;D) = \log \prod_nh(x_n)\exp\{\eta^T T(x_n) - A(\eta)\}</script>
+
+<script type="math/tex; mode=display">=\sum_n\log h(x_n) + (\eta^T\sum_n T(x_n))-NA(\eta)</script>
+
+<p>Take the derivatives and set to zero:</p>
+
+<script type="math/tex; mode=display">\frac{\partial\ell}{\partial\eta} = \sum_n T(x_n)-N\frac{\partial A(\eta)}{\partial\eta} = 0</script>
+
+<p>and</p>
+
+<script type="math/tex; mode=display">\frac{\partial A(\eta)}{\partial\eta}=\frac{1}{N}\sum_n T(x_n)</script>
+
+<script type="math/tex; mode=display">\tilde{\mu}_{MLE} = \frac{1}{N}\sum_n T(x_n)</script>
+
+<p>This amounts to moment matching. Also, we could infer the canonical parameters using <script type="math/tex">\tilde{\eta}_{MLE}=\psi(\tilde{\mu}_{MLE})</script>.</p>
+
+<h3 id="sufficiency">Sufficiency</h3>
+<p>We can see from above that for <script type="math/tex">p(x|\theta)</script>, <script type="math/tex">T(x)</script> is sufficient for <script type="math/tex">\theta</script> if there is no information in <script type="math/tex">X</script> regarding <script type="math/tex">\theta</script> beyond that in <script type="math/tex">T(x)</script>. Then, We can throw away <script type="math/tex">X</script> for the purpose of inference w.r.t <script type="math/tex">\theta</script>. These could be shown by both Bayesian view and Frequentist view.</p>
+
+<p>Bayesian view:</p>
+
+<figure>
+<div class="row">
+<div class="col two">
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/bayesian.png" />
+</div>
+</div>
+<figcaption>
+<strong>Bayesian view</strong>
+</figcaption>
+</figure>
+
+<script type="math/tex; mode=display">p(\theta|T(x),x)=p(\theta|T(x))</script>
+
+<p>Frequentist view:</p>
+
+<figure>
+<div class="row">
+<div class="col two">
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/freq.png" />
+</div>
+</div>
+<figcaption>
+<strong>Frequentist view</strong>
+</figcaption>
+</figure>
+
+<script type="math/tex; mode=display">p(x|T(x),\theta)=p(x|T(x))</script>
+
+<p><strong>The Neyman factorization theorem</strong>:</p>
+
+<figure>
+<div class="row">
+<div class="col two">
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/neyman.png" />
+</div>
+</div>
+</figure>
+
+<p><script type="math/tex">T(x)</script> is sufficient for $\theta$ if</p>
+
+<script type="math/tex; mode=display">p(x,T(x),\theta) = \psi_1(T(x),\theta)\psi_2(x,T(x))</script>
+
+<script type="math/tex; mode=display">p(x|\theta) = g(T(x),\theta)h(x,T(x))</script>
+
+<p><strong>Examples</strong></p>
+
+<p>Gaussian:</p>
+
+<script type="math/tex; mode=display">\eta = [\Sigma^{-1}\mu;-\frac{1}{2}vec(\Sigma^{-1})] = [\eta_1,vec(\eta_2)], \eta_1 = \Sigma^{-1}\mu, \eta_2 = -\frac{1}{2}\Sigma^{-1}</script>
+
+<script type="math/tex; mode=display">T(x) = [x;vec(xx^T)]</script>
+
+<script type="math/tex; mode=display">A(\eta)=\frac{1}{2}\mu^T\Sigma^{-1}\mu+\log{|\Sigma|}=-\frac{1}{2}tr(\eta_2\eta_1\eta_1^T)-\frac{1}{2}\log{(-2\eta_2)}</script>
+
+<script type="math/tex; mode=display">h(x)=(2\pi)^{-k/2}</script>
+
+<script type="math/tex; mode=display">\mu_{MLE}=\frac{1}{N}\sum_n T_1(x_n)=\frac{1}{N}\sum_n x_n</script>
+
+<p>Multinomial:</p>
+
+<script type="math/tex; mode=display">\eta = [\ln(\pi_k/\pi_K);0]</script>
+
+<script type="math/tex; mode=display">T(x) = [x]</script>
+
+<script type="math/tex; mode=display">A(\eta) = -\ln(1-\sum_{k=1}^{K-1}\pi_k) = \ln(\sum_{k=1}^{K}e^{\eta_k})</script>
+
+<script type="math/tex; mode=display">h(x) = 1</script>
+
+<script type="math/tex; mode=display">\mu_{MLE}=\frac{1}{N}\sum_n x_n</script>
+
+<p>Poisson:</p>
+
+<script type="math/tex; mode=display">\eta = \log \lambda</script>
+
+<script type="math/tex; mode=display">T(x) = x</script>
+
+<script type="math/tex; mode=display">A(\eta) =\lambda = e^\eta</script>
+
+<script type="math/tex; mode=display">h(x)=\frac{1}{x!}</script>
+
+<script type="math/tex; mode=display">\mu_{MLE}=\frac{1}{N}\sum_n x_n</script>
+
+<h2 id="generalized-linear-models">Generalized Linear Models</h2>
+<p>There are various conditional density estimation tasks that can be viewed as two-node GMs (see <a href="#supplementary">supplementary section</a> for examples). Many are instances of Generalized Linear Models.</p>
+
+<p>Generalized linear model (GLM) is a flexible generalization of ordinary linear regression that allows the linear model to be related to response variables via a link function, that have error distribution models other than a normal distribution. For example both linear regression and logistic regression can be unified by generalized linear model.</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/GLM.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>GLM</strong>
+  </figcaption>
+</figure>
+
+<h3 id="commonality">Commonality</h3>
+<p>We model the expecatation of <script type="math/tex">y</script>:
+<script type="math/tex">E_p(\mathbf{y)} = \mu = f(\theta^T\mathbf{x})</script></p>
+
+<ul>
+  <li><script type="math/tex">p</script> is the conditional distribution of <script type="math/tex">y</script></li>
+  <li><script type="math/tex">f</script> is the response function</li>
+</ul>
+
+<p>The observed input <script type="math/tex">\mathbf{x}</script> is assumed to enter into the model via a linear combination of its elements, and the conditional mean <script type="math/tex">\mu</script> is represented as a function <script type="math/tex">f(\xi)</script> of <script type="math/tex">\xi</script>, where f is known as the link function of <script type="math/tex">\xi=\theta^T\mathbf{x}</script>. The observed output <script type="math/tex">\mathbf{y}</script> is assumed to be characterized by an exponential family distribution with conditional mean <script type="math/tex">\mu</script>.</p>
+
+<p><strong>Example 1: Linear Regression</strong></p>
+
+<p>Let’s take a quick recap on Linear Regression.</p>
+
+<p>Assume that the target variable and the inputs are related by:</p>
+
+<script type="math/tex; mode=display">y_i = \theta^T x_i + \epsilon_i</script>
+
+<p>where <script type="math/tex">\epsilon</script> is an error term of unmodeled effects or random noise.</p>
+
+<p>Now assume that $\epsilon$ follows a Gaussian distribution <script type="math/tex">N(0, \sigma)</script>, then</p>
+
+<script type="math/tex; mode=display">p(y_i|x_i;\theta) = \frac{1}{\sqrt{2\pi}\sigma}\exp(-\frac{(y_i -\theta^T\mathbf x_i)^2}{2\sigma^2})</script>
+
+<p>We can use te LMS algorithm, which is a gradient ascent/descent approach, to estimate the parameter.</p>
+
+<p><strong>Example 2: Logistic Regression</strong> (sigmoid classifier, perceptron, etc.)</p>
+
+<p>The condition distribution is a Bernoulli:</p>
+
+<script type="math/tex; mode=display">p(y|x) = \mu(x)^y (1-\mu(x))^{1-y}</script>
+
+<p>where <script type="math/tex">\mu</script> is a logistic function</p>
+
+<script type="math/tex; mode=display">\mu(x) = \frac{1}{1+e^{-\theta^T x}}</script>
+
+<p>We can use the brute force gradient method as in LR. But we can also apply generic laws by observing the <script type="math/tex">p( y \vert x )</script> is an exponential family function - a generalized linear model.</p>
+
+<h3 id="more-examples-parameterizing-graphical-models">More examples: parameterizing graphical models</h3>
+<p><strong>Markov random fields</strong></p>
+
+<figure>
+<div class="row">
+<div class="col two">
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/markov.png" />
+</div>
+</div>
+</figure>
+
+<p><script type="math/tex">p(\mathbf x) = \frac{1}{Z}\exp\{ -\sum_{c\in C} \phi_c(\mathbf x_c)\} = \frac{1}{Z}\exp\{-H(\mathbf x)\}</script> <script type="math/tex">p(X) = \frac{1}{Z}\exp\{\sum_{i,j\in N_i}\theta_{ij}X_iX_j+\sum_i\theta_{i0}X_i\}</script></p>
+
+<p><strong>Restricted Boltzmann Machines</strong></p>
+
+<figure>
+<div class="row">
+<div class="col two">
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/boltzmann.png" />
+</div>
+</div>
+</figure>
+
+<script type="math/tex; mode=display">p(x,h|\theta) = \exp\{\sum_i \theta_i \phi_i(x_i)+\sum_j \theta_j \phi_j(x_j)+\sum_{i,j} \theta_{i,j}  \phi_{i,j} (x_{i},h_j )-A(\theta)\}</script>
+
+<p><strong>Conditional Random Fields</strong></p>
+
+<figure>
+<div class="row">
+<div class="col two">
+<img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/crf.png" />
+</div>
+</div>
+</figure>
+
+<ul>
+  <li>Discriminative model, modeling <script type="math/tex">p(Y \vert X)</script></li>
+</ul>
+
+<p><script type="math/tex">p_\theta(y \vert x) = \frac{1}{Z(\theta,x)}\exp\{\sum_c\theta_cf_c(x,y_c)\}</script></p>
+<ul>
+  <li><script type="math/tex">X_i</script>s are assumed as features that are inter-dependent</li>
+  <li>When labeling <script type="math/tex">X_i</script>, future observations are taken into account.</li>
+</ul>
+
+<h3 id="mle-for-glims">MLE for GLIMs</h3>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/responseFunc.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Example canonical response functions</strong>
+  </figcaption>
+</figure>
+
+<p>Log-likelihood</p>
+
+<script type="math/tex; mode=display">\ell = \sum \limits_n \log h(y_n)+\sum \limits_n(\theta^Tx_ny_n-A(\eta_n))</script>
+
+<p>Derivative is</p>
+
+<script type="math/tex; mode=display">\frac{d\ell}{d \theta}=\sum_n(x_ny_n-\frac{dA(\eta_n)}{\eta_n}\frac{d\eta}{d\theta})=\sum_nx_n(y_n-\mu_n)=X^T(y-\mu)</script>
+
+<p>which is a fixed point function since <script type="math/tex">\mu</script> is a function of <script type="math/tex">\theta</script>.</p>
+
+<h3 id="iteratively-reweighted-least-squares-irls">Iteratively Reweighted Least Squares (IRLS)</h3>
+
+<p>Recall that the Hessian matrix <script type="math/tex">H=-X^T WX</script>, and <script type="math/tex">\theta^*=(X^TX)^{-1} X^T y</script> in least mean square optimization, we use Newton-Raphson method with cost function <script type="math/tex">\ell</script>:</p>
+
+<script type="math/tex; mode=display">\theta^{t+1}=\theta^t-H^{-1}\nabla_\theta\ell=(X^TW^tX)^{-1}X^TW^tz^t</script>
+
+<p>where the response is:</p>
+
+<script type="math/tex; mode=display">z^t=X\theta^t+(W^t)^{-1}(y-\mu^t)</script>
+
+<p>Hence, this can be understood as solving the Iteratively reweighted least squares problem.
+<script type="math/tex">\theta^{t+1}=arg\min_\theta(z-X\theta)^T(z-X\theta)</script></p>
+
+<h2 id="global-and-local-parameter-independence">Global and local parameter independence</h2>
+
+<p>Simple graphical models can be viewed as building blocks of complex graphical models. With the same concept, if we assume the parameters for each local conditional probabilistic distribution to be globally independent, and all nodes are fully observed, then the log-likelihood function can be decomposed into a sum of local terms, one per node:</p>
+
+<script type="math/tex; mode=display">\ell(\theta,D)=\log p(D|\theta)=\sum_i(\sum_n \log p(x_{n,i}|\mathbf{x_{n,\pi_i},\theta_i}))</script>
+
+<h3 id="plate">Plate</h3>
+
+<p>A plate is a macro that allows subgraphs to be replicated. Conventionally, instead of drawing each repeated variable individually, a plate is used to group these variables into a subgraph that repeat together, and a number is drawn on the plate to represent the number of repetitions of the subgraph in the plate.</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/plate.png" />
+    </div>
+  </div>
+</figure>
+
+<p>Rules for plates: Repeat every structure in a box a number of times given by the integer in the corner of the box (e.g. <script type="math/tex">N</script>), updating the plate index variable (e.g. <script type="math/tex">n</script>) as you go; Duplicate every arrow going into the plate and every arrow leaving the plate by connecting the arrows to each copy of the structure.</p>
+
+<p>For example, in the directed acyclic network, it can be decomposed as
+<script type="math/tex">p(x|\theta)=\sum_{i=1}^np(x_i|\mathbf{x}_{\pi_i})=p(x_1|\theta_1)p(x_2|x_1,\theta_2)p(x_3|x_1,\theta_3)p(x_4|x_2,x_3,\theta_4)</script>
+This is exactly like learning four separate small BNs, each of which consists of a node and its parents, as shown by the following graph:</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/decompose.png" />
+    </div>
+  </div>
+</figure>
+
+<p>Global parameter independence:
+For every DAG model,  <script type="math/tex">p(\theta_m|G)=\prod_{i=1}\limits^Mp(\theta_i|G)</script>.</p>
+
+<p>Local parameter independence:
+For every node, <script type="math/tex">p(\theta_i|G)=\prod_{i=1}^{q_i}p(\theta_{x_i^k|\mathbf{x}_{\pi_i}^j}|G)</script>.</p>
+
+<h3 id="global-parameter-sharing">Global parameter sharing</h3>
+<p>Consider a network structure <script type="math/tex">G</script> over a set of variables <script type="math/tex">X = \{X_1, \cdots, X_n\}</script>, parameterized by a set of parameters <script type="math/tex">\theta</script>. Each variable <script type="math/tex">X_i</script> is associated with a CPD <script type="math/tex">P(X_i | U_i,\theta)</script>. Now, rather than assuming that each such CPD has its own parameterization <script type="math/tex">\theta_{X_i|U_i}</script>, we assume that we have a certain set of shared parameters that are used by multiple variables in the network. That is the global parameter sharing. Assuming <script type="math/tex">\theta</script> is partitioned into disjoint subsets <script type="math/tex">\theta_1, \cdots, \theta_k</script>, and with each subset we assign a disjoint set of variables <script type="math/tex">\mathcal{V}_k\subset\mathcal{X}</script>. For <script type="math/tex">X_i\subset\mathcal{V_k}</script>, <script type="math/tex">P(X_i|\mathbf{U}_i,\theta)=P(X_i|\mathbf{U}_i,\theta^k)</script>
+and for <script type="math/tex">X_i,X_j\subset\mathcal{V_k}</script>,</p>
+
+<script type="math/tex; mode=display">P(X_i|\mathbf{U}_i,\theta^k)=P(X_j|\mathbf{U}_j,\theta^k)</script>
+
+<h2 id="supervised-ml-estimation">Supervised ML estimation</h2>
+<h3 id="hidden-markov-model-hmm">Hidden Markov Model (HMM)</h3>
+<p>We are given a HMM, and let hidden states be $y_1, \cdots, y_N$, our observations be $x_1, \cdots, x_N$, which are all known to us.</p>
+
+<p>In the training time, we can record the frequency of each transition from a hidden state to another, or from a hidden state to an observation state.</p>
+
+<p>Let $A_{ij}$ be a transition from a hidden state $i$ to a hidden state $j$, and let $B_{ik}$ be a transition from a hidden state <script type="math/tex">i</script> to an observation state $k$. We calculate our parameters using maximum likelihood estimation by the following:</p>
+
+<script type="math/tex; mode=display">a_{ij}^{ML} = \frac{\#transitions\ from\ i\ to\ j}{\#transitions\ from\ i\ to\ any\ hidden}</script>
+
+<script type="math/tex; mode=display">b_{ik}^{ML} = \frac{\#transitions\ from\ i\ to\ k}{\#transitions\ from\ i\ to\ any\ observation}</script>
+
+<p>If what we observe are continuous, we can treat them as Gaussian, and apply corresponding learning rules for Gaussian.</p>
+
+<h4 id="pros">Pros</h4>
+<p>This method gives us the parameters that “best fit”, or maximizes the likelihood of seeing the training data. Therefore for the test data, intuitively it should be at least close to the truth. MLE tends to give good performance in the reality.</p>
+
+<h4 id="cons">Cons</h4>
+<p>We just show that the parameters for calculation of probability upon seeing a test data depend on the frequency of seeing the same pattern in the training time. This leads to a problem. If there’s a test data case that’s never seen in the training data, then we will auto assign a zero probability to that test data, which is “infinitely wrong” because it will lead to a infinity cross entropy from real world to our model.</p>
+
+<p>This also shows the overfitting problem, that we fit our training data too well that we cannot generalize our model to the real world well.</p>
+
+<h4 id="example-on-the-slide">Example on the slide</h4>
+<p><script type="math/tex">b_{F4}=0</script> because there’s no casino roll such that <script type="math/tex">x=4</script> and <script type="math/tex">y=F</script> in the training data. However we all know this is not true!</p>
+
+<h3 id="pseudocounts">Pseudocounts</h3>
+<p>To solve this problem, we can add “hallucinated counts” to all the cases, so that even the cases which are never seen in the training time will get some counts. Therefore at test time there will be no zero probability assigned to any case.</p>
+
+<h4 id="how-many-pseudocounts-do-we-add">How many Pseudocounts do we add</h4>
+<p>Imagine if the total frequency of the cases in training is 100, and we add 10000 counts to one case, then that case will be assigned a very high probability in the test time. What we just have done is equal to saying that “I strongly believe this will happen”. In another word, we put lots of belief in that case.</p>
+
+<p>However, if we just add one Pseudocount to each case, then the probability of frequent cases will decrease, but not too much. Their rankings in probability won’t change, because it’s just their denominators in MLE calculation have changed, by the same amount. The spared probability will be distributed to cases never seen in the training. They will be very small, but this eliminates the problem of zero probability in testing. This is what we call smoothing.</p>
+
+<p>We can also see this as Bayesian Estimation under a uniform prior with “parameter strength”, while we add pseudocounts to cases.</p>
+
+<h2 id="supplementary">Supplementary</h2>
+<h3 id="density-estimation">Density Estimation</h3>
+<p>Density estimation can be viewed as single-node graphical models.  It is the building block of general GM.</p>
+
+<p>For density estimation we have:</p>
+<ul>
+  <li>MLE(maximum likelihood estimate)</li>
+  <li>Bayesian estimate</li>
+</ul>
+
+<h3 id="discrete-distributions">Discrete Distributions</h3>
+<h4 id="bernoulli-distribution-berp">Bernoulli distribution: <script type="math/tex">Ber(p)</script></h4>
+
+<script type="math/tex; mode=display">P(x)=p^x(1-p)^{1-x}</script>
+
+<h4 id="multinomial-distribution-multinomialntheta">Multinomial distribution: <script type="math/tex">Multinomial(n,\theta)</script></h4>
+<p>It’s generally similar to Binomial. However, the “1” in parameter indicates there will be only one trial. Therefore it’s similar to Bernoulli, except now we have <script type="math/tex">k</script> instances that could happen, each with a probability <script type="math/tex">\theta_i</script>, where $\sum_{i=1}^{k}{\theta_i}=1$.</p>
+
+<p>Suppose $n$ is the observed vector with:</p>
+
+<script type="math/tex; mode=display">n  = \begin{bmatrix} n_1 \\ \cdots \\ n_k \end{bmatrix}, \sum_j n_j = N</script>
+
+<script type="math/tex; mode=display">P(n)=\frac{N!}{n_1!n_2! \dots n_k!}\theta^n</script>
+
+<h3 id="mle-constrained-optimization-with-lagrange-multipliers">MLE: constrained optimization with Lagrange multipliers</h3>
+<p>Objective Function:</p>
+
+<script type="math/tex; mode=display">l(\theta;D)=\sum_k{n_klog\theta_k}</script>
+
+<p>constraint:</p>
+
+<script type="math/tex; mode=display">\sum_{k=1}^K{\theta_k=1}</script>
+
+<p>Constrained cost function with a Lagrange multiplier:</p>
+
+<script type="math/tex; mode=display">l^-=\sum_k{n_klog\theta_k+\lambda(1-\sum_{k=1}^K{\theta_k})}</script>
+
+<h3 id="bayesian-estimation">Bayesian estimation</h3>
+<p>Dirichlet prior:<br />
+<script type="math/tex">P(\theta)=C(\alpha)\prod_k{\theta_k^{\alpha_k-1}}</script></p>
+
+<p>Posterior distribution of <script type="math/tex">\theta</script>: <br />
+<script type="math/tex">P(\theta|x_1, \cdots, x_N)=\prod_k{\theta_k^{\alpha_k+n_k-1}}</script></p>
+
+<p>Posterior mean estimation: <br />
+<script type="math/tex">\theta_k=\frac{n_k+\alpha_k}{N+|\alpha|}</script></p>
+
+<h3 id="sequential-bayesian-updating">Sequential Bayesian updating</h3>
+<p>Start with Dirichlet prior: <br />
+<script type="math/tex">P(\bar{\theta}|\bar{\alpha})=Dir(\bar{\theta}:\bar{\alpha})</script></p>
+
+<p>Observe N’ samples with sufficient statistics <script type="math/tex">\bar{n}'</script>. Posterior becomes: <br />
+<script type="math/tex">P(\bar{\theta}|\bar{\alpha},\bar{n}')=Dir(\bar{\theta}:\bar{\alpha}+\bar{n}')</script></p>
+
+<h3 id="hierarchical-bayesian-models">Hierarchical Bayesian Models</h3>
+<p><script type="math/tex">\theta</script> are the parameters for the likelihood <script type="math/tex">P(x \vert \theta)</script></p>
+
+<p><script type="math/tex">\alpha</script> are the parameters for the prior <script type="math/tex">P(\theta \vert \alpha)</script></p>
+
+<p>We can have hyper-parameters, etc.</p>
+
+<p>We stop when the choice of hyper-parameters makes no difference to the marginal likelihood; typically make hyper-parameters constants.</p>
+
+<h3 id="limitation-of-dirichlet-prior">Limitation of Dirichlet Prior</h3>
+
+<p>Dirichlet prior could only put emphasis/bias on all coordinates or one single coordinate; it cannot, for example, emphasize two coordinates simultaneorly. The prior corresponding to different hyperparamter <script type="math/tex">\alpha</script> is shown in the following picture:</p>
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/Limitation_of_Dirichlet_Prior.png" />
+    </div>
+  </div>
+</figure>
+
+<h3 id="the-logistic-normal-prior">The Logistic Normal Prior</h3>
+<p>Pro: co-variance structure<br />
+Con: non-conjugate</p>
+
+<h3 id="continuous-distributions">Continuous Distributions</h3>
+<h4 id="uniform-probability-density-function">Uniform Probability Density Function</h4>
+<p><script type="math/tex">% <![CDATA[
+p(x) =
+\begin{cases}
+\frac{1}{b-a} & \ a \leq x \leq b \\
+0 				 & \ \text{elsewhere}
+\end{cases} %]]></script></p>
+
+<h4 id="normal-gaussian-probability-density-function">Normal (Gaussian) Probability Density Function</h4>
+<p><script type="math/tex">P(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}</script></p>
+
+<h4 id="multivariate-gaussian">Multivariate Gaussian</h4>
+<p><script type="math/tex">P(X;\bar{\mu},\sum)=\frac{1}{(\sqrt{2\pi})^\frac{n}{2}|\sum|^{\frac{1}{2}}}\exp(-\frac{1}{2}(X-\bar{\mu})^T\sum^{-1}(X-\bar{\mu}))</script></p>
+
+<h3 id="mle-for-a-multivariate-gaussian">MLE for a multivariate-Gaussian:</h3>
+<p>It can be shown that the MLE for <script type="math/tex">\mu</script> and <script type="math/tex">\Sigma</script> are:  <br />
+<script type="math/tex">\mu_{MLE} = \frac{1}{N}\sum_n (x_n)</script><br />
+<script type="math/tex">\Sigma_{MLE} = \sum_n (x_n - \mu_{MLE})(x_n - \mu_{MLE})^T = \frac{1}{N} S</script></p>
+
+<p>where the scatter matrix is: <br />
+<script type="math/tex">S = \sum_n (x_n - \mu_{MLE})(x_n - \mu_{MLE})^T = \sum_n x_n x_n^T - N \mu_{ML} \mu_{ML}^T</script></p>
+
+<p>Note that <script type="math/tex">X^TX=\sum_n{x_n x_n^T}</script> may not be full rank (eg. if <script type="math/tex">% <![CDATA[
+N<D %]]></script>), in which case <script type="math/tex">\sum_{ML}</script> is not invertible</p>
+
+<h3 id="bayesian-parameter-estimation-for-a-gaussian">Bayesian Parameter Estimation for a Gaussian</h3>
+<p>Reasons for Bayesian Approach:</p>
+<ul>
+  <li>Update estimate sequentially over time</li>
+  <li>We may have prior knowledge about the expected magnitude of parameters</li>
+  <li>The MLE for $\Sigma$ may not be full rank if we don’t have enough data</li>
+</ul>
+
+<p>Now that we only consider conjugate priors, and consider various cases of increasing complexity:</p>
+<ul>
+  <li>Known <script type="math/tex">\sigma</script>, unknown <script type="math/tex">\mu</script></li>
+  <li>Known <script type="math/tex">\mu</script>, unknown <script type="math/tex">\sigma</script></li>
+  <li>Unknown <script type="math/tex">\mu</script> and <script type="math/tex">\sigma</script></li>
+</ul>
+
+<p><strong>Unknown <script type="math/tex">\mu</script>, known <script type="math/tex">\sigma</script></strong></p>
+<ul>
+  <li>Normal Prior:
+<script type="math/tex">P(\mu | \mu_0, \tau^2) \sim \mathcal{N}(\mu_0, \tau^2) = \frac{1}{\sqrt{2\pi\tau^2t}}\exp\{ -\frac{1}{2\tau^2}(\mu-\mu_0)^2 \}</script></li>
+  <li>Joint Probability:
+<script type="math/tex">P(x, \mu | \mu_0, \tau^2) = P(x | \mu) P(\mu) = (\frac{1}{\sqrt{2\pi\sigma^2}})^N \exp\{ -\frac{1}{2\sigma^2}\sum_{n=1}^N(x_n - \mu)^2 \} \frac{1}{\sqrt{2\pi\tau^2}}\exp\{ -\frac{1}{2\tau^2}(\mu-\mu_0)^2 \}</script></li>
+  <li>Posterior:<br />
+<script type="math/tex">P(\mu | x, \mu_0, \tau^2) \sim \mathcal{N}(\tilde \mu, \tilde \sigma^2) = \frac{1}{\sqrt{2\pi \tilde \sigma^2}} \exp\{ - \frac{1}{2\tilde \sigma}(\mu-\tilde\mu)^2 \}</script><br />
+where: <br />
+<script type="math/tex">\tilde \mu = \frac{N/\sigma^2}{N/\sigma^2 + 1/\tau^2} \bar{x} + \frac{1/\tau^2}{N/\sigma^2 + 1/\tau^2} \mu_0</script> <br />
+<script type="math/tex">\tilde \sigma^{-2} = \frac{N}{\sigma}^2 + \frac{1}{\tau^2}</script><br />
+The posterior mean is a convex combination of sample mean and prior mean, and the posterior precision is the precision of the prior plus <script type="math/tex">1/\sigma^2</script> of contribution for each observed data point.</li>
+</ul>
+
+<p><strong>Known <script type="math/tex">\mu</script>, unkown <script type="math/tex">\lambda = \sigma^{-2}</script></strong></p>
+<ul>
+  <li>Conjugate prior for <script type="math/tex">\sigma</script>:
+<script type="math/tex">P(\lambda | a, b)=  \Gamma(a)^{-1}b^a\lambda^{a-1}\exp(-b\lambda)</script></li>
+  <li>
+    <p>Joint Probability:
+<script type="math/tex">P(x, \lambda | a, b) = P(x | \lambda, a, b)P(\lambda | a,b ) =  (2\pi)^{-n/2} \lambda^{n/2}\exp(-\frac{\lambda}{2}\sum_{n=1}^N(x_n - \mu)^2)  \Gamma(a)^{-1}b^a\lambda^{a-1}\exp(-b\lambda)</script></p>
+  </li>
+  <li>Therefore Posterior:
+<script type="math/tex">P(\lambda | x, a, b) \sim Gamma(\lambda | a_n, b_n) = \Gamma(a_n)^{-1}b_n^{a_n}\lambda^{a_n - 1} \exp(-b_n \lambda)</script>
+where <script type="math/tex">a_n = a + \frac{n}{2}</script> and <script type="math/tex">b_n = b +\frac{1}{2}\sum_{n=1}^N(x_n - \mu)^2</script></li>
+</ul>
+
+<p><strong>Unkown <script type="math/tex">\mu</script>, unkown <script type="math/tex">\lambda</script></strong></p>
+<ul>
+  <li>Univariate Case
+    <ul>
+      <li>
+        <p>Conjugate prior for <script type="math/tex">\mu</script> and <script type="math/tex">\lambda = \sigma^{-2}</script>: (Normal-Inverse-Gamma)</p>
+
+        <script type="math/tex; mode=display">P(\mu, \sigma^2| m,V,a,b) = P(\mu | \sigma^2, m, V) P(\sigma^2 | a,b) = \mathcal{N}(\mu | m, \sigma^2 V) Gamma(\lambda | a_n, b_n)</script>
+      </li>
+    </ul>
+  </li>
+  <li>Multivariate Case
+    <ul>
+      <li>
+        <p>Conjugate prior for <script type="math/tex">\mu</script> and <script type="math/tex">\Sigma</script>: (Normal-Inverse-Wishart)</p>
+
+        <script type="math/tex; mode=display">P(\mu, \Sigma |\mu_0, \kappa_0, \Lambda_0^{-1}, \nu_0) = P(\mu | \Sigma, \mu_0, \kappa_0) P( \Sigma | \Lambda_0^{-1}, \nu_0) = \mathcal{N}(\mu | \mu_0, \frac{1}{\kappa_0}\Sigma) \mathcal{IW}(\Sigma |\Lambda_0^{-1}, \nu_0)</script>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="two-nodes-fully-observed-bns">Two nodes fully observed BNs</h3>
+<figure>
+  <div class="row">
+   <div class="col one">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/two_node_bayesian.png" />
+   </div>
+  </div>
+  <figcaption>
+  <strong>Two nodes fully observed BNs</strong>
+  </figcaption>
+</figure>
+
+<ul>
+  <li>Conditional Mixtures
+    <ul>
+      <li>Linear/Logistic Regression</li>
+    </ul>
+  </li>
+  <li>Classification
+    <ul>
+      <li>Generative and discriminative approaches</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="classification">Classification</h3>
+<p>Goal: wish to learn <script type="math/tex">f: X \to Y</script></p>
+<ul>
+  <li>Generative: Modeling the joint distribution of all data, i.e.: <script type="math/tex">P(x,y)</script></li>
+  <li>Discriminative: Modeling only the conditional distribution, i.e.: <script type="math/tex">P(y \vert x)</script></li>
+</ul>
+
+<h4 id="conditional-gaussian">Conditional Gaussian</h4>
+<p>The data: <script type="math/tex">\{ (x_1,y_1),(x_2, y_2), \cdots, (x_n, y_n) \}</script></p>
+
+<p><script type="math/tex">y</script> is a class indicator vector (one-hot encoding):
+<script type="math/tex">p(y_n) = multi(y_n; \pi) = \prod_{k=1}^K \pi_k^{y_{n,k}}</script></p>
+
+<p><script type="math/tex">x</script> is a conditional Gaussian variable with a class-specific mean:
+<script type="math/tex">p(x_n | y_{n,k} = 1, \mu, \sigma) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\{-\frac{1}{2\sigma^2}(x_n-\mu_k)^2 \}</script></p>
+
+<script type="math/tex; mode=display">p(x|y, \mu, \sigma)=\prod_n p(x_n | y_n, \mu, \sigma) = \prod_n (\prod_k \mathcal{N} (x_n; \mu_k, \sigma_k)^{y_{n,k}} )</script>
+
+<h4 id="mle-of-conditional-gaussian">MLE of Conditional Gaussian</h4>
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/gaussian_mle.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>MLE of Conditional Gaussian.</strong>
+  </figcaption>
+</figure>
+
+<ul>
+  <li>Data log-likelihood
+<script type="math/tex">l(\theta; D) = \log \prod_n p(x_n, y_n) = \log \prod_n p(y_n | \pi) p(x_n | y_n, \mu, \sigma)</script></li>
+  <li>
+    <p>MLE:</p>
+
+    <p><script type="math/tex">\hat \pi_{k, MLE} = \text{argmax}_{\pi} l(\theta; D) \Rightarrow \hat \pi_{k, MLE} = \frac{\sum_{n}y_{n,k}}{N} = \frac{n_k}{N}</script>, the fraction of sample of class <script type="math/tex">k</script></p>
+
+    <p><script type="math/tex">\hat \mu_{k, MLE} = \text{argmax}_{\mu} l(\theta; D) \Rightarrow \hat\mu_{k, MLE} = \frac{\sum_n y_{n,k} x_n}{\sum_n y_{n,k}} = \frac{\sum_{n} y_{n,k} x_n}{n_k}</script>, the average of samples of class <script type="math/tex">k</script></p>
+  </li>
+</ul>
+
+<h4 id="bayesian-estimation-of-conditional-gaussian">Bayesian Estimation of Conditional Gaussian</h4>
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-05/gaussian_bayesian.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Bayesian Estimation of Conditional Gaussian</strong>
+  </figcaption>
+</figure>
+
+<ul>
+  <li>
+    <p>Prior:  <br />
+<script type="math/tex">P(\pi | \alpha) = Dirichlet(\pi; \alpha)</script> <br />
+<script type="math/tex">P(\mu_k | \nu) = \mathcal{N}(\mu_k; \nu, \tau^2)</script></p>
+  </li>
+  <li>
+    <p>Posterior mean:</p>
+
+    <p><script type="math/tex">\pi_{k, Bayes} = \frac{N}{N + \vert a \vert_1} \hat \pi_{k, MLE} + \frac{\vert a \vert_1}{N + \vert a \vert_1} \frac{a_k}{ \vert a \vert_1} = \frac{n_k + a_k}{N + \vert a \vert_1}</script> where <script type="math/tex">\vert a \vert_1 = \sum_{k=1}^K a_k</script></p>
+
+    <p><script type="math/tex">\mu_{k, Bayes} = \frac{n_k/ \sigma^2}{n_k/\sigma^2 + 1/\tau^2}\hat{\mu}_{k, MLE} + \frac{1/\tau^2}{n_k/\sigma^2 + 1/\tau^2}\nu</script>,
+<script type="math/tex">\sigma_{Bayes}^{-2} = \frac{N}{\sigma^2} + \frac{1}{\tau^2}</script></p>
+  </li>
+</ul>
+
+<h4 id="gausian-distriminative-analysis">Gausian Distriminative Analysis:</h4>
+<ul>
+  <li>
+    <p>Joint probability of a datum and its label is:
+<script type="math/tex">P(x_n, y_{n,k} = 1 | \mu, \sigma ) = p(y_{n,k} = 1) p(x_n | y_{n,k} = 1, \mu, \sigma) = \pi_k \frac{1}{\sqrt{2\pi \sigma^2}}\exp\{-\frac{1}{2\sigma^2}(x_n - \mu_k)^2 \}</script></p>
+  </li>
+  <li>
+    <p>Predict the conditional probability of label given the datum:
+<script type="math/tex">p(y_{n,k} = 1 | x_n, \mu, \sigma) = \frac{\pi_k (2\pi\sigma^2)^{-1/2} \exp \{ -(x_n - \mu_k)^2 /2\sigma^2 \} }{\sum_{k'} \pi_{k'} (2\pi\sigma^2)^{-1/2} \exp \{ -(x_n - \mu_{k'})^2 /2\sigma^2 \} }</script></p>
+  </li>
+  <li>Frequentist Approach: fit <script type="math/tex">\pi</script>, <script type="math/tex">\mu</script> and <script type="math/tex">\sigma</script> from data first</li>
+  <li>Bayesian Approach: compute the posterior dist. of the parameters first</li>
+</ul>
+
+<h3 id="linear-regression">Linear Regression</h3>
+
+<p>The data: <script type="math/tex">\{(x_1, y_1), (x_2, y_2), \cdots, (x_N, y_N) \}</script>, where <script type="math/tex">x</script> is an input vector and <script type="math/tex">y</script> is a response vector(either continuous or discrete)</p>
+
+<p>A regression scheme can be used to model <script type="math/tex">p(y \vert x)</script> directly rather than <script type="math/tex">p(x,y)</script></p>
+
+<h4 id="a-discrimintative-probabilitstic-model">A discrimintative probabilitstic model</h4>
+<p>Assume <script type="math/tex">y_i = \theta^T x_i + \epsilon_i</script>, where <script type="math/tex">\epsilon</script> is an error term of unmodeled effects or random noise. Assume <script type="math/tex">\epsilon_i \sim \mathcal{N}(0, \sigma^2)</script>, then
+<script type="math/tex">p(y_i | x_i; \theta) \sim \mathcal{N}(\theta^Tx_i, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\{ -\frac{1}{2\sigma^2} (y_i - \theta^Tx_i)^2 \}</script></p>
+
+<p>And by that each <script type="math/tex">(y_i, x_i)</script> are i.i.d, we have:
+<script type="math/tex">L(\theta) = \prod_{i=1}^N p(y_i | x_i; \theta) = (\frac{1}{\sqrt{2\pi\sigma^2}})^N \exp\{ - \frac{1}{2\sigma^2}\sum_{i=1}^N(y_i - \theta^T x_i)^2 \}</script></p>
+
+<p>hence:
+<script type="math/tex">l(\theta) = n\log \frac{1}{\sqrt{2\pi\sigma^2}} - \frac{1}{2\sigma^2}\sum_{i=1}^N(y_i - \theta^Tx_i)^2</script></p>
+
+<p>we notice that maximizing this term w.r.t $\theta$ is equivalent to minimizing the MSE(mean square error):
+<script type="math/tex">J(\theta) = \frac{1}{2}\sum_{i=1}^N(x_i^T \theta - y_i)^2</script></p>
+
+<h2 id="ml-structure-learning-for-completely-observed-gms">ML Structure Learning for Completely Observed GMs</h2>
+<h3 id="two-optimal-approaches">Two “Optimal” Approaches</h3>
+<p>“Optimal” means the employed algorithms are guaranteed to return a structure that maximizes the objective. Some popluar heuristics, however, provide no gurantee on attaining optimality, interpretability or even do not have an explicit objective. e.g. structured EM, module network, greedy structural search, deep learning via auto-encoders, etc.</p>
+
+<p>Will learn two classes of algorithms for guaranteed structure learning, albeit only applying to certain families of graphs:</p>
+
+<ul>
+  <li>Trees: The Chow-Liu Algorithm</li>
+  <li>Pairwise MRFs: covariance selection, neighborhood-selection</li>
+</ul>
+
+<h3 id="structural-search">Structural Search</h3>
+<ul>
+  <li><script type="math/tex">O(2^{n^2})</script> graphs over <script type="math/tex">n</script> nodes</li>
+  <li><script type="math/tex">O(n!)</script> trees over <script type="math/tex">n</script> nodes</li>
+</ul>
+
+<p>But we can find exact solution of an optimal tree under MLE:</p>
+
+<ul>
+  <li>MLE score decomposable to edge-related elements</li>
+  <li>In a tree each node has only one parent</li>
+</ul>
+
+<p>Lead to the Chow-Liu Algorithm</p>
+
+<h3 id="chow-liu-algorithm">Chow-Liu Algorithm</h3>
+
+<d-math block="">
+\begin{aligned}
+l(\theta_G, G; D) &amp;= \log P(D | \theta_G, G)\\
+&amp;= \log \prod_n (\prod_i p(x_{n,i} | x_{n, \pi_i(G)}, \theta_{i | \pi_i(G)} ) )\\
+&amp;= \sum_{i} (\sum_{n}\log p(x_{n,i} | x_{n, \pi_i(G), \theta_{i | \pi_i(G) }}) )\\
+&amp;= M\sum_i (\sum_{x_i, x_{\pi_i(G)}} \hat p(x_i, x_{\pi_i(G)}\log p(x_i | x_{\pi_i(G)}, \theta_{i | \pi_i(G)} ))\\
+&amp;= M\sum_i(\sum_{x_i, x_{\pi_i(G)}} \hat{p}(x_i, x_{\pi_i(G)}) \log \frac{\hat p(x_i, x_{\pi_i(G)}, \theta_{i | \pi_i(G)})}{\hat p(x_{\pi_i(G)}) \hat p(x_i) } ) - M \sum_i (\sum_{x_i} \hat p(x_i) \log \hat p(x_i))\\
+&amp;= M\sum_i \hat I(x_i, x_{\pi_i(G)}) - M \sum_i \hat H(x_i)
+\end{aligned}
+</d-math>
+
+<ul>
+  <li>For each pair of variable <script type="math/tex">x_i</script> and <script type="math/tex">x_j</script>:
+    <ul>
+      <li>Compute empirical distribution: <script type="math/tex">\hat p(x_i, x_j) = \frac{count(x_i, x_j)}{M}</script></li>
+      <li>Compute mutual information: <script type="math/tex">\hat I(x_i, x_j) = \sum_{x_i, x_j} \hat p (x_i, x_j) \log \frac{\hat p (x_i, x_j)}{\hat p (x_i) \hat p(x_j)}</script></li>
+    </ul>
+  </li>
+  <li>Define a graph with node <script type="math/tex">x_1, \cdots, x_n</script>:
+    <ul>
+      <li>Edge <script type="math/tex">(i,j)</script> get weight: <script type="math/tex">\hat I(x_i, x_j)</script></li>
+      <li>Compute maximum weight spanning tree</li>
+      <li>Direction: pick any node as root, do BFS(breadth first search) do define directions, i.e.: we define an edge from node <script type="math/tex">A</script> to node <script type="math/tex">B</script> if we reach <script type="math/tex">B</script> from <script type="math/tex">A</script> in running BFS.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="structure-learning-for-general-graphs">Structure Learning for General Graphs</h3>
+<p>Theorem: The problem of learning a BN structure with at most <script type="math/tex">d</script> parents is NP-hard for any (fixed) <script type="math/tex">d \geq 2</script>.</p>
+
+<p>Most structure learning approaches use heuristics</p>
+<ul>
+  <li>Exploit score decomposition:
+    <ul>
+      <li>e.g: Greedy search through space of node-orders</li>
+      <li>Local search of graph structures</li>
+    </ul>
+  </li>
+</ul>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-01-30-lecture-05.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 12: Theory of Variational Inference: Marginal Polytope, Inner and Outer Approximation</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-12/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 12: Theory of Variational Inference: Marginal Polytope, Inner and Outer Approximation",
+      "description": "Introduction of Loopy Belief Propagation algorithm and the theory behind it and Mean-field approximation.",
+      "published": "February 25, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Donghan Yu"
+        },
+        
+        {
+          "author": "Songwei Ge"
+        },
+        
+        {
+          "author": "Xiaofei Shi"
+        },
+        
+        {
+          "author": "Aniketh Janardhan Reddy",
+          "authorURL": "https://anikethjr.github.io "
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Maruan Al-Shedivat",
+          "editorURL": "https://www.cs.cmu.edu/~mshediva/"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 12: Theory of Variational Inference: Marginal Polytope, Inner and Outer Approximation</h1>
+        <p align='right' dir="rtl">Introduction of Loopy Belief Propagation algorithm and the theory behind it and Mean-field approximation.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <h2 id="recap-of-the-message-passing-algorithm-and-its-properties">Recap of the message passing algorithm and its properties</h2>
+
+<p>In the previous lectures, we have looked at exact inference algorithms and observed that they are not very efficient. Hence, a need for more efficient inference algorithms arises. This lecture will focus on such algorithms which are called <em>Approximate Inference Algorithms</em>.</p>
+
+<p>Inference using graphical models can be used to compute marginal distributions, conditional distributions, the likelihood of observed data, and the modes of the density function. We have already studied that exact inference can be accomplished either using brute force (i.e. eliminating all the required variables in any order) or by refining our elimination order so as to reduce the number of computations. In this context, the belief propagation or sum-product message passing algorithm run on a clique tree generated by a given variable elimination ordering was introduced as an equivalent way of performing variable elimination. We have seen that the overall complexity of the algorithm is exponential in the number of variables in the largest elimination clique which is generated when we use a given elimination order. The tree width of a graph was defined as one less than the smallest possible value of the cardinality of the largest elimination clique, ranging over all possible elimination orderings. If we can find an optimal elimination order, we can reduce the complexity of belief propagation. As the problem of finding the best elimination order is NP-hard, exact inference is also NP-hard. Belief propagation is guaranteed to converge to a unique and fixed set of values after a finite number of iterations when it is run on trees.</p>
+
+<p>For more details about the message passing algorithm, please look at the <a href="https://sailinglab.github.io/pgm-spring-2019/notes/lecture-04/">Notes for Lecture 4</a>.</p>
+
+<h3 id="message-passing-protocol">Message Passing Protocol</h3>
+
+<p>The message passing protocol dictates that a node can only send a message to its neighbors when and only when it has received the messages from all of its other neighbors. Hence, to naively compute the marginal of a given node, we should treat that node as the root and run the message passing algorithm. This is illustrated by the three figures given below, each of which shows the messaging directions to be used when computing the given marginal:</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/pgm345.png" />
+        </div>
+    </div>
+</figure>
+
+<h3 id="message-passing-for-hmms">Message Passing for HMMs</h3>
+
+<p>When the message passing algorithm is applied to a HMM shown below, we will see that the forward and backward algorithms can be obtained.</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/pgm7.png" />
+        </div>
+    </div>
+</figure>
+
+<p>The corresponding clique tree for the HMM shown above is:</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/pgm8.png" />
+        </div>
+    </div>
+</figure>
+
+<p>Now, the messages (denoted by <script type="math/tex">\mu</script>s) and the potentials (denoted by <script type="math/tex">\psi</script>s) involved in the rightward pass are depicted by the below figure:</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/pgm9.png" />
+        </div>
+    </div>
+</figure>
+
+<p>We have that,</p>
+
+<script type="math/tex; mode=display">\mu_{t\rightarrow t+1} (y_{t+1}) = \sum_{y_t} \psi(y_t,y_{t+1})\mu_{t-1\rightarrow t}(y_t)\mu_{t\uparrow}(y_{t+1})</script>
+
+<p>We know that:</p>
+
+<script type="math/tex; mode=display">\psi(y_t,y_{t+1}) = p(y_{t+1}|y_t) = a_{y_t,y_{t+1}}</script>
+
+<p>is the probability of transitioning from <script type="math/tex">y_t</script> to <script type="math/tex">y_{t+1}</script> and</p>
+
+<script type="math/tex; mode=display">\mu_{t\uparrow}(y_{t+1}) = p(x_{t+1}|y_{t+1})</script>
+
+<p>is the probability of emitting <script type="math/tex">x_{t+1}</script> in state <script type="math/tex">y_{t+1}</script>.</p>
+
+<script type="math/tex; mode=display">\Longrightarrow \mu_{t\rightarrow t+1} (y_{t+1}) = \sum_{y_t} p(y_{t+1}|y_t)\mu_{t-1\rightarrow t}(y_t)p(x_{t+1}|y_{t+1}) = p(x_{t+1}|y_{t+1}) \sum_{y_t} a_{y_t,y_{t+1}} \mu_{t-1\rightarrow t}(y_t)</script>
+
+<p>which is the forward algorithm.</p>
+
+<p>Similarly, the messages and the potentials involved in the leftward pass are depicted by the below figure:</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/pgm10.png" />
+        </div>
+    </div>
+</figure>
+
+<p>Then we have that,</p>
+
+<script type="math/tex; mode=display">\mu_{t-1\leftarrow t}(y_t) = \sum_{y_{t+1}} \psi(y_t,y_{t+1}) \mu_{t\leftarrow t+1}(y_{t+1})\mu_{t\uparrow}(y_{t+1}) = \sum_{y_{t+1}} p(y_{t+1}|y_t) \mu_{t\leftarrow t+1}(y_{t+1}) p(x_{t+1}|y_{t+1})</script>
+
+<p>which is the backward algorithm.</p>
+
+<h3 id="correctness-of-belief-propagation-in-trees">Correctness of Belief Propagation in Trees</h3>
+
+<p><strong>Theorem:</strong> The message passing algorithm correctly computes all of the marginals in a tree.</p>
+
+<p>This is a result of there being only one unique path between any two nodes in a tree. Intuitively, this guarantees that only two unique messages can be associated with an edge, one for each direction of traversal.</p>
+
+<h3 id="local-and-global-consistency">Local and Global Consistency</h3>
+
+<p>Let <script type="math/tex">\{\tau_C, C \in \mathcal{C}\}</script> and <script type="math/tex">\{\tau_S, S \in \mathcal{S}\}</script> denote the set of functions which are associated with cliques and separator sets respectively.</p>
+
+<p>These sets of functions are locally consistent if the following properties hold:</p>
+<ul>
+  <li>
+    <script type="math/tex; mode=display">\sum_{x'_S} \tau_S(x'_S) = 1, \forall S \in \mathcal{S}</script>
+  </li>
+  <li>
+    <script type="math/tex; mode=display">\sum_{x'_C|x'_S = x_S} \tau_C(x'_C) = \tau_S(x_S), \forall C \in \mathcal{C}, \forall S \subset C</script>
+  </li>
+</ul>
+
+<p>The first property implies that the functions associated with each separator set are proper marginals. The second property requires that if we sum any clique function <script type="math/tex">\tau_C</script> over all the variables in the clique <script type="math/tex">C</script> which are not present in a sepset <script type="math/tex">S \subset C</script>, we must obtain a function <script type="math/tex">\tau_S(X_S)</script>.</p>
+
+<p>The aforementioned sets of functions are global consistent if all <script type="math/tex">\tau_C</script> and <script type="math/tex">\tau_S</script> are valid marginals.</p>
+
+<p>For junction trees, local consistency is equivalent to global consistency. A proof of this fact can be found at this <a href="http://www.cs.princeton.edu/courses/archive/spring09/cos513/scribe/lecture07.pdf">link</a>.</p>
+
+<p>However, for graphs which are not trees, local consistency does not always imply global consistency.</p>
+
+<p><strong>Example</strong></p>
+
+<p>Consider the two following message passing sequences for the same graph:</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/pgm12.png" />
+        </div>
+    </div>
+</figure>
+
+<p>It can be seen that we obtain different values for <script type="math/tex">P(A)</script> based on the message passing sequence.</p>
+
+<p>Similarly, if we construct a clique tree for the above graph (shown below), we see that the random variable <script type="math/tex">C</script> is part of two non-neighbouring cliques. Hence, it is impossible for the two clique potentials which contain <script type="math/tex">C</script> to agree on the marginal associated with <script type="math/tex">C</script> since no information about <script type="math/tex">C</script> is ever passed in the messages.</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/pgm3.png" />
+        </div>
+    </div>
+</figure>
+
+<!-- Consider the case where the $$\tau_C$$s and $$\tau_S$$s are marginal probability distributions. In this case, the second property is satisfied because $$\sum_{X_1,X_2 | X_2 = x_2} P(X_1,X_2) = P(X_2 = x_2)$$. -->
+
+<h2 id="loopy-belief-propagation">Loopy Belief Propagation</h2>
+
+<p>Above examples illustrate that on a non-tree graphical model the message passing algorithms are not guaranteed to provide a correct solution to the inference problem anymore. One way to deal with this is to convert a non-tree graphical model into a junction tree. However, such conversion often leads to graph with extremely large tree-width which is also unaffordable. For example in the following figure, an Ising model with <script type="math/tex">N \times N</script> grid and <script type="math/tex">N\sim O(1000)</script> will yield a clique with <script type="math/tex">2^{100}</script> entries. Therefore, we have to do approximation inference such as loopy belief propagation or mean field approximation.</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/part2_1.jpg" />
+        </div>
+    </div>
+</figure>
+
+<h3 id="introduction-to-loopy-belief-propagation-and-empirical-observations">Introduction to loopy Belief propagation and empirical observations</h3>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/part2_2.jpg" />
+        </div>
+    </div>
+</figure>
+
+<p>The main idea of loopy belief propagation does is to extend belief propagation algorithm (a.k.a message passing algorithm) from tree to non-tree graphical models. Considering an undirected graphical model with pairwise and singleton potential functions, the loopy belief propagation algorithm calculates the messages and marginal probability based on the following equations:</p>
+
+<d-math block="">
+\begin{aligned}
+M_{i\rightarrow j}(x_j) &amp;\varpropto \sum_{x_i}\Psi_{ij}(x_i, x_j)\Psi_{i}(x_i) \prod_kM_{k\rightarrow i}(x_i) \\
+b_i(x_i) &amp;\varpropto \Psi_{i}(x_i) \prod_kM_k(x_k)
+\end{aligned}
+</d-math>
+
+<p>To be specific, the messages are updated and passed iteratively among nodes at the same time. Different from belief propagation algorithm where we pass the messages from the leaves to the root, the message passing here is recurrent. Another difference is that the loopy belief propagation algorithm doesn’t need to pass messages only after collecting all the messages from its neighbors. Previous studies showed that directly copying the idea of belief propagation from tree to non-tree graphical model leads to two outcomes:</p>
+
+<ul>
+  <li>The algorithm converges and the approximated results are usually close to the results calculated by brute-force marginalization of variables.</li>
+  <li>The algorithm fails to converge at all and oscillates between multiple answers of <script type="math/tex">b</script>.</li>
+</ul>
+
+<h3 id="a-theory-behind-loopy-belief-propagation-bethe-approximation-to-gibbs-free-energy">A theory behind loopy belief propagation: Bethe approximation to Gibbs free energy</h3>
+
+<p>It is often the case to use a distribution Q to approximate the intractable distribution P. In order to obtain a good approximation, the KL-divergence between Q and P is supposed to be reasonably small. Based on the factorized probability of the joint distribution, we can write the KL-divergence between Q and P as follows:</p>
+
+<d-math block="">
+\begin{aligned}
+KL(Q, P) &amp;= \sum_XQ(X)\log\left(\frac{Q(X)}{P(X)}\right) \\
+&amp;= \sum_XQ(X)\log Q(X)-\sum_XP(X)\log P(X) \\
+&amp;= -H_Q(X)-E_Q\log P(X) \\
+&amp;= -H_Q(X)-\sum_{f_\alpha\in F}E_Q\log f_\alpha(X_\alpha) + \log Z
+\end{aligned}
+</d-math>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/part2_3.jpg" />
+        </div>
+    </div>
+</figure>
+
+<p>We call the first two terms <script type="math/tex">-H_Q(X)-\sum_{f_\alpha\in F}E_Q\log f_\alpha(X_\alpha)</script> the <em>Free Energy</em>. Now we consider an example of tree-structured distribution shown above. Based on the chain rule and local Markov property of undirected graphical model, we can expand the joint probability to factorized probability. According to the Bayes rule, we can further write the joint probability in the following form:</p>
+
+<d-math block="">
+\begin{aligned}
+P(X_1, X_2, \cdots, X_8) &amp;= P(X_7, X_8)P(X_6|X_7)P(X_5|X_6)P(X_1|X_5)P(X_2|X_1)P(X_3|X_2)P(X_4|X_3), \\
+&amp;= \frac{P(X_7, X_8)P(X_6, X_7)P(X_5, X_6)P(X_1, X_5)P(X_2, X_1)P(X_3, X_2)P(X_4, X_3)}{P(X_7)P(X_6)P(X_5)P(X_1)P(X_2)P(X_3)}
+\end{aligned}
+</d-math>
+
+<p>Note that only the singleton probabilities <script type="math/tex">P(X_1)</script> and <script type="math/tex">P(X_8)</script> don’t occur in the above equations. Therefore, we can summarize the joint probability for any tree-structured distribution as <script type="math/tex">b(x)=\prod_{\alpha}b_{\alpha}(x_{\alpha})\prod_ib_i(x_i)^{(1-d_i)}</script>, where <script type="math/tex">d_i</script> represents the degree of that note <script type="math/tex">x_i</script>. With this probability and the definition of the <em>Free Energy</em>, we can further write the entropy term and <em>Free Energy</em> as follows:</p>
+
+<d-math block="">
+\begin{aligned}
+H_{tree}&amp;=\sum_{\alpha}\sum_{x_\alpha}b_{\alpha}(x_{\alpha})\ln b_{\alpha}(x_{\alpha}) + \sum_i(d_i-1)\sum_{d_i}b_i(x_i), \\
+F_{tree}&amp;=-H_Q(X)-\sum_{f_\alpha\in F}E_Q\log f_\alpha(X_\alpha)\\
+&amp;=\sum_{\alpha}\sum_{x_\alpha}b_{\alpha}(x_{\alpha})\ln \frac{b_{\alpha}(x_{\alpha})}{f_{\alpha}(x_{\alpha})} - \sum_i(d_i-1)\sum_{d_i}b_i(x_i) \\
+&amp;= F_{12}+F_{23}+F_{34}+F_{15}+F_{56}+F_{67}+F_{78}-F_1-F_2-F_3-F_5-F_6-F_7.
+\end{aligned}
+</d-math>
+
+<p>Then we consider a non-tree graph like this:</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/loopy-ydh.png" />
+        </div>
+    </div>
+</figure>
+
+<p>We can not write down its probability like:</p>
+
+<script type="math/tex; mode=display">P(X) = \frac{\prod_{\alpha} b_{\alpha}(X_{\alpha})}{\prod_{i} b_{i}^{d_i - 1}(x_i)}</script>
+
+<p>Then it’s hard to calculate the Free energy <script type="math/tex">F(X)</script>. However, for a general
+graph, we can choose approximate <script type="math/tex">\hat{F}(P, Q)=F_{Bethe}</script>, which has the
+formulation:</p>
+
+<script type="math/tex; mode=display">F_{Bethe} = \sum_{\alpha} \sum_{X_{\alpha}} b_{\alpha}(X_{\alpha}) \ln \frac{b_{\alpha}(X_{\alpha})}
+{f_{\alpha}(X_{\alpha})} - \sum_{i} (1-d_i) \sum_{x_i}b_i(x_i) \ln b_i(x_i)
+= - \langle f_{\alpha}(X_{\alpha}) \rangle - H_{Bethe}</script>
+
+<p>Note that this is equal to the exact Gibbs free energy when the factor graph
+is a tree, but in general, <script type="math/tex">H_{Bethe}</script> is not the same as the
+<script type="math/tex">H</script> of a tree.</p>
+
+<p>Then for the loopy graph above, we can write the <script type="math/tex">F_{Bethe}</script> as:</p>
+
+<script type="math/tex; mode=display">F_{Bethe} = \sum_{(i,j) \in E}F_{ij} - \sum_i d_i F_i</script>
+
+<h3 id="constrained-minimization-of-the-bethe-free-energy">Constrained minimization of the Bethe free energy</h3>
+
+<p>Then we want to solve the constrained minimization problem:</p>
+
+<d-math block="">
+\begin{aligned}
+&amp; \text{min}
+&amp; &amp; F_{Bethe}(b(x_i), b(X_{\alpha})) \\
+&amp; \text{subject to}
+&amp; &amp; \sum_{x_i} b_i(x_i) = 1, \sum_{X_{\alpha}|x_i} b_{\alpha}(X_{\alpha}) =
+b_i(x_i)
+\end{aligned}
+</d-math>
+
+<p>We can write the Lagrange form as:</p>
+
+<d-math block="">
+L = F_{Bethe} + \sum_i \gamma_i \left(\sum_{x_i} b_i(x_i) - 1\right)
++ \sum_{\alpha} \sum_{i \in N(\alpha)} \sum_{x_i} \lambda_{\alpha i}(x_i)
+\left(\sum_{X_{\alpha}|x_i} b_{\alpha}(X_{\alpha}) - b_i(x_i)\right)
+</d-math>
+
+<p>Then we can have the zero-gradient solutions:</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/solution-ydh.png" />
+        </div>
+    </div>
+</figure>
+
+<p>A interesting finding is that, if we identify <script type="math/tex">\lambda_{\alpha i}(x_i) = \log(m_{i \rightarrow \alpha}(x_i)) = \log
+\prod_{b \in N(i) \neq \alpha} m_{b \to i}(x_i)</script>, then we get exactly the BP equations:</p>
+
+<d-math block="">
+\begin{aligned}
+b_i(x_i) &amp; \propto f_i(x_i) \prod_{\alpha \in N(i)} m_{\alpha \to i}(x_i) \\
+b_{\alpha}(X_{\alpha}) &amp; \propto f_{\alpha}(X_{\alpha}) \prod_{i \in N(\alpha)}
+\prod_{c \in N(i)|\alpha} m_{c \to i}(x_i)
+\end{aligned}
+</d-math>
+
+<h2 id="theory-of-variational-inference">Theory of Variational Inference</h2>
+
+<p>We have learned two families of approximate inference algorithms: Loopy
+belief propagation (sum-product) and mean-field approximation. Then in this
+section we’ll re-exam them from a unified point of view based on the
+variational principle: Loop BP – outer approximation, Mean Filed –
+inner approximation.</p>
+
+<h3 id="variational-methods">Variational Methods</h3>
+
+<p>“Variational” is a fancy name for optimization-based formulations, which
+represent the quantity of interest as the solution to an optimization
+problem. Actually many problems can be formulated in a variational way:</p>
+
+<ol>
+  <li>
+    <p>Eigenvalue problem: find the eigenvalue <script type="math/tex">\lambda</script> of <script type="math/tex">A</script>, which means
+<script type="math/tex">Ax=\lambda x</script> for any <script type="math/tex">x</script>. Then we have the Courant-Fischer for
+eigenvalues: <script type="math/tex">\lambda_{\max}(A) = \max_{||x||_{2} =1} x^T A x</script>.</p>
+  </li>
+  <li>
+    <p>Linear systems of equations: <script type="math/tex">Ax=b, A \succ 0, x^{*} = A^{-1}b</script>. The
+variational formulation can be: <script type="math/tex">x^{*} = \text{argmin}_x (\frac{1}{2} x^T
+Ax - b^Tx)</script>. For large systems, we can apply conjugate gradient method
+to compute this efficiently.</p>
+  </li>
+</ol>
+
+<h3 id="inference-problems-in-graphical-models">Inference Problems in Graphical Models</h3>
+
+<p>Given an undirected graphical model, i.e.,</p>
+
+<script type="math/tex; mode=display">p(x) = \frac{1}{Z} \prod_{C \in \mathcal{C}} \psi_C(x_C),</script>
+
+<p>where <script type="math/tex">\mathcal{C}</script> denotes the collection of cliques, one is interested in the inference of the marginal distributions</p>
+
+<script type="math/tex; mode=display">p(x_i) = \sum_{x_j, j\neq i} p(x).</script>
+
+<h3 id="ingredients-exponential-families">Ingredients: Exponential Families</h3>
+
+<p><strong>Definition:</strong> We say <script type="math/tex">X</script> follows from an exponential family provided that the parametrized collection of density functions satisfies:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+p(x;\theta) = \exp\left\{ \theta^T\phi(x) - A(\theta) \right\}, \qquad A(\theta)<\infty . %]]></script>
+
+<p>Moreover, <script type="math/tex">\phi</script> is one of the sufficient statistics for <script type="math/tex">\theta</script>, see Larry Wasserman’s lecture notes from 10/36-705 for more details and examples <a href="http://www.stat.cmu.edu/~larry/=stat705/Lecture5.pdf" target="\_blank">here</a>; and <script type="math/tex">A</script> is usually known as the log partition function, which is convex and lower semi-continuous. Further,</p>
+
+<d-math block="">
+\begin{aligned}
+A(\theta) &amp;= \log \mathbb{E}_{\theta} \left[ \exp\{\theta^T\phi(X)\}\right], \\
+\frac{\partial A(\theta)}{\partial \theta} &amp;= \mathbb{E}_{\theta} \left[ \phi(X) \right].
+\end{aligned}
+</d-math>
+
+<ul>
+  <li>Parametrize Graphical Models as Exponential Family
+For undirected graphical model, if we assume</li>
+</ul>
+
+<script type="math/tex; mode=display">\log \psi_C(x_C) = \log \psi(x_C;\theta_C) = \theta_C^T \phi(x_C),</script>
+
+<p>and let</p>
+
+<script type="math/tex; mode=display">A(\theta) = \log Z(\theta)</script>
+
+<p>then</p>
+
+<script type="math/tex; mode=display">p(x;\theta) = \exp\left( \sum_{C \in \mathcal{C}} \theta_C^T \phi(x_C)- A(\theta)\right).</script>
+
+<ul>
+  <li>Examples: Gaussian MRF, Discrete MRF.</li>
+</ul>
+
+<h3 id="ingredients-convex-conjugate">Ingredients: Convex Conjugate</h3>
+
+<p>Definition: For a function <script type="math/tex">f</script>, the convex conjugate dual, which is also known as the Legendre transform of <script type="math/tex">f</script>, is defined as</p>
+
+<script type="math/tex; mode=display">f^* (\mu) = \sup_{\theta} \{ \theta^T\mu - f(\theta)\},</script>
+
+<p>and the convex conjugate dual is convex, no matter the original function is convex or not, and
+Moreover, if <script type="math/tex">f</script> is convex and lower semi-continuous, then</p>
+
+<script type="math/tex; mode=display">f(x) = \sup_{\mu} \{ \theta^T\mu - f^* (\mu)\}.</script>
+
+<ul>
+  <li>Application to Exponential Family</li>
+</ul>
+
+<p>Let <script type="math/tex">A</script> be the log partition function for the exponential family</p>
+
+<script type="math/tex; mode=display">p(x;\theta) = \exp\left\{ \theta^T\phi(x) - A(\theta) \right\},</script>
+
+<p>The dual for <script type="math/tex">A</script> is</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+A^* (\mu) = \sup\{ \theta^T \mu - A(\theta): A(\theta)<\infty\}, %]]></script>
+
+<p>and the stationarity condition is,</p>
+
+<script type="math/tex; mode=display">\mu = \frac{\partial A(\theta)}{\partial \theta} = \mathbb{E}_{\theta} \left[ \phi(X) \right],</script>
+
+<p>we can thus represent <script type="math/tex">\theta</script> through the mean parameter <script type="math/tex">\mu</script>.
+Therefore, we have the following Legendre mapping:</p>
+
+<script type="math/tex; mode=display">A^* (\mu) = \mathbb{E}_{\theta(\mu)} \left[ \log p(X;\theta(\mu)) \right] = -H(p(X;\theta(\mu))),</script>
+
+<p>where <script type="math/tex">H</script> is the Boltzmann-Shannon entropy function.</p>
+
+<h3 id="ingredients-convex-polytope">Ingredients: Convex Polytope</h3>
+
+<p>Half-plane Representation: the Minkowski-Weyl Theorem</p>
+
+<p><strong>Theorem:</strong> A non-empty convex polytope <script type="math/tex">\mathcal{M}</script> can be characterized by a finite collection of linear inequality constraints, i.e.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\mathcal{M} = \left\{ \mu: a_j^T \mu \geq b_j, j \in \mathcal{J} \right\}, \qquad |\mathcal{J}| <\infty. %]]></script>
+
+<h3 id="marginal-polytope">Marginal Polytope</h3>
+
+<p><strong>Definition:</strong> For a distribution <script type="math/tex">p(x)</script> and a sufficient statistics <script type="math/tex">\phi(x)</script>, the mean parameter is defined as:</p>
+
+<script type="math/tex; mode=display">\mu = \mathbb{E}_p[\phi(X)],</script>
+
+<p>and the set of all realizable mean parameters is denoted by:</p>
+
+<script type="math/tex; mode=display">\mathcal{M} := \left\{ \mu: \mathbb{E}_p[\phi(X)] = \mu, \text{for some distribution $p$} \right\}.</script>
+
+<ul>
+  <li>
+    <p><script type="math/tex">\mathcal{M}</script> is a convex set;</p>
+  </li>
+  <li>
+    <p>For discrete exponential families, <script type="math/tex">\mathcal{M}</script> is called the marginal polytope, and has the following convex hull representation:</p>
+  </li>
+</ul>
+
+<script type="math/tex; mode=display">\mathcal{M} = conv\{ \phi(x): x\in \mathcal{X}^m \}.</script>
+
+<p>By the Minkowski-Weyl Theorem, the marginal polytope can be represented by a finite collection of linear inequality constraints, see the examples for the 2-node Ising model.</p>
+
+<h2 id="variational-principle">Variational Principle</h2>
+
+<p>The <strong>exact</strong> variational formulation is:</p>
+
+<script type="math/tex; mode=display">A(\theta) = \text{sup}_{\mu \in \mathcal{M}} \{ \theta^T \mu - A^{*}(\mu) \},</script>
+
+<p>where <script type="math/tex">\mathcal{M}</script> is the marginal polytope, as mentioned before, which is difficult to characterize. <script type="math/tex">A^*</script> is the conjugate dual (entropy) without explicit form.</p>
+
+<p>Then we’ll talk about two approximation methods: 1. mean field approximation: <strong>non-convex inner bound</strong> and <strong>exact form of entropy</strong>. 2. Bethe approximation and loopy belief propagation: <strong>polyhedral outer bound</strong> and <strong>non-convex Bethe approximation</strong>.</p>
+
+<h2 id="mean-field-approximation">Mean Field Approximation</h2>
+
+<p>First we recall that For an exponential family with sufficient statistics
+<script type="math/tex">\phi</script> defined on graph <script type="math/tex">G</script>, the set of realizable mean parameter set
+is defined as:</p>
+
+<script type="math/tex; mode=display">\mathcal{M}(G;\phi) = \{ \mu \in \mathbb{R}^d| \exists p \ \text{s.t.} \ E_p[\phi(X)] = \mu \}</script>
+
+<p>Then we restrict <script type="math/tex">p</script> to a subset of distributions associated with a <strong>tractable</strong> subgraph. For example, we transform a general graph
+with mean parameter set <script type="math/tex">% <![CDATA[
+\Omega = \{ \theta \in \mathbb{R}^d | A(\theta) < +\infty \} %]]></script>, to a subgraph <script type="math/tex">F_0</script> with <script type="math/tex">\Omega(F_0) = \{
+\theta \in \Omega | \theta_{(s,t)} = 0 \ \forall \ (s,t) \in E \}</script>, or a subgraph <script type="math/tex">T</script> with <script type="math/tex">\Omega(T) = \{ \theta \in \Omega |
+\theta_{(s,t)} = 0 \ \forall \ (s,t) \in E(T) \}</script>. This is illustrated in the following figure.</p>
+
+<figure id="basic-structure" class="l-body">
+    <div class="row">
+        <div class="col two">
+            <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-12/graph-ydh.png" />
+        </div>
+    </div>
+</figure>
+
+<p>For a given tractable subgraph <script type="math/tex">F</script>, a subset of canonical parameters is:</p>
+
+<script type="math/tex; mode=display">\mathcal{M}(F;\phi) = \{ \tau \in \mathbb{R}^d| \tau = E_{\theta}[\phi(X)] \text{ for some } \theta \in \Omega(F) \}</script>
+
+<p>This stands for the inner approximation for variational principle. Then the mean filed method solves the relaxed problem:</p>
+
+<script type="math/tex; mode=display">\text{max}_{\tau \in M_F(G)} \{  \langle \tau, \theta \rangle - A_F^{*}(\tau) \}</script>
+
+<p>where <script type="math/tex">A^{*}_F</script> is the exact dual function restricted to <script type="math/tex">M_F(G)</script>.</p>
+
+<h3 id="geometry-of-mean-field">Geometry of Mean Field</h3>
+
+<p>Mean field optimization is always non-convex for any exponential family in which the state space <script type="math/tex">\mathcal{X}^m</script> is finite. This can be seen very easily - the marginal polytope <script type="math/tex">\mathcal{M}(G)</script> is a convex hull and <script type="math/tex">\mathcal{M}_F(G)</script> contains all the extreme points of this polytope. This implies that <script type="math/tex">\mathcal{M}_F(G)</script> is a strict subset of <script type="math/tex">\mathcal{M}(G)</script> and is thus non-convex. For example, consider a two-node Ising model:</p>
+
+<script type="math/tex; mode=display">\mathcal{M}_F(G) = \left\{ \tau_1, \tau_2 \in [0, 1] \quad \text{s.t.} \, \tau_{12} = \tau_1 \tau_2 \right\}</script>
+
+<p>This has a parabolic cross section along <script type="math/tex">\tau_1 = \tau_2</script> and hence it is non-convex.</p>
+
+<h2 id="bethe-approximation-and-sum-product">Bethe Approximation and Sum-Product</h2>
+
+<p>The Sum-Product/Belief Propagation algorithm is exact for trees but it is approximate for loopy graphs. It is interesting to consider how the algorithm on trees is related to the variational principle and what the algorithm is doing for graphs with cycles. In fact, it turns out that the message passing updates are a Lagrange method to solve the stationary condition of the variational formulation.</p>
+
+<h2 id="bethe-variational-problem-bvp">Bethe Variational Problem (BVP)</h2>
+
+<p>In the variational formulation <script type="math/tex">A(\theta) = \sup_{\mu\in \mathcal{M}(G)} \{\theta^T\mu - A^*(\mu)\}</script>, there usually exists 2 problems: the marginal polytope <script type="math/tex">\mathcal{M}</script> is hard to characterize, and the exact entropy <script type="math/tex">- A^*(\mu)\}</script> lacks explicit form. Therefore, in BVP, we use the following 2 approximation to solve the problem:</p>
+
+<ul>
+  <li>Substitute the marginal polytope <script type="math/tex">\mathcal{M}(G)</script> with the tree-based outer bound:</li>
+</ul>
+
+<script type="math/tex; mode=display">\mathbb{L}(G) = \{\tau>0 | \sum_{x_s} \tau_s(x_s) =1, \sum_{x_t} \tau_{st}(x_s, x_t) = \tau_s(x_s)\};</script>
+
+<ul>
+  <li>Substitute the exact entropy <script type="math/tex">- A^*(\mu)\}</script> with the exact expression for trees:</li>
+</ul>
+
+<script type="math/tex; mode=display">-A^*(\tau) \approx H_{\text{Bethe}}(\tau) := \sum_{s\in V} H_s(\tau_s) - \sum_{(s,t)\in E}I_{st}(\tau_{st}).</script>
+
+<p>With these two ingredients, the BVP is formulated as a simple structured problem:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\max_{\tau \in \mathbb{L}(G)}\{ <\theta, \tau> + \sum_{s\in V} H_s(\tau_s) - \sum_{(s,t)\in E}I_{st}(\tau_{st}) \}. %]]></script>
+
+<h3 id="geometry-of-bvp">Geometry of BVP</h3>
+
+<ul>
+  <li>
+    <p>Loopy BP can be derived as am iterative method for solving a Lagrangian formulation of the BVP; similar proof as for tree graphs;</p>
+  </li>
+  <li>
+    <p>A set of pseudo-marginals given by Loopy BP fixed point in any graph if and only if they are local stationary points of BVP;</p>
+  </li>
+  <li>
+    <p>For any graph, <script type="math/tex">\mathcal{M}(G)\subset \mathbb{L}(G)</script>; <script type="math/tex">\mathcal{M}(G)=\mathbb{L}(G)</script> if and only if the graph is a tree;</p>
+  </li>
+  <li>
+    <p>For any element of outer bound <script type="math/tex">\mathbb{L}(G)</script>, it is possible to construct a distribution with it as a BP fixed point.</p>
+  </li>
+</ul>
+
+<h3 id="remark">Remark</h3>
+
+<p>The connection between Loopy BP and the Lagrangian formulation of the Bethe Variational Problem provides a principled basis for applying the sum product algorithm for loopy graphs. However, there are no guarantees on the convergence of the BP algorithm on loopy graphs, although there is always a fixed point of loopy BP. Even if the algorithm converges in the end, due to the non-convexity of Bethe Variational Problem, there are no guarantees on the global optimum. In general, there are no guarantees that <script type="math/tex">A_{\text{Bethe}}(\theta)</script> is a lower bound of <script type="math/tex">A(\theta)</script>.</p>
+
+<p>Nevertheless, the connection and understanding of this suggest a number of avenues for improving upon the ordinary sum-product algorithm, via progressively better approximations to the entropy function and outer bounds on the marginal polytope such as Kikuchi clustering <d-cite key="yedidia2001generalized"></d-cite>.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>Variational methods turn the inference problem into an optimization problem via exponential families and convex duality. However, the exact variational principle is usually intractable to solve and approximations are required. In a theoretical view, there are two distinct components for approximations:</p>
+
+<ol>
+  <li>Either inner or outer bound to the marginal polytope;</li>
+  <li>Various approximation to the entropy function.</li>
+</ol>
+
+<p>In this lecture, we went through the theoretical guarantee behind two mainstream variational methods: Mean field and Belief Propagation. In addition, there is another storyline on Kikuchi clustering and its variants <d-cite key="yedidia2001generalized"></d-cite>. In conclusion, the approximations made by these three methods can be explained as follows:</p>
+
+<ul>
+  <li><strong>Mean field:</strong>  non-convex inner bound and exact form of entropy;</li>
+  <li><strong>Belief Propagation</strong>: polyhedral  outer bound and non-convex Bethe approximation;</li>
+  <li><strong>Kikuchi and variants</strong> : tighter polyhedral outer bounds and better entropy approximations.</li>
+</ul>
+
+<p>More information on this topic can be found in Section 3 and 4 from Wainwright &amp; Jordan’s paper <d-cite key="wainwright2008graphical"></d-cite>.</p>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-02-25-lecture-12.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>

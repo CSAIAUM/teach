@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>مبانی برنامه نویسی | Lecture 4: Exact Inference</title>
+  <meta name="description" content="مبانی برنامه نویسی - مهر ۱۴۰۰ 
+">
+
+  <link rel="shortcut icon" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/favicon.ico">
+
+  <link type=text/css rel=stylesheet href=https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@26.0.2/dist/font-face.css>
+
+  <link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/main.css">
+  <link rel="canonical" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/lecture-04/">
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/template.v2.js"></script>
+    <script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Lecture 4: Exact Inference",
+      "description": "Introducing the problem of inference and finding exact solutions to it in graphical models.",
+      "published": "January 28, 2019",
+      "lecturers": [
+        
+        {
+          "lecturer": "Eric Xing",
+          "lecturerURL": "https://www.cs.cmu.edu/~epxing/"
+        }
+        
+      ],
+      "authors": [
+        
+        {
+          "author": "Tingfung Lau"
+        },
+        
+        {
+          "author": "Austin Dill"
+        },
+        
+        {
+          "author": "Lingxiao Zhao"
+        },
+        
+        {
+          "author": "Ksenia Korovina"
+        }
+        
+      ],
+      "editors": [
+        
+        {
+          "editor": "Xun Zheng",
+          "editorURL": "https://www.cs.cmu.edu/~xunzheng/"
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <span class="site-title">
+      <a class="page-link" href="https://csaiaum.github.io/teach/shadroo/4001/mabani/">مبانی برنامه نویسی</a>
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/logistics/">قوانین</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/lectures/">جلسات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/notes/">جزوات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/calendar/">تقویم</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/homework/">تمرینات</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/project/">پروژه</a>
+        <a class="page-link" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/source/">منابع</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+
+      <d-title>
+        <h1 align='right' dir="rtl" >Lecture 4: Exact Inference</h1>
+        <p align='right' dir="rtl">Introducing the problem of inference and finding exact solutions to it in graphical models.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article align='right' dir="rtl">
+        <h2 id="introduction">Introduction</h2>
+<p>In this previous lectures, we introduce the concept of <strong>Graphical Models</strong> and its mathematical formulations.
+Now we know that we can use a graphical model $M$ (Bayesian network or undirected graph model) to specify a probability distribution $P_{M}$ satisfying some conditional independence property.
+In this lecture, we will study how to utilize a graphical model. Given a GM $M$, we generally have two type of tasks</p>
+<ul>
+  <li><strong>Inference:</strong> answering queries about the probability distribution $P_M$ defined by $M$, for examples, <script type="math/tex">P_M(X|Y)</script> where $X$ and $Y$ are subsets of variables in GM $M$.</li>
+  <li><strong>Learning:</strong> estimating a plausible model $M$ from data $D$.  We call the process of obtaining a point estimate of $M$ as <em>learning</em>, but for Bayesian, they seek the posterior distribution of <script type="math/tex">p(M|D)</script>, which is actually an <em>inference</em> problem. The learning task is highly related to the inference task. When we want to compute a point estimate of $M$, we need to do inference to impute the missing data if not all the variables are observable. So the learning algorithm usually uses inference as a subroutine.</li>
+</ul>
+
+<h3 id="inference-problems">Inference Problems</h3>
+<p>Here we will study different kind of queries associated with the probability distribution $P_M$ defined by GM $M$.</p>
+
+<h4 id="likelihood">Likelihood</h4>
+<p>Most queries one may ask involve an <em>evidence</em>, so we first introduce the definition of evidence.
+Evidence $\mathbf{e}$ is an assignment of a set of variables $\mathbf{E}$.
+Without loss of generality, we assume that $\mathbf{E}={X_{k+1}, \cdots, X_k }$.</p>
+
+<p>The simplest kind of query is the probability of evidence $\mathbf{e}$</p>
+
+<script type="math/tex; mode=display">P(\mathbf{e})=\sum_{x_1} \cdots \sum_{x_k} P(x_1, \cdots, x_k, \mathbf{e})</script>
+
+<p>this is often referred as computing the likelihood of $\mathbf{e}$.</p>
+
+<h4 id="conditional-probability">Conditional Probability</h4>
+<p>We are often interested in the conditional probability of varaibles $X$ given evidence $\mathbf{e}$</p>
+
+<script type="math/tex; mode=display">P(X|\mathbf{e}) = \frac{P(X,\mathbf{e})}{P(\mathbf{e})} = \frac{P(X,\mathbf{e})}{\sum_x P(X=x,\mathbf{e})}</script>
+
+<p>this is the <em>a posteriori</em> belief $X$ given evidence $\mathbf{e}$. Usually we only query about a subset of variables $Y$ of all domain variables $X = {Y, Z}$ and “<em>don’t care</em>” about the remaining, $Z$:</p>
+
+<script type="math/tex; mode=display"> P(Y | \mathbf{e}) = \sum_\mathbf{z} P(Y, Z = \mathbf{z} | \mathbf{e}).</script>
+
+<p>The process of summing out the “don’t care” variables $Z$ is called <em>marginalization</em>,
+and the resulting <script type="math/tex">P(Y | \mathbf{e})</script> is called a <em>marginal</em> prob.</p>
+
+<p>A posteriori belief is very useful. Here we show some applications of a posteriori belief:</p>
+<ul>
+  <li><strong>Prediction:</strong> computing the probability of an outcome given the starting condition.</li>
+</ul>
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/query-prediction.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Example of prediction in a chain model.</strong> The green nodes are observable variables.
+  </figcaption>
+</figure>
+<p>In this type of queries, the query node is the descendent of the evidence. If we know the value of variable $A$ and $B$, the probability of the outcome is a posteriori belief <script type="math/tex">P(C|A,B)</script>. Using the conditional independence <script type="math/tex">C \perp A | B</script> encoded in the graph, we can simplify it to <script type="math/tex">P(C|A,B) = P(C|B)</script>.</p>
+
+<ul>
+  <li><strong>Diagnosis:</strong> computing the probability of disease/fault given symptoms.</li>
+</ul>
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/query-diagnosis.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Example of diagnosis in a chain model.</strong> The green nodes are observable variables.
+  </figcaption>
+</figure>
+<p>In this type of queries, the query node is the ancestor of the evidence.  In the GM $M$, if we know the value of variable $B$ and $C$, the probability of the cause is a posteriori belief <script type="math/tex">P(A|B,C)</script>. Again using the conditional independence, we can simplify it to <script type="math/tex">P(A|B,C) = P(A|B)</script>.</p>
+<ul>
+  <li><strong>Learning:</strong> when learning with partial observation of the variables, we need to compute a posteriori belief in the learning algorithm. In EM algorithm, we will use a posteriori belief to fill in the unobserved variables as part of the algorithm. We will cover more details about learning algorithms later.</li>
+</ul>
+
+<p>The information flow between variables is not restricted by the directionality of the edges in a GM.
+We can actually do a probabilistic inference combing evidence from all parts of the networks.
+Deep Belief Network (DBN) [Hinton, 2006]<d-cite key="hinton2006reducing"></d-cite> is an example.
+DBN is a generative model or Restricted Boltzmann Machine (RBM) with multiple layers.
+The model is successful for solving tasks like recognizing handwritten digits, learning motion capture data, collaborative filtering.
+The following figures shows a DBN with 3 hidden layers. We can infer hidden unit $H_1, H_2, H_3$ from data $V$. We can also generate data $V$ by sampling hidden units $H_3, H_2, H_1$ in the opposite direction.</p>
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/dbn.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>A Deep Belief Network with 3 hidden layers for image processing. </strong>
+  </figcaption>
+</figure>
+
+<h4 id="most-probable-assignment">Most Probable Assignment</h4>
+<p>Another interesting query is to find the <strong>most probable joint assignment</strong>(MPA) for <em>some</em> variables in interest.
+Such reasoning is usually performed under some evidence $\mathbf{e}$ and ignoring some “don’t care” variables $Z$,</p>
+
+<script type="math/tex; mode=display"> \mathrm{MPA}(Y | e) = \arg \max_{\mathbf{y} \in \mathcal{Y} } P(\mathbf{y} | \mathbf{e}) = \arg \max_{\mathbf{y} \in \mathcal{Y} } P(\mathbf{y}, \mathbf{z} | \mathbf{e}). </script>
+
+<p>From the equation, we can find that MPA is the maximum a posteriori configuration of $Y$.</p>
+
+<p>This query is typically useful for prediction given a GM $M$.</p>
+<ul>
+  <li><strong>Classification:</strong> find the most likely label, given the evidence.</li>
+  <li><strong>Explanation</strong> find the most likely scenario, given the evidence.</li>
+</ul>
+
+<p><strong>Important Notice:</strong> The MPA of a variable depends on its “context” of the problem — the set of variables been jointly queried. For example, the probability distribution of $y_1$ and $y_2$ is shown in the following table. When we compute the MPA of $y_1$, we first compute the marginalization $p(y_1=0) = 0.4, p(y_1=1) = 0.6$, MPA is $\arg \max_{y_1} p(y_1) = 1$. On the other hand the MPA $y_1, y_2$ is $\arg \max_{y_1, y_2} p(y_1, y_2) = (0, 0)$.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>$y_1$</th>
+      <th>$y_2$</th>
+      <th>$p(y_1, y_2)$</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0</td>
+      <td>0.35</td>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>1</td>
+      <td>0.05</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0</td>
+      <td>0.3</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>1</td>
+      <td>0.3</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="inference-methods">Inference Methods</h3>
+<p>Inference is generally a hard problem. Actually, there is a theorem showing that computing $P(X = \mathbf{x} | \mathbf{e})$ in a GM is NP-hard. However, the NP-hardness does not mean that we cannot solve inference.
+The theorem implies that we cannot find a general inference procedure that works efficiently for arbitrary GMs.
+We still have a chance to find provably efficient algorithms for some particular families of GMs.</p>
+
+<p>There are many approaches for inference in GMs. They can be divided into two classes</p>
+<ul>
+  <li><strong>Exact inference algorithms.</strong> Including the elimination algorithm, message-passing algorithm (sum-product, belief propagation), the junction tree algorithms. These algorithms can give the precise result of query. The major topic of this lecture is on exact inference algorithms.</li>
+  <li><strong>Approximate inference techniques.</strong> Including stochastic simulation / sampling methods, Markov chain Monte Carlo (MCMC) methods, variational algorithms. These algorithms only gives an approximate answer to the inference query. We will cover these methods in future lectures.</li>
+</ul>
+
+<h2 id="elimination-algorithm-and-examples">Elimination Algorithm and Examples</h2>
+
+<p>Now that we understand the problem of inference, we will examine some simple cases to build intuition for a general method for exact inference.</p>
+
+<h3 id="elimination-on-chains">Elimination on Chains</h3>
+
+<p>Consider a simple chain on variables $A, B, C, D, E$ as seen below.</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/chain1.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Chain PGM.</strong>
+  </figcaption>
+</figure>
+
+<p>Imagine we want the probability of $E=e$ regardless of the values of $A, B, C, D$. Naively, we could sum over the joint probability:</p>
+
+<script type="math/tex; mode=display">P(e) = \sum_d \sum_c \sum_b \sum_a P(a, b, c, d, e)</script>
+
+<p>This will require an exponential number of terms. Thankfully, we can use the properties of Bayesian Networks to cut down on this computational cost. Since Bayesian Networks encode conditional independences, we can decompose the joint probability as follows:</p>
+
+<script type="math/tex; mode=display">P(e) = \sum_d \sum_c \sum_b \sum_a P(a) P (b | a) P(c | b) P(d | c) P(e | d)</script>
+
+<p>This decomposition has allowed us to decouple conditionally independent variables and we can therefore push in and isolate summations, like the following:</p>
+
+<script type="math/tex; mode=display">P(e) = \sum_d \sum_c \sum_b P(c | b) P(d | c) P(e | d) \sum_a P(a) P (b | a)</script>
+
+<p>Focusing on the final term, $\sum_a P(a)P(b\vert a)$, we see that this marginalizes over $a$ and leaves us with a function of only $b$. We will generally refer to this as $\phi(b)$ but semantically it is equivalent to $P(b)$. We are left with the following expression for the marginal probability of $e$.</p>
+
+<script type="math/tex; mode=display">P(e) = \sum_d \sum_c \sum_b P(c | b) P(d | c) P(e | d) P(b)</script>
+
+<p>Note that because the variable $a$ is no longer part of this expression we will say $a$ has been <em>eliminated</em>. We are therefore left with a new graphical model for our situation:</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/chain2.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Graphical Model after Elimination of A.</strong>
+  </figcaption>
+</figure>
+
+<p>Repeating this, we get the following sequence of steps:</p>
+
+<d-math block="">
+\begin{aligned}
+P(e) &amp;= \sum_d \sum_c P(d | c) P(e | d) \sum_b P(c | b) P(b) \\
+&amp;= \sum_d \sum_c P(d | c) P(e | d) P(c) \\
+&amp;= \sum_d P(e | d) \sum_c P(d | c) P(c) \\
+&amp;= \sum_d P(e | d) P(d) \\
+\end{aligned}
+</d-math>
+
+<p>As each elimination step costs $O(Val\vert X_i \vert \times \vert X_{i+1} \vert)$, the overall complexity is $O(nk^2)$, a huge improvement overall from the exponential runtime of the naive summation of the joint probability.</p>
+
+<h3 id="elimination-in-hidden-markov-models">Elimination in Hidden Markov Models</h3>
+
+<p>Now we will consider a model frequently used in time-series analysis and Natural Language Processing known as a Hidden Markov Model.</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/HMM.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Hidden Markov Model.</strong>
+  </figcaption>
+</figure>
+
+<p>Naively we could find the conditional probability of $y_i$ given the observed sequence, but using our elimination trick, we can get similar computational advantages as seen in the chain example.</p>
+
+<d-math block="">
+\begin{aligned}
+P(y_i | x_1, \dots, x_T) &amp;= \sum_{y_{-i}} P(y_1, \dots, y_T, x_1, \dots, x_T) \\
+&amp;= \sum_{y_{-i}} P(y_1) P(x_1 | y_1) P(y_2 | y_1) \dots P(y_T | y_{T-1}) P(x_T | y_T) \\  
+\end{aligned}
+</d-math>
+
+<p>With this model, we have two intuitive choices for the order of variables to eliminate. We could start from the first time step (known as the <em>Forward Algorithm</em>) or start from the final time step (known as the <em>Backward Algorithm</em>).</p>
+
+<p>Note that to each notation, we will represent a summation over all random variables $y$ except the $i$th variable as $y_{-i}$.</p>
+
+<h4 id="forward-algorithm">Forward Algorithm</h4>
+
+<p>If we choose to eliminate variables by starting at the beginning of the chain, we would first group factors as follows:</p>
+
+<d-math block="">
+\begin{aligned}
+P(y_i | x_1, \dots, x_T) &amp;= \sum_{y_{-1, -i}} P(x_2 | y_2) P(y_3 | y_2) \dots P(y_T | y_{T-1}) P(x_T | y_T) \sum_{y_1} P(y_1) P(x_1 | y_1) P(y_2 | y_1)\\  
+&amp;=  \sum_{y_{-1, -i}} P(x_2 | y_2) P(y_3 | y_2) \dots P(y_T | y_{T-1}) P(x_T | y_T) \phi(x_1, y_2) \\  
+&amp;=  \sum_{y_{-1, -i}} P(x_2 | y_2) P(y_3 | y_2) \dots P(y_T | y_{T-1}) P(x_T | y_T) P(x_1, y_2) \\  
+\end{aligned}
+</d-math>
+
+<p>We can continue in this pattern with each intermediate term $\phi(\cdot)$ representing a joint probability.</p>
+
+<h4 id="backward-algorithm">Backward Algorithm</h4>
+
+<p>If we choose to eliminate variables by starting at the end of the chain, we would first group factors as follows:</p>
+
+<d-math block="">
+\begin{aligned}
+P(y_i | x_1, \dots, x_T) &amp;= \sum_{y_{-T, -i}} P(y_1) P(x_1 | y_1) P(y_2 | y_1) \dots P(x_{T-1} | y_{T-1}) P(y_{T-1} | y_{T-2}) \sum_{y_T} P(y_T | y_{T-1}) P(x_T | y_T) \\  
+&amp;= \sum_{y_{-T, -i}} P(y_1) P(x_1 | y_1) P(y_2 | y_1) \dots P(x_{T-1} | y_{T-1}) P(y_{T-1} | y_{T-2}) \phi(x_T, y_{T-1}) \\
+&amp;= \sum_{y_{-T, -i}} P(y_1) P(x_1 | y_1) P(y_2 | y_1) \dots P(x_{T-1} | y_{T-1}) P(y_{T-1} | y_{T-2}) P(x_T | y_{T-1}) \\
+\end{aligned}
+</d-math>
+
+<p>We can continue in this pattern with each intermediate term $\phi(\cdot)$ representing a conditional probability.</p>
+
+<h3 id="takeaways-from-examples">Takeaways from Examples</h3>
+
+<p>The main takeaways from our exploration are that elimination provides a systematic way to efficiently do exact inference and that while we can generally create intermediate factors, the semantics of the intermediate factors can vary.</p>
+
+<h3 id="variable-elimination-algorithm">Variable Elimination Algorithm</h3>
+
+<p>From these examples, we can consolidate our techniques used in the above examples to a more general algorithm called <em>Variable Elimination</em>.</p>
+
+<p>Note that a frequent operation in the above examples is that of taking a product of factors ($F$) and then summing over the values of a variable. This is the general <em>Sum-Product</em> operation.</p>
+
+<script type="math/tex; mode=display">\sum_{z} \prod_{\phi\in F} \phi</script>
+
+<p>Furthermore, we would like a way of incorporating evidence $E=e$ that generalizes our use of factors above. Because we will be maintaining a list of factors and iterating through it, it will be advantages to define new factors that explicitly incorporate our evidence, instead of having fixed variables inside our original factors.</p>
+
+<p>Let $\delta(E_i, e_i)$ denote our <em>evidence potential</em>.</p>
+
+<script type="math/tex; mode=display">\delta(E_i, e_i) = \{
+1,\text{ if } E_i = e_i;
+0,\text{ if } E_i \neq e_i
+\}</script>
+
+<p>Then as fitting with out existing framework, we can simply define the <em>total evidence potential</em> to be the product our each of the individual evidence potentials.</p>
+
+<script type="math/tex; mode=display">\delta(E, e) = \prod_{i \in I_e} \delta(E_i, e_i)</script>
+
+<p>Now we can treat evidence as just another type of factor.</p>
+
+<p>With these concepts in hand we can outline our new algorithm.</p>
+
+<ul>
+  <li>Given a query of the form $P(X_1 | e)$, we first focus on the joint probability $P(X_1, e)$.
+<script type="math/tex">P(X_1, e) = \sum_{x_n}\dots\sum_{x_2}\prod_{i} P(x_i | pa_i)</script>.
+This suggests an implicit “elimination order” over the variables.</li>
+  <li>Following the order prescribed above:
+    <ul>
+      <li>Move all the relevant terms to the innermost sum and all irrelevant terms out of it.</li>
+      <li>Perform the Sum-Product operation on the innermost sum, producing a new factor $\phi$.</li>
+      <li>Repeat until the entire joint is calculated.</li>
+    </ul>
+  </li>
+  <li>So calculate the desired query, simply divide the joint by the marginal probability of the evidence.
+<script type="math/tex">P(X_1 |e) = \frac{\phi(X_1, e)}{\sum_{x_1}\phi(X_1, e)}</script></li>
+</ul>
+
+<h2 id="graph-elimination">Graph Elimination</h2>
+<p>In this section we are going to analyze the complexity of Variable Elimination (VE) algorithm. We first give a basic analysis based on the algorithm procedure and this can give us the insight of the bottleneck of complexity. Then we show that each step of VE can be viewed as a graph transformation step and this can let us analyze the algorithm complexity more clearly in graph perspective. We also formalize the graph perspective view of VA as graph elimination algorithm.</p>
+
+<h3 id="basic-complexity-analysis">Basic Complexity Analysis</h3>
+<p>From last section we have known VE can reduce inference complexity greatly. Now let’s have a closer look. Let $n$ be the number of variables in the fully joint probability, $m$ be the number of initial factors including original factors and evidence potentials. We have seen that VE is an n-step iterative elimination algorithm. In each step the algorithm picks a variable $X_i$ and “push in” the summarization w.r.t. $X_i$, which makes the summarization performs over the product of only a subset of factors involving $X_i$. Let $N_i$ be the number of variables ($y_1, y_2, …, y_{N_i}$) inside the subset of factors. We can formally write the step as:</p>
+
+<script type="math/tex; mode=display">m_i(y_1,...,y_{N_i}) = \sum_{x_i \in Val(X_i)} \prod_{j=1}^{k_i} m(x_i, y_{c_i})</script>
+
+<p>Where $k_i$ is the number of factors involving $X_i$.</p>
+
+<p>Assume each variable has no more than $v$ values, for each configuration of $y_1,…,y_{N_i}$ there is $\textnormal{Val}(X_i) k_i \le v N_i$ multiplication and $\textnormal{Val}(X_i) \le v$ addition. And there are at most $v^{N_i}$ configurations of $y_1,…,y_{N_i}$. Considering the algorithm has $n$ steps, and let $N_{max} = \max_i N_i$. We can write down the complexity is $O(nv^{N_{max}})$. Thus we see that the computational cost of VE algorithm is dominated by the maximum size of intermediate factors generated in an exponential growth rate.</p>
+
+<h3 id="ve-to-graph-elimination-example">VE to Graph Elimination: Example</h3>
+<p>We have seen the bottleneck of the VE algorithm is the maximum size of intermediate factors. It is affected by the elimination ordering. Now let’s first see an example that connects iterative elimination steps inside VE with a series of graph structure transformations. This gives us a visualization way of analyzing complexity based on graph elimination. Questions regarding the computation complexity of the VE can be reduced to purely graph-theoretic considerations.</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Given a Bayesian Network factorizing as the graph shown in below, we are going to do VE to inference $P(A</td>
+      <td>h)$. The initial factors are:</td>
+    </tr>
+  </tbody>
+</table>
+
+<script type="math/tex; mode=display">P(a)P(b)P(c|b)P(d|a)P(e|c,d)P(f|a)P(g|e)P(h|e,f)</script>
+
+<p>Before doing VE we choose an elimination ordering as $H,G,F,E,D,C,B$.</p>
+
+<figure>
+  <div class="row">
+   <div class="col one">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/graph_example1.jpg" />
+   </div>
+  </div>
+</figure>
+
+<p>Step 1: to handle conditioning $h$</p>
+
+<p>H variable node is observed node, we can add additional evidence indicator factor to make conditioning on observed evidence as isomorphic as a marginalization step:</p>
+
+<script type="math/tex; mode=display">m_h(e,f) = p(h=\bar{h} |e, f) = \sum_{h} p(h|e,f) \delta(h=\bar{h})</script>
+
+<p>The new product of factors becomes:</p>
+
+<script type="math/tex; mode=display">P(a)P(b)P(c|b)P(d|a)P(e|c,d)P(f|a)P(g|e)m_h(e,f)</script>
+
+<p><strong>Graph transformation:</strong> After conditioning on $h$, we eliminate $h$ in old factors and generate a new factor $m_h(e, f)$. In the perspective of graph evolving, as shown in the below, this corresponding to delete the node $h$ as we eliminate $h$, and also add an edge between node $E$ and $F$ since the generated new factor depending on $E$ and $F$. The reduced factorization is a Gibbs distribution factorizing over the new graph.</p>
+
+<figure>
+  <div class="row">
+    <div class="col one">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/graph_example2.jpg" />
+    </div>
+  </div>
+</figure>
+
+<p>Step 2: eliminate G</p>
+
+<p>Compute:</p>
+
+<script type="math/tex; mode=display">m_g(e) = \sum_g p(g|e) = 1</script>
+
+<p>The new product of factors:</p>
+
+<script type="math/tex; mode=display">P(a)P(b)P(c|b)P(d|a)P(e|c,d)P(f|a)m_g(e)m_h(e, f)</script>
+
+<p><strong>Graph transformation:</strong> Just remove node $G$ as the below.</p>
+<figure>
+  <div class="row">
+    <div class="col one">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/graph_example3.jpg" />
+    </div>
+  </div>
+</figure>
+
+<p>Step 3: eliminate F</p>
+
+<p>Compute:</p>
+
+<p><script type="math/tex">m_f(a, e) = \sum_f p(f|a)m_h(e, f)</script>
+The new product of factors:</p>
+
+<script type="math/tex; mode=display">P(a)P(b)P(c|b)P(d|a)P(e|c, d)m_g(e)m_f(a, e)</script>
+
+<p><strong>Graph transformation:</strong> Remove node $F$ and moralize $A$ and $E$.</p>
+<figure>
+  <div class="row">
+   <div class="col one">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/graph_example4.jpg" />
+   </div>
+  </div>
+</figure>
+
+<p>Step 4: eliminate E</p>
+
+<p>Compute:</p>
+
+<script type="math/tex; mode=display">m_e(a,c,d) = \sum_e p(e|c, d)m_g(e)m_f(a, e)</script>
+
+<p>The new product of factors:</p>
+
+<script type="math/tex; mode=display">P(a)P(b)P(c|b)P(d|a)m_e(a,c,d)</script>
+
+<p><strong>Graph transformation:</strong> Generated term &lt;=&gt; fully connected subgraph, according to the Gibbs distribution property. As shown in the follwing, node $E$ is removed and $E$’s neighbors are moralized.</p>
+<figure>
+  <div class="row">
+   <div class="col one">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/graph_example5.jpg" />
+   </div>
+  </div>
+</figure>
+
+<p>Step 5: eliminate D</p>
+
+<p>Compute:</p>
+
+<script type="math/tex; mode=display">m_d(a, c) = \sum_d p(d|a) m_e(a, c, d)</script>
+
+<p>The new product of factors:</p>
+
+<script type="math/tex; mode=display">P(a)P(b)P(c|b)m_d(a, c)</script>
+
+<p><strong>Graph transformation:</strong> As in the following.</p>
+<figure>
+  <div class="row">
+   <div class="col one">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/graph_example6.jpg" />
+   </div>
+  </div>
+</figure>
+
+<p>Step 6: eliminate</p>
+
+<p>Compute:</p>
+
+<script type="math/tex; mode=display">m_c(a, b) = \sum_c p(c|b)m_d(a, c)</script>
+
+<p>The new product of factors:</p>
+
+<script type="math/tex; mode=display">P(a)P(b)m_c(a, b)</script>
+
+<p><strong>Graph transformation:</strong> As in the following, moralize $A$ and $B$.</p>
+<figure>
+  <div class="row">
+    <div class="col one">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/graph_example7.jpg" />
+   </div>
+  </div>
+</figure>
+
+<p>Step 7: eliminate B</p>
+
+<p>Compute:</p>
+
+<script type="math/tex; mode=display">m_b(a) = \sum_b p(b)m_c(alb)</script>
+
+<p>The new product of factors:</p>
+
+<script type="math/tex; mode=display">P(a)P(b)</script>
+
+<p><strong>Graph transformation:</strong>  Now only a single node $A$ left.</p>
+
+<p>In the last step we just normalize left product.</p>
+
+<p>All in all we can see the corresponding graph transformation can be shown as following. At each step we remove a node from the former graph and moralize removed node’s neighbors.</p>
+<figure>
+  <div class="row">
+   <div class="col three">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/graph_example8.jpg" />
+   </div>
+  </div>
+</figure>
+
+<h3 id="ve-to-graph-elimination-ge-formal-connection">VE to Graph Elimination (GE): Formal Connection</h3>
+<p>As we have shown in the above example, intuitively the graph elimination procedure has a close connection with variable elimination algorithm. We first summarize the graph elimination algorithm, give out the definition of an important graph structure <strong>reconstituted graph</strong>, and a theorem about the correspondence of elimination clique in GE and the generated intermediate term in VE.</p>
+
+<p><strong>Graph Elimination Algorithm</strong> :</p>
+
+<p>Given:  undirected/directed graph $G$, an elimination ordering $I$.  <br />
+Initialization: If $G$ is directed, first moralize $G$. <br />
+Procedure: For each node $X_i$ in $I$, at each step connect all of the remaining neighbors of $X_i$ and remove $X_i$ from the graph.</p>
+
+<p><strong>Reconstituted Graph $G’_I(V, E’)$</strong>: also named induced graph</p>
+
+<p>Note: the $I$ is an elimination ordering, for different $I$ reconstituted graph is different.</p>
+
+<p>Definition: the reconstituted graph $G’_I(V, E’)$ is a graph whose edge set $E’$ is a superset of $E$ containing all edges of $E$ and any new edges created during a run of <strong>Graph Elimination Algorithm</strong>.</p>
+
+<p>Reconstituted graph records the <strong>elimination cliques</strong> created in graph elimination algorithm. At each step before we remove a node $X_i$ from graph, connecting all neighbors of $X_i$ created a clique, which is the <strong>elimination cliques</strong></p>
+
+<p><strong>Correspondence between intermediate terms in VE and elimination cliques in GE:</strong></p>
+
+<p>Following the corresponding steps of VE and GE, it’s easy to see that at each elimination step, the scope of generated intermediate term in VE is just he elimination clique generated in GE. The following figure shows this relationship based on the example we introduced before:</p>
+<figure>
+  <div class="row">
+   <div class="col three">
+     <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/elimination_clique.jpg" />
+   </div>
+  </div>
+</figure>
+
+<p><strong>Theorem:</strong></p>
+
+<ol>
+  <li>
+    <p>The scope of every factor generated during the variable elimination process is a clique in reconstituted graph $G’_I(V, E’)$.</p>
+  </li>
+  <li>
+    <p>Every maximal clique in reconstituted graph $G’_I(V, E’)$ is the scope of some intermediate factor in the computation.</p>
+  </li>
+</ol>
+
+<p>The proof of the theorem can be found in Chapter 9 of Koller’s PGM textbook. This theorem tells us the scope of intermediate factors which is a elimination clique, is a clique in reconstituted graph. What’s more, the scope of the largest intermediate factor is a the largest maximal clique in reconstituted graph.</p>
+
+<h3 id="complexity-analysis-in-graph-perspective">Complexity Analysis in Graph Perspective</h3>
+
+<p>In the beginning of this section we have argued that the bottleneck of VE’s complexity is determined by the scope size of the maximum intermediate factor generated in the procedure of VE. In above subsection we have shown that each intermediate factor in VE is an elimination clique in graph elimination algorithm, and the largest elimination clique is also a largest maximal clique in reconstituted graph.</p>
+
+<p>Then, given an elimination ordering $I$, the problem of get the bottleneck maximum scope size $N_{max}$ of intermediate factors is equivalent of finding the largest clique in reconstituted graph $G’_I(V, E’)$, which is a pure graph theoretic question. And there are efficient mature algorithm for solving this problem.</p>
+
+<h3 id="elimination-ordering">Elimination Ordering</h3>
+
+<p>We can define the <strong>width</strong> of a reconstituted graph as the size of largest clique minus 1. Let $w_{G,I}$ be the width of $G_I’(V, E’)$. For different ordering $I$, $w_{G,I}$ is different.</p>
+
+<p>Now we define <strong>tree-width</strong> of $G$ as:</p>
+
+<script type="math/tex; mode=display">w^*_{G} = \min_{I} w_{G,I}</script>
+
+<p>This term provides us a bound on the best performance	we can hope for applying VE to do an inference over a probability that factorizes over $G$.</p>
+
+<p>However, finding the best elimination ordering of a graph is a NP-hard problem. As we have shown before the inference task itself is also NP-hard. But these two NP-hard problems are not same. To be more specific, even we have find a best elimination ordering, the complexity of inference can still be exponential if the tree width of the graph $G$ is large.</p>
+
+<p>Although design a general best elimination ordering finding algorithm is NP-hard, there are some heuristic algorithm can generate a near-optimal elimination ordering (look at Koller’s PGM for detail). And on the other hand, for some particular graph $G$ there exists “obvious” optimal ordering that can be easily got. Now we give some examples to show opposite scenarios.</p>
+
+<p><strong>Example 1: Star graph</strong><br />
+If we remove centroid first it’s easy to see the width of induced graph is equal to $N-1$ where $N$ is total number of nodes. However if we remove centroid at the end, it’s easy to see the induced graph is the original star graph and the width is just 1. Using this elimination ordering can make variable elimination very efficient.</p>
+
+<p><strong>Example 2: Tree graph</strong> <br />
+It’s obvious that eliminating nodes from leaves to root won’t introduce any induced dependency so the induced graph is just the original tree. And we know that there is no clique with size large than 3 in tree. So the width is just 1.</p>
+
+<p><strong>Example 3: Ising model</strong><br />
+It’s extremely hard to find a optimal elimination ordering. And actually the tree width of ising model is large than the $\sqrt{n}$ so even finding a optimal elimination ordering, the VE algorithm is still exponential in $n$.</p>
+
+<hr />
+
+<h2 id="message-passing-algorithms">Message Passing Algorithms</h2>
+
+<h4 id="overview">Overview</h4>
+
+<p>Now we have devised a general Eliminate algorithm that is able to work on every graph. However, it has several downsides. One of them, as we have discussed, is exponential worst case complexity. Another one is that it is designed to only answer single-node queries. In this section, we build on the same idea of exploiting local structure of a graph to manipulate factors, and formulate a class of exact inference algorithms based on passing messages over the Clique tree data structure. Doing so will give us important insight on the way inference works in general, and also provide computational benefits in the case when multiple queries have to be computed based on the same evidence. Next, we will show that the message-passing idea can be implemented more efficiently for the special case tree-like graphs. Finally, we conclude with a summary of exact inference.</p>
+
+<p>This section will provide just a cursory overview of the aforementioned techniques, with the intent of presenting intuitions about how they connect to one another, and also clearing up some confusing terminology. For more in-depth explanations and proofs for each of the topics, the scribe would advise looking into the references.</p>
+
+<h4 id="variable-elimination-and-clique-trees-">Variable elimination and Clique Trees <d-cite key="Koller"></d-cite><d-cite key="Murphy"></d-cite></h4>
+
+<p>Let us start by drawing a connection between variable elimination process as we have seen in Eliminate algorithm, and a special data structure called a Clique tree (also known by the names of Junction or Join tree). Recall that performing one step of variable elimination involved creating a factor $\psi_i$ by multiplying several existing factors, and then one variable is summed out of $\psi_i$ to create a factor $\tau_i$ that is sent to other factors as a “message”. A run of this algorithm defines a <em>Clique tree</em>: it is an undirected graph with nodes corresponding to factors $\psi_i$, or cliques of variables $C_i$ in its scope; an edge between $C_i$ and $C_j$ is added if a message $\tau_i$ is used to in the computation of $C_j$’s message $\tau_j$. Notice that any message $\tau_i$ is passed only once: when a factor $\phi_i$ is used to create the next factor $\psi_j$, it is never used again; hence this graph can be seen to be a tree. Figures below present an example.</p>
+
+<figure>
+  <div class="row">
+    <div class="col one">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/student_network.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Student network <d-cite key="Koller"></d-cite></strong>
+  </figcaption>
+</figure>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/student_ctree.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Clique tree for VE execution in order C,D,I,H,G,S,L</strong>
+  </figcaption>
+</figure>
+
+<p>A more algorithmically principled way of constructing a clique tree given the elimination order triangulates $\mathcal{G}$ into its chordal graph, extracts max cliques in it and and finds a minimal spanning tree in the resulting clique graph. Triangulation “triangulates” the graph by iteratively adding an edge between any non-adjacent vertices into any cycle of length at least $4$. Equivalently, given elimination order, we can add edges that would be added if we were to run elimination. Next, maximal cliques $C_i$ are extracted from this graph and arranged in a graph with edges $s_{i,j} = C_i\cap C_j$. Finally, a minimum spanning tree in this graph is a clique tree. The initial graph, triangulated graph, max cliques and the corresponding clique tree are presented in the below example.</p>
+
+<figure>
+  <div class="row">
+    <div class="col two">
+      <img src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/img/notes/lecture-04/construction.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Constructing a Clique tree from the Student network.</strong>
+  </figcaption>
+</figure>
+
+<p>Moreover, there is a simple characterization of exactly those trees with $C_i \subseteq X$ as nodes and $S_{i,j} \subseteq C_i\cap C_j$ as edges that are clique trees defined by some variable elimination procedure (using a property called Running Intersections). This lets us identify clique trees with executions of variable elimination. As we will see, interpreting variable elimination in terms of clique trees has several computational advantages. For example, one tree may be used as a basis for executing several different elimination orderings. Furthermore, it makes it possible to cache intermediate messages for answering multiple marginal probability queries more efficiently.</p>
+
+<h4 id="general-sum-product-on-a-clique-tree-">General Sum-Product on a Clique Tree <d-cite key="Koller"></d-cite><d-cite key="Murphy"></d-cite></h4>
+
+<p>The Sum-Product algorithm provides a way to use a Clique tree to guide variable elimination. Starting with a clique tree $\Tau$ with cliques $C_i$, we perform the following steps:</p>
+
+<ol>
+  <li>Generate initial potentials by multiplying factors assigned to each clique $C_i$:</li>
+</ol>
+
+<script type="math/tex; mode=display">\psi_i(C_i) = \prod \psi</script>
+
+<ol>
+  <li>Choose root $C_r$ to be a clique that contains variable of interest.</li>
+  <li>Orient the graph upward towards the root. This defines partial ordering of operations on the tree.</li>
+  <li>Pass messages bottom-up (collect evidence phase): in the topological order from leaves to root, compute and store</li>
+</ol>
+
+<script type="math/tex; mode=display">\delta_{i\rightarrow j} = \sum_{C_i - S_{i,j}} \psi_i \cdot \prod_{k\in Pred(i)} \delta_{k\rightarrow i}</script>
+
+<ol>
+  <li>Distribute messages top-down (distribute evidence phase): for each clique $C_i$</li>
+</ol>
+
+<script type="math/tex; mode=display">\beta_i = \psi_r \cdot \prod_{k\in Pred(r)} \delta_{k\rightarrow r}</script>
+
+<p>After step $4$, we can get the marginal for the root node, $P(C_r)$, by multiplying the incoming messages with $C_r$’s own clique potential:</p>
+
+<script type="math/tex; mode=display">P(C_r) = \psi_r \cdot \prod_{k\in Pred(r)} \delta_{k\rightarrow r}</script>
+
+<p>(to get the likelihood of the variable of interest, it remains to sum out irrelevant variables). However, the benefit of using the clique tree shows after the top-down phase of step $5$, after which the <em>beliefs</em> $\beta_i$ we obtain are actually equal to marginals $P(C_i)$ for every clique. This way, running $N$ marginal queries is reduced from $Nc$ to just $2c$ (at the cost of storing the tree and messages between bottom-up and top-down passes).</p>
+
+<p>There are several modifications of the algorithm. One replaces sum-product with max-product in the collect evidence phase, and with traceback in the distribute evidence phase, to produce a MAP estimate for $\mathcal{G}$. Another gives a way to do posterior sampling on from the model, by having the collect evidence phase proceed as usual, and on the distribute evidence phase sampling variables given the values higher up the tree.</p>
+
+<p>The resulting <em>Clique (Junction) tree algorithm</em> is a general algorithm for exact inference. However, it inherits the worst-case complexity of the Eliminate algorithm, which is exponential in the size of the largest clique in elimination order. The smallest size of largest clique over all elimination orderings is called the treewidth of a graph; it captures the complexity of VE, as well as CTA. However, finding the ordering, as well as the treewidth itself, is NP-hard in general. This limits the applicability of both of these algorithms.</p>
+
+<p>Next, we will present a more specialized instantiation of a message-passing algorithm that is limited to trees or tree-like structures, but is more efficient. Moreover, it can be applied to non-trees in an iterative fashion, resulting in an approximate inference algorithm known as <em>Loopy Belief propagation</em>.</p>
+
+<h4 id="sum-product-algorithm-on-trees-">Sum-Product algorithm on trees <d-cite key="Murphy"></d-cite><d-cite key="Jordan2003"></d-cite></h4>
+
+<p>There is a special class of models for which the exact inference can be performed especially efficiently. If $\mathcalP{G}$ is a undirected tree or a directed graph whose moralization is an undirected tree, we can use the Sum-Product message passing in the same way as described before, using the graph itself in place of a clique tree. Likewise, max-product variation for MAP inference and posterior sampling can both be used; moreover, the algorithm can be extended to certain tree-like structures through construction of so called Factor graphs. This algorithm is also known as Belief Propagation, and when applied to chain graps, as Forward-Backward algorithm. This multitude of names reflects the practical significance of this algorithm: although it is limited to certain graphical model structures, it is efficient due to low treewidth of those models and not needing to construct a clique tree in order to obtain all singleton marginals.</p>
+
+<p>One more interesting feature of the tree Sum-Product algorithm is that we can still apply it to graphs that are not trees (i.e. have loops) by repeatedly running message passing until convergence: in that case, it yields an approximate inference method. This algorithm is called Loopy Belief Propagation, and it has been experimentally shown to work well for different classes of models.</p>
+
+<h4 id="summary-of-exact-inference-">Summary of exact inference <d-cite key="Murphy"></d-cite><d-cite key="Jordan2003"></d-cite></h4>
+
+<p>Let us recap what we have learnt about exact inference. We have seen Eliminate, Clique tree, and Sum-Product algorithms. Eliminate algorithm is conceptually simple and applicable to any graphical model. However, it only lets us compute single queries and has worst case exponential time complexity in treewidth. Clique tree algorithm is also applicable to general graphs and is able to fix the first of Eliminate’s issues by caching computation using messages, but has the same computational complexity as a function of graph properties. Sum-product algorithm can be thought of as implementing the same idea of passing messages around the graph and can thus be for several-query applications, but reduces the computational complexity of Clique tree algorithm at the cost of being limited to tree-like graphical models.</p>
+
+<p>In general, the above trade-offs between generality and computational complexity are unavoidable: it can be shown that exact inference is NP-hard <d-cite key="DagumLuby1993"></d-cite>. In general, this intractability of exact inference leads to the need for approximate inference algorithms, which we will study later in the course. However, it is worth understanding exact inference. For one, as we have seen, under some assumptions about the model’s structure exact inference is feasible, for example when the graphical model is a tree or has low treewidth. This case turns out to be quite important in applications, as many interesting models have a tree-like structure. Moreover, some of the approximate inference algorithms, such as Loopy BP, are inspired by exact inference algorithms.</p>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">مبانی برنامه نویسی</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">گروه کامپیوتر دانشگاه آزاد مشهد</li><li><a class="u-email" href="mailto:csaiaum.ir@gmail.com">csaiaum.ir@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/csaiaum" target="_blank"><i class="fab fa-github"></i> <span class="username">csaiaum</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>&copy; Copyright 2021 Azad Islamic University, Mashhad Branch</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+  <d-bibliography src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/bibliography/2019-01-28-lecture-04.bib">
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/katex.js"></script>
+
+
+
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = 'hover';
+  anchors.add('article h2, article h3, article h4, article h5, article h6');
+</script>
+
+
+
+<!-- Adjust LaTeX JS -->
+<script src="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/https://csaiaum.github.io/teach/shadroo/4001/mabani/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</html>
